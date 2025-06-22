@@ -151,8 +151,11 @@ The STM32L562's memory is partitioned into well-defined regions to support secur
 | ♻️ Backup Image(50KB)| 0x08073000
 +----------------------+
 ```
-------
+---
 
-© 2025 Soulaimane Oulad Belayachi
+<p align="center">
+  <b>© 2025 Soulaimane Oulad Belayachi</b>
+</p>
+
 
 
