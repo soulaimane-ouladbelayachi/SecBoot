@@ -1,0 +1,1022 @@
+ARM GAS  /tmp/ccOYQKtx.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secboot_diag.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secboot_diag.c"
+  21              		.section	.text.SECBOOT_Diag_LogEvent,"ax",%progbits
+  22              		.align	1
+  23              		.global	SECBOOT_Diag_LogEvent
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	SECBOOT_Diag_LogEvent:
+  29              	.LVL0:
+  30              	.LFB205:
+   1:../../Secure/Core/Src/secboot_diag.c **** #include "secboot_diag.h"
+   2:../../Secure/Core/Src/secboot_diag.c **** 
+   3:../../Secure/Core/Src/secboot_diag.c **** 
+   4:../../Secure/Core/Src/secboot_diag.c **** /**
+   5:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Basic response executor
+   6:../../Secure/Core/Src/secboot_diag.c ****   */
+   7:../../Secure/Core/Src/secboot_diag.c **** static void SECBOOT_Diag_ExecuteResponse(SECBOOT_Diag_ResponseLevel level);
+   8:../../Secure/Core/Src/secboot_diag.c **** 
+   9:../../Secure/Core/Src/secboot_diag.c **** 
+  10:../../Secure/Core/Src/secboot_diag.c **** /**
+  11:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Recovery attempt with logging
+  12:../../Secure/Core/Src/secboot_diag.c ****   * @note   Verifies backup and jumps, logs critical events
+  13:../../Secure/Core/Src/secboot_diag.c ****   */
+  14:../../Secure/Core/Src/secboot_diag.c **** static void try_recovery_from_backup(void);
+  15:../../Secure/Core/Src/secboot_diag.c **** 
+  16:../../Secure/Core/Src/secboot_diag.c **** /**
+  17:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Basic system lockdown
+  18:../../Secure/Core/Src/secboot_diag.c ****   * @note   Performs essential security actions without complex features
+  19:../../Secure/Core/Src/secboot_diag.c ****   */
+  20:../../Secure/Core/Src/secboot_diag.c **** void system_lockdown(void);
+  21:../../Secure/Core/Src/secboot_diag.c **** 
+  22:../../Secure/Core/Src/secboot_diag.c **** SECBOOT_Diag_TypeDef SECBOOT_Diag_LogEvent(SECBOOT_Diag_EventType event,uint8_t code,uint32_t data)
+  31              		.loc 1 22 100 view -0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 40
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  23:../../Secure/Core/Src/secboot_diag.c ****      /* 1. Validate parameters */
+  24:../../Secure/Core/Src/secboot_diag.c ****     if (event > SECBOOT_DIAG_ROLLBACK_ATTEMPT) {
+ARM GAS  /tmp/ccOYQKtx.s 			page 2
+
+
+  35              		.loc 1 24 5 view .LVU1
+  36              		.loc 1 24 8 is_stmt 0 view .LVU2
+  37 0000 4028     		cmp	r0, #64
+  38 0002 5AD8     		bhi	.L6
+  22:../../Secure/Core/Src/secboot_diag.c ****      /* 1. Validate parameters */
+  39              		.loc 1 22 100 view .LVU3
+  40 0004 70B5     		push	{r4, r5, r6, lr}
+  41              	.LCFI0:
+  42              		.cfi_def_cfa_offset 16
+  43              		.cfi_offset 4, -16
+  44              		.cfi_offset 5, -12
+  45              		.cfi_offset 6, -8
+  46              		.cfi_offset 14, -4
+  47 0006 8AB0     		sub	sp, sp, #40
+  48              	.LCFI1:
+  49              		.cfi_def_cfa_offset 56
+  50 0008 0446     		mov	r4, r0
+  51 000a 0E46     		mov	r6, r1
+  52 000c 1546     		mov	r5, r2
+  25:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_INVALID_PARAM;
+  26:../../Secure/Core/Src/secboot_diag.c ****     }
+  27:../../Secure/Core/Src/secboot_diag.c **** 
+  28:../../Secure/Core/Src/secboot_diag.c ****     /* 2. Prepare log entry */
+  29:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_LogEntry entry;
+  53              		.loc 1 29 5 is_stmt 1 view .LVU4
+  30:../../Secure/Core/Src/secboot_diag.c ****     entry.timestamp = HAL_GetTick();
+  54              		.loc 1 30 5 view .LVU5
+  55              		.loc 1 30 23 is_stmt 0 view .LVU6
+  56 000e FFF7FEFF 		bl	HAL_GetTick
+  57              	.LVL1:
+  58              		.loc 1 30 21 view .LVU7
+  59 0012 0690     		str	r0, [sp, #24]
+  31:../../Secure/Core/Src/secboot_diag.c ****     entry.event = event;
+  60              		.loc 1 31 5 is_stmt 1 view .LVU8
+  61              		.loc 1 31 17 is_stmt 0 view .LVU9
+  62 0014 8DF81C40 		strb	r4, [sp, #28]
+  32:../../Secure/Core/Src/secboot_diag.c ****     entry.error_code = code;
+  63              		.loc 1 32 5 is_stmt 1 view .LVU10
+  64              		.loc 1 32 22 is_stmt 0 view .LVU11
+  65 0018 8DF81D60 		strb	r6, [sp, #29]
+  33:../../Secure/Core/Src/secboot_diag.c ****     entry.context_data = data;
+  66              		.loc 1 33 5 is_stmt 1 view .LVU12
+  67              		.loc 1 33 24 is_stmt 0 view .LVU13
+  68 001c 0895     		str	r5, [sp, #32]
+  34:../../Secure/Core/Src/secboot_diag.c ****     entry.crc = 0;  // Temporary zero for CRC calculation
+  69              		.loc 1 34 5 is_stmt 1 view .LVU14
+  70              		.loc 1 34 15 is_stmt 0 view .LVU15
+  71 001e 0023     		movs	r3, #0
+  72 0020 0993     		str	r3, [sp, #36]
+  35:../../Secure/Core/Src/secboot_diag.c **** 
+  36:../../Secure/Core/Src/secboot_diag.c **** 
+  37:../../Secure/Core/Src/secboot_diag.c ****     uint32_t temp_crc;
+  73              		.loc 1 37 5 is_stmt 1 view .LVU16
+  38:../../Secure/Core/Src/secboot_diag.c ****     memcpy(&temp_crc, &entry.crc, sizeof(temp_crc));  // Safe
+  74              		.loc 1 38 5 view .LVU17
+  75 0022 0593     		str	r3, [sp, #20]
+  39:../../Secure/Core/Src/secboot_diag.c **** 
+ARM GAS  /tmp/ccOYQKtx.s 			page 3
+
+
+  40:../../Secure/Core/Src/secboot_diag.c ****     //TODO FIX ALIGNEMENT SECBOOT_Diag_LogEntry
+  41:../../Secure/Core/Src/secboot_diag.c **** 
+  42:../../Secure/Core/Src/secboot_diag.c ****     if(SECBOOT_CRC_Calculate((uint8_t*)&entry, (sizeof(entry) - sizeof(entry.crc)), &temp_crc) != S
+  76              		.loc 1 42 5 view .LVU18
+  77              		.loc 1 42 8 is_stmt 0 view .LVU19
+  78 0024 05AA     		add	r2, sp, #20
+  79 0026 0C21     		movs	r1, #12
+  80 0028 06A8     		add	r0, sp, #24
+  81 002a FFF7FEFF 		bl	SECBOOT_CRC_Calculate
+  82              	.LVL2:
+  83              		.loc 1 42 7 view .LVU20
+  84 002e 0446     		mov	r4, r0
+  85 0030 10B1     		cbz	r0, .L14
+  43:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_ERROR;
+  86              		.loc 1 43 16 view .LVU21
+  87 0032 0120     		movs	r0, #1
+  88              	.LVL3:
+  89              	.L2:
+  44:../../Secure/Core/Src/secboot_diag.c ****     }
+  45:../../Secure/Core/Src/secboot_diag.c **** 
+  46:../../Secure/Core/Src/secboot_diag.c ****     /* 4. Secure flash programming */
+  47:../../Secure/Core/Src/secboot_diag.c ****     HAL_FLASH_Unlock();
+  48:../../Secure/Core/Src/secboot_diag.c **** 
+  49:../../Secure/Core/Src/secboot_diag.c ****     /* 4.1 Get next log position (circular buffer) */
+  50:../../Secure/Core/Src/secboot_diag.c ****     static uint32_t log_index = 0;
+  51:../../Secure/Core/Src/secboot_diag.c ****     uint32_t log_addr = SECBOOT_DIAG_LOG_BASE + (log_index * SECBOOT_DIAG_LOG_SIZE);
+  52:../../Secure/Core/Src/secboot_diag.c **** 
+  53:../../Secure/Core/Src/secboot_diag.c ****     /* 4.2 Verify sector is erased */
+  54:../../Secure/Core/Src/secboot_diag.c ****     if (*(uint32_t*)log_addr != 0xFFFFFFFF) {
+  55:../../Secure/Core/Src/secboot_diag.c ****         HAL_FLASH_Lock();
+  56:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_TAMPERED;
+  57:../../Secure/Core/Src/secboot_diag.c ****     }
+  58:../../Secure/Core/Src/secboot_diag.c **** 
+  59:../../Secure/Core/Src/secboot_diag.c ****     /* 4.3 Program entry in 64-bit chunks (STM32L5 requirement) */
+  60:../../Secure/Core/Src/secboot_diag.c ****     uint64_t* pData = (uint64_t*)&entry;
+  61:../../Secure/Core/Src/secboot_diag.c ****     for (uint8_t i = 0; i < SECBOOT_DIAG_LOG_SIZE/8; i++) {
+  62:../../Secure/Core/Src/secboot_diag.c ****         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, log_addr + (i * 8), pData[i]) != HAL_OK
+  63:../../Secure/Core/Src/secboot_diag.c ****             HAL_FLASH_Lock();
+  64:../../Secure/Core/Src/secboot_diag.c ****             return SECBOOT_DIAG_ERROR;
+  65:../../Secure/Core/Src/secboot_diag.c ****         }
+  66:../../Secure/Core/Src/secboot_diag.c ****     }
+  67:../../Secure/Core/Src/secboot_diag.c **** 
+  68:../../Secure/Core/Src/secboot_diag.c ****     HAL_FLASH_Lock();
+  69:../../Secure/Core/Src/secboot_diag.c **** 
+  70:../../Secure/Core/Src/secboot_diag.c ****     /* 5. Update index with overflow protection */
+  71:../../Secure/Core/Src/secboot_diag.c ****     log_index = (log_index + 1) % SECBOOT_DIAG_MAX_LOGS;
+  72:../../Secure/Core/Src/secboot_diag.c **** 
+  73:../../Secure/Core/Src/secboot_diag.c ****     /* 6. Verify write (anti-tamper measure) */
+  74:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_LogEntry written_entry;
+  75:../../Secure/Core/Src/secboot_diag.c ****     memcpy(&written_entry, (void*)log_addr, sizeof(written_entry));
+  76:../../Secure/Core/Src/secboot_diag.c ****     
+  77:../../Secure/Core/Src/secboot_diag.c ****     uint32_t verify_crc = 0;
+  78:../../Secure/Core/Src/secboot_diag.c **** 
+  79:../../Secure/Core/Src/secboot_diag.c ****     if(SECBOOT_CRC_Calculate((uint8_t*)&written_entry,(sizeof(written_entry) - sizeof(written_entry
+  80:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_ERROR;
+  81:../../Secure/Core/Src/secboot_diag.c ****     }                                      
+  82:../../Secure/Core/Src/secboot_diag.c **** 
+ARM GAS  /tmp/ccOYQKtx.s 			page 4
+
+
+  83:../../Secure/Core/Src/secboot_diag.c ****     if (written_entry.crc != verify_crc) {
+  84:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_TAMPERED;
+  85:../../Secure/Core/Src/secboot_diag.c ****     }
+  86:../../Secure/Core/Src/secboot_diag.c **** 
+  87:../../Secure/Core/Src/secboot_diag.c ****     return SECBOOT_DIAG_OK;
+  88:../../Secure/Core/Src/secboot_diag.c **** 
+  89:../../Secure/Core/Src/secboot_diag.c **** }
+  90              		.loc 1 89 1 view .LVU22
+  91 0034 0AB0     		add	sp, sp, #40
+  92              	.LCFI2:
+  93              		.cfi_remember_state
+  94              		.cfi_def_cfa_offset 16
+  95              		@ sp needed
+  96 0036 70BD     		pop	{r4, r5, r6, pc}
+  97              	.LVL4:
+  98              	.L14:
+  99              	.LCFI3:
+ 100              		.cfi_restore_state
+  47:../../Secure/Core/Src/secboot_diag.c **** 
+ 101              		.loc 1 47 5 is_stmt 1 view .LVU23
+ 102 0038 FFF7FEFF 		bl	HAL_FLASH_Unlock
+ 103              	.LVL5:
+  50:../../Secure/Core/Src/secboot_diag.c ****     uint32_t log_addr = SECBOOT_DIAG_LOG_BASE + (log_index * SECBOOT_DIAG_LOG_SIZE);
+ 104              		.loc 1 50 5 view .LVU24
+  51:../../Secure/Core/Src/secboot_diag.c **** 
+ 105              		.loc 1 51 5 view .LVU25
+  51:../../Secure/Core/Src/secboot_diag.c **** 
+ 106              		.loc 1 51 47 is_stmt 0 view .LVU26
+ 107 003c 214B     		ldr	r3, .L18
+ 108 003e 1D68     		ldr	r5, [r3]
+ 109              	.LVL6:
+  51:../../Secure/Core/Src/secboot_diag.c **** 
+ 110              		.loc 1 51 47 view .LVU27
+ 111 0040 05F54015 		add	r5, r5, #3145728
+ 112 0044 05F52075 		add	r5, r5, #640
+  51:../../Secure/Core/Src/secboot_diag.c **** 
+ 113              		.loc 1 51 14 view .LVU28
+ 114 0048 AD01     		lsls	r5, r5, #6
+ 115              	.LVL7:
+  54:../../Secure/Core/Src/secboot_diag.c ****         HAL_FLASH_Lock();
+ 116              		.loc 1 54 5 is_stmt 1 view .LVU29
+  54:../../Secure/Core/Src/secboot_diag.c ****         HAL_FLASH_Lock();
+ 117              		.loc 1 54 9 is_stmt 0 view .LVU30
+ 118 004a 2B68     		ldr	r3, [r5]
+  54:../../Secure/Core/Src/secboot_diag.c ****         HAL_FLASH_Lock();
+ 119              		.loc 1 54 8 view .LVU31
+ 120 004c B3F1FF3F 		cmp	r3, #-1
+ 121 0050 0FD1     		bne	.L15
+ 122              	.L3:
+ 123              	.LVL8:
+ 124              	.LBB2:
+  61:../../Secure/Core/Src/secboot_diag.c ****         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, log_addr + (i * 8), pData[i]) != HAL_OK
+ 125              		.loc 1 61 27 is_stmt 1 discriminator 1 view .LVU32
+ 126 0052 072C     		cmp	r4, #7
+ 127 0054 15D8     		bhi	.L16
+  62:../../Secure/Core/Src/secboot_diag.c ****             HAL_FLASH_Lock();
+ 128              		.loc 1 62 9 view .LVU33
+ARM GAS  /tmp/ccOYQKtx.s 			page 5
+
+
+  62:../../Secure/Core/Src/secboot_diag.c ****             HAL_FLASH_Lock();
+ 129              		.loc 1 62 86 is_stmt 0 view .LVU34
+ 130 0056 06AB     		add	r3, sp, #24
+ 131 0058 03EBC403 		add	r3, r3, r4, lsl #3
+  62:../../Secure/Core/Src/secboot_diag.c ****             HAL_FLASH_Lock();
+ 132              		.loc 1 62 13 view .LVU35
+ 133 005c D3E90023 		ldrd	r2, [r3]
+ 134 0060 05EBC401 		add	r1, r5, r4, lsl #3
+ 135 0064 0120     		movs	r0, #1
+ 136 0066 FFF7FEFF 		bl	HAL_FLASH_Program
+ 137              	.LVL9:
+  62:../../Secure/Core/Src/secboot_diag.c ****             HAL_FLASH_Lock();
+ 138              		.loc 1 62 12 view .LVU36
+ 139 006a 30B9     		cbnz	r0, .L17
+  61:../../Secure/Core/Src/secboot_diag.c ****         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, log_addr + (i * 8), pData[i]) != HAL_OK
+ 140              		.loc 1 61 55 is_stmt 1 discriminator 2 view .LVU37
+ 141 006c 0134     		adds	r4, r4, #1
+ 142              	.LVL10:
+  61:../../Secure/Core/Src/secboot_diag.c ****         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, log_addr + (i * 8), pData[i]) != HAL_OK
+ 143              		.loc 1 61 55 is_stmt 0 discriminator 2 view .LVU38
+ 144 006e E4B2     		uxtb	r4, r4
+ 145              	.LVL11:
+  61:../../Secure/Core/Src/secboot_diag.c ****         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, log_addr + (i * 8), pData[i]) != HAL_OK
+ 146              		.loc 1 61 55 discriminator 2 view .LVU39
+ 147 0070 EFE7     		b	.L3
+ 148              	.LVL12:
+ 149              	.L15:
+  61:../../Secure/Core/Src/secboot_diag.c ****         if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, log_addr + (i * 8), pData[i]) != HAL_OK
+ 150              		.loc 1 61 55 discriminator 2 view .LVU40
+ 151              	.LBE2:
+  55:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_TAMPERED;
+ 152              		.loc 1 55 9 is_stmt 1 view .LVU41
+ 153 0072 FFF7FEFF 		bl	HAL_FLASH_Lock
+ 154              	.LVL13:
+  56:../../Secure/Core/Src/secboot_diag.c ****     }
+ 155              		.loc 1 56 9 view .LVU42
+  56:../../Secure/Core/Src/secboot_diag.c ****     }
+ 156              		.loc 1 56 16 is_stmt 0 view .LVU43
+ 157 0076 0420     		movs	r0, #4
+ 158 0078 DCE7     		b	.L2
+ 159              	.LVL14:
+ 160              	.L17:
+ 161              	.LBB3:
+  63:../../Secure/Core/Src/secboot_diag.c ****             return SECBOOT_DIAG_ERROR;
+ 162              		.loc 1 63 13 is_stmt 1 view .LVU44
+ 163 007a FFF7FEFF 		bl	HAL_FLASH_Lock
+ 164              	.LVL15:
+  64:../../Secure/Core/Src/secboot_diag.c ****         }
+ 165              		.loc 1 64 13 view .LVU45
+  64:../../Secure/Core/Src/secboot_diag.c ****         }
+ 166              		.loc 1 64 20 is_stmt 0 view .LVU46
+ 167 007e 0120     		movs	r0, #1
+ 168 0080 D8E7     		b	.L2
+ 169              	.L16:
+  64:../../Secure/Core/Src/secboot_diag.c ****         }
+ 170              		.loc 1 64 20 view .LVU47
+ 171              	.LBE3:
+ARM GAS  /tmp/ccOYQKtx.s 			page 6
+
+
+  68:../../Secure/Core/Src/secboot_diag.c **** 
+ 172              		.loc 1 68 5 is_stmt 1 view .LVU48
+ 173 0082 FFF7FEFF 		bl	HAL_FLASH_Lock
+ 174              	.LVL16:
+  71:../../Secure/Core/Src/secboot_diag.c **** 
+ 175              		.loc 1 71 5 view .LVU49
+  71:../../Secure/Core/Src/secboot_diag.c **** 
+ 176              		.loc 1 71 28 is_stmt 0 view .LVU50
+ 177 0086 0F4A     		ldr	r2, .L18
+ 178 0088 1368     		ldr	r3, [r2]
+ 179 008a 0133     		adds	r3, r3, #1
+  71:../../Secure/Core/Src/secboot_diag.c **** 
+ 180              		.loc 1 71 33 view .LVU51
+ 181 008c 03F00F03 		and	r3, r3, #15
+  71:../../Secure/Core/Src/secboot_diag.c **** 
+ 182              		.loc 1 71 15 view .LVU52
+ 183 0090 1360     		str	r3, [r2]
+  74:../../Secure/Core/Src/secboot_diag.c ****     memcpy(&written_entry, (void*)log_addr, sizeof(written_entry));
+ 184              		.loc 1 74 5 is_stmt 1 view .LVU53
+  75:../../Secure/Core/Src/secboot_diag.c ****     
+ 185              		.loc 1 75 5 view .LVU54
+ 186 0092 01AC     		add	r4, sp, #4
+ 187              	.LVL17:
+  75:../../Secure/Core/Src/secboot_diag.c ****     
+ 188              		.loc 1 75 5 is_stmt 0 view .LVU55
+ 189 0094 2868     		ldr	r0, [r5]	@ unaligned
+ 190 0096 6968     		ldr	r1, [r5, #4]	@ unaligned
+ 191 0098 AA68     		ldr	r2, [r5, #8]	@ unaligned
+ 192 009a EB68     		ldr	r3, [r5, #12]	@ unaligned
+ 193 009c 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+  77:../../Secure/Core/Src/secboot_diag.c **** 
+ 194              		.loc 1 77 5 is_stmt 1 view .LVU56
+  77:../../Secure/Core/Src/secboot_diag.c **** 
+ 195              		.loc 1 77 14 is_stmt 0 view .LVU57
+ 196 009e 0023     		movs	r3, #0
+ 197 00a0 0093     		str	r3, [sp]
+  79:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_ERROR;
+ 198              		.loc 1 79 5 is_stmt 1 view .LVU58
+  79:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_ERROR;
+ 199              		.loc 1 79 8 is_stmt 0 view .LVU59
+ 200 00a2 6A46     		mov	r2, sp
+ 201 00a4 0C21     		movs	r1, #12
+ 202 00a6 01A8     		add	r0, sp, #4
+ 203 00a8 FFF7FEFF 		bl	SECBOOT_CRC_Calculate
+ 204              	.LVL18:
+  79:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_ERROR;
+ 205              		.loc 1 79 7 view .LVU60
+ 206 00ac 38B9     		cbnz	r0, .L8
+  83:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_TAMPERED;
+ 207              		.loc 1 83 5 is_stmt 1 view .LVU61
+  83:../../Secure/Core/Src/secboot_diag.c ****         return SECBOOT_DIAG_TAMPERED;
+ 208              		.loc 1 83 8 is_stmt 0 view .LVU62
+ 209 00ae 049A     		ldr	r2, [sp, #16]
+ 210 00b0 009B     		ldr	r3, [sp]
+ 211 00b2 9A42     		cmp	r2, r3
+ 212 00b4 BED0     		beq	.L2
+  84:../../Secure/Core/Src/secboot_diag.c ****     }
+ARM GAS  /tmp/ccOYQKtx.s 			page 7
+
+
+ 213              		.loc 1 84 16 view .LVU63
+ 214 00b6 0420     		movs	r0, #4
+ 215 00b8 BCE7     		b	.L2
+ 216              	.LVL19:
+ 217              	.L6:
+ 218              	.LCFI4:
+ 219              		.cfi_def_cfa_offset 0
+ 220              		.cfi_restore 4
+ 221              		.cfi_restore 5
+ 222              		.cfi_restore 6
+ 223              		.cfi_restore 14
+  25:../../Secure/Core/Src/secboot_diag.c ****     }
+ 224              		.loc 1 25 16 view .LVU64
+ 225 00ba 0220     		movs	r0, #2
+ 226              	.LVL20:
+ 227              		.loc 1 89 1 view .LVU65
+ 228 00bc 7047     		bx	lr
+ 229              	.LVL21:
+ 230              	.L8:
+ 231              	.LCFI5:
+ 232              		.cfi_def_cfa_offset 56
+ 233              		.cfi_offset 4, -16
+ 234              		.cfi_offset 5, -12
+ 235              		.cfi_offset 6, -8
+ 236              		.cfi_offset 14, -4
+  80:../../Secure/Core/Src/secboot_diag.c ****     }                                      
+ 237              		.loc 1 80 16 view .LVU66
+ 238 00be 0120     		movs	r0, #1
+ 239 00c0 B8E7     		b	.L2
+ 240              	.L19:
+ 241 00c2 00BF     		.align	2
+ 242              	.L18:
+ 243 00c4 00000000 		.word	log_index.0
+ 244              		.cfi_endproc
+ 245              	.LFE205:
+ 247              		.section	.text.system_lockdown,"ax",%progbits
+ 248              		.align	1
+ 249              		.global	system_lockdown
+ 250              		.syntax unified
+ 251              		.thumb
+ 252              		.thumb_func
+ 254              	system_lockdown:
+ 255              	.LFB209:
+  90:../../Secure/Core/Src/secboot_diag.c **** 
+  91:../../Secure/Core/Src/secboot_diag.c **** 
+  92:../../Secure/Core/Src/secboot_diag.c **** 
+  93:../../Secure/Core/Src/secboot_diag.c **** /**
+  94:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Handles CRC verification failures with basic response policy
+  95:../../Secure/Core/Src/secboot_diag.c ****   * @param  status CRC error status from verification
+  96:../../Secure/Core/Src/secboot_diag.c ****   * @retval SECBOOT_Diag_ResponseLevel Recommended system response
+  97:../../Secure/Core/Src/secboot_diag.c ****   *
+  98:../../Secure/Core/Src/secboot_diag.c ****   * @note Simplified Response Policy:
+  99:../../Secure/Core/Src/secboot_diag.c ****   * - CRC mismatch: Try recovery once
+ 100:../../Secure/Core/Src/secboot_diag.c ****   * - Invalid parameters: Just log warning
+ 101:../../Secure/Core/Src/secboot_diag.c ****   * - Timeout/other errors: Lock system
+ 102:../../Secure/Core/Src/secboot_diag.c ****   */
+ 103:../../Secure/Core/Src/secboot_diag.c **** SECBOOT_Diag_ResponseLevel SECBOOT_Diag_HandleCrcFail(SECBOOT_CRC_StatusTypeDef status)
+ARM GAS  /tmp/ccOYQKtx.s 			page 8
+
+
+ 104:../../Secure/Core/Src/secboot_diag.c **** {
+ 105:../../Secure/Core/Src/secboot_diag.c ****     // 1. Always log the failure first
+ 106:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_LogEvent(SECBOOT_DIAG_CRC_FAIL, (uint8_t)status, HAL_GetTick());
+ 107:../../Secure/Core/Src/secboot_diag.c ****     
+ 108:../../Secure/Core/Src/secboot_diag.c ****     // 2. Determine simple response
+ 109:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_ResponseLevel response;
+ 110:../../Secure/Core/Src/secboot_diag.c ****     
+ 111:../../Secure/Core/Src/secboot_diag.c ****     if (status == SECBOOT_CRC_MISMATCH) {
+ 112:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_RECOVER;  // Try recovery
+ 113:../../Secure/Core/Src/secboot_diag.c ****     }
+ 114:../../Secure/Core/Src/secboot_diag.c ****     else if (status == SECBOOT_CRC_INVALID_PARAM) {
+ 115:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_WARN;     // Just log warning
+ 116:../../Secure/Core/Src/secboot_diag.c ****     }
+ 117:../../Secure/Core/Src/secboot_diag.c ****     else {
+ 118:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_LOCKDOWN; // Lock system for other errors
+ 119:../../Secure/Core/Src/secboot_diag.c ****     }
+ 120:../../Secure/Core/Src/secboot_diag.c ****     
+ 121:../../Secure/Core/Src/secboot_diag.c ****     // 3. Execute the response
+ 122:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_ExecuteResponse(response);
+ 123:../../Secure/Core/Src/secboot_diag.c ****     
+ 124:../../Secure/Core/Src/secboot_diag.c ****     return response;
+ 125:../../Secure/Core/Src/secboot_diag.c **** }
+ 126:../../Secure/Core/Src/secboot_diag.c **** 
+ 127:../../Secure/Core/Src/secboot_diag.c **** /**
+ 128:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Basic response executor
+ 129:../../Secure/Core/Src/secboot_diag.c ****   */
+ 130:../../Secure/Core/Src/secboot_diag.c **** void SECBOOT_Diag_ExecuteResponse(SECBOOT_Diag_ResponseLevel level)
+ 131:../../Secure/Core/Src/secboot_diag.c **** {
+ 132:../../Secure/Core/Src/secboot_diag.c ****     switch(level) {
+ 133:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_DIAG_RESP_WARN:
+ 134:../../Secure/Core/Src/secboot_diag.c ****             // Just blink LED for visibility
+ 135:../../Secure/Core/Src/secboot_diag.c ****             HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, GPIO_PIN_RESET);
+ 136:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 137:../../Secure/Core/Src/secboot_diag.c ****             
+ 138:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_DIAG_RESP_RECOVER:
+ 139:../../Secure/Core/Src/secboot_diag.c ****             try_recovery_from_backup();
+ 140:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 141:../../Secure/Core/Src/secboot_diag.c ****             
+ 142:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_DIAG_RESP_LOCKDOWN:
+ 143:../../Secure/Core/Src/secboot_diag.c ****             system_lockdown();
+ 144:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 145:../../Secure/Core/Src/secboot_diag.c ****             
+ 146:../../Secure/Core/Src/secboot_diag.c ****         default:
+ 147:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 148:../../Secure/Core/Src/secboot_diag.c ****     }
+ 149:../../Secure/Core/Src/secboot_diag.c **** }
+ 150:../../Secure/Core/Src/secboot_diag.c **** 
+ 151:../../Secure/Core/Src/secboot_diag.c **** 
+ 152:../../Secure/Core/Src/secboot_diag.c **** /**
+ 153:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Recovery attempt with logging
+ 154:../../Secure/Core/Src/secboot_diag.c ****   * @note   Verifies backup and jumps, logs critical events
+ 155:../../Secure/Core/Src/secboot_diag.c ****   */
+ 156:../../Secure/Core/Src/secboot_diag.c **** void try_recovery_from_backup(void)
+ 157:../../Secure/Core/Src/secboot_diag.c **** {
+ 158:../../Secure/Core/Src/secboot_diag.c ****     // 1. Log recovery attempt start
+ 159:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_LogEvent(SECBOOT_DIAG_ROLLBACK_ATTEMPT, 
+ 160:../../Secure/Core/Src/secboot_diag.c ****                          ROLLBACK_NORMAL_RECOVERY,  // Basic attempt code
+ARM GAS  /tmp/ccOYQKtx.s 			page 9
+
+
+ 161:../../Secure/Core/Src/secboot_diag.c ****                          HAL_GetTick());
+ 162:../../Secure/Core/Src/secboot_diag.c **** 
+ 163:../../Secure/Core/Src/secboot_diag.c ****     // 2. Verify backup signature
+ 164:../../Secure/Core/Src/secboot_diag.c ****     if(SECBOOT_BootManager_VerifyAppSignature(SECBOOT_BACKUP_IMAGE_ADDR) != SECBOOT_BOOTMANAGER_OK)
+ 165:../../Secure/Core/Src/secboot_diag.c ****     {
+ 166:../../Secure/Core/Src/secboot_diag.c ****         // 3. Log signature failure
+ 167:../../Secure/Core/Src/secboot_diag.c ****         SECBOOT_Diag_LogEvent(SECBOOT_DIAG_ROLLBACK_ATTEMPT,
+ 168:../../Secure/Core/Src/secboot_diag.c ****                              SIG_FAIL_BACKUP_IMAGE,  // Signature fail code
+ 169:../../Secure/Core/Src/secboot_diag.c ****                              0);
+ 170:../../Secure/Core/Src/secboot_diag.c ****         SECBOOT_Diag_ExecuteResponse(SECBOOT_DIAG_RESP_LOCKDOWN);
+ 171:../../Secure/Core/Src/secboot_diag.c ****         return;
+ 172:../../Secure/Core/Src/secboot_diag.c ****     }
+ 173:../../Secure/Core/Src/secboot_diag.c **** 
+ 174:../../Secure/Core/Src/secboot_diag.c ****     // 4. Attempt jump to backup
+ 175:../../Secure/Core/Src/secboot_diag.c ****     if(SECBOOT_BootManager_JumpTo(SECBOOT_BACKUP_IMAGE_ADDR) != SECBOOT_BOOTMANAGER_OK)
+ 176:../../Secure/Core/Src/secboot_diag.c ****     {
+ 177:../../Secure/Core/Src/secboot_diag.c ****         // 5. Log jump failure
+ 178:../../Secure/Core/Src/secboot_diag.c ****         SECBOOT_Diag_LogEvent(SECBOOT_DIAG_ROLLBACK_ATTEMPT,
+ 179:../../Secure/Core/Src/secboot_diag.c ****                              ROOLBACK_JUMP_FAILED,  // Jump fail code
+ 180:../../Secure/Core/Src/secboot_diag.c ****                              HAL_GetTick());
+ 181:../../Secure/Core/Src/secboot_diag.c ****     }
+ 182:../../Secure/Core/Src/secboot_diag.c **** 
+ 183:../../Secure/Core/Src/secboot_diag.c ****     // 6. Final fallback (should never reach here)
+ 184:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_ExecuteResponse(SECBOOT_DIAG_RESP_LOCKDOWN);
+ 185:../../Secure/Core/Src/secboot_diag.c ****     while(1);
+ 186:../../Secure/Core/Src/secboot_diag.c **** }
+ 187:../../Secure/Core/Src/secboot_diag.c **** 
+ 188:../../Secure/Core/Src/secboot_diag.c **** 
+ 189:../../Secure/Core/Src/secboot_diag.c **** /**
+ 190:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Basic system lockdown
+ 191:../../Secure/Core/Src/secboot_diag.c ****   * @note   Performs essential security actions without complex features
+ 192:../../Secure/Core/Src/secboot_diag.c ****   */
+ 193:../../Secure/Core/Src/secboot_diag.c **** void system_lockdown(void)
+ 194:../../Secure/Core/Src/secboot_diag.c **** {
+ 256              		.loc 1 194 1 is_stmt 1 view -0
+ 257              		.cfi_startproc
+ 258              		@ Volatile: function does not return.
+ 259              		@ args = 0, pretend = 0, frame = 0
+ 260              		@ frame_needed = 0, uses_anonymous_args = 0
+ 261              		@ link register save eliminated.
+ 262              	.L21:
+ 195:../../Secure/Core/Src/secboot_diag.c ****     while(1);
+ 263              		.loc 1 195 5 discriminator 1 view .LVU68
+ 264              		.loc 1 195 10 discriminator 1 view .LVU69
+ 265 0000 FEE7     		b	.L21
+ 266              		.cfi_endproc
+ 267              	.LFE209:
+ 269              		.section	.text.SECBOOT_Diag_ExecuteResponse,"ax",%progbits
+ 270              		.align	1
+ 271              		.syntax unified
+ 272              		.thumb
+ 273              		.thumb_func
+ 275              	SECBOOT_Diag_ExecuteResponse:
+ 276              	.LVL22:
+ 277              	.LFB207:
+ 131:../../Secure/Core/Src/secboot_diag.c ****     switch(level) {
+ 278              		.loc 1 131 1 view -0
+ARM GAS  /tmp/ccOYQKtx.s 			page 10
+
+
+ 279              		.cfi_startproc
+ 280              		@ args = 0, pretend = 0, frame = 0
+ 281              		@ frame_needed = 0, uses_anonymous_args = 0
+ 131:../../Secure/Core/Src/secboot_diag.c ****     switch(level) {
+ 282              		.loc 1 131 1 is_stmt 0 view .LVU71
+ 283 0000 08B5     		push	{r3, lr}
+ 284              	.LCFI6:
+ 285              		.cfi_def_cfa_offset 8
+ 286              		.cfi_offset 3, -8
+ 287              		.cfi_offset 14, -4
+ 132:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_DIAG_RESP_WARN:
+ 288              		.loc 1 132 5 is_stmt 1 view .LVU72
+ 289 0002 0228     		cmp	r0, #2
+ 290 0004 0AD0     		beq	.L23
+ 291 0006 0328     		cmp	r0, #3
+ 292 0008 0BD0     		beq	.L24
+ 293 000a 0128     		cmp	r0, #1
+ 294 000c 00D0     		beq	.L27
+ 295              	.LVL23:
+ 296              	.L22:
+ 149:../../Secure/Core/Src/secboot_diag.c **** 
+ 297              		.loc 1 149 1 is_stmt 0 view .LVU73
+ 298 000e 08BD     		pop	{r3, pc}
+ 299              	.LVL24:
+ 300              	.L27:
+ 135:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 301              		.loc 1 135 13 is_stmt 1 view .LVU74
+ 302 0010 0022     		movs	r2, #0
+ 303 0012 0821     		movs	r1, #8
+ 304 0014 0448     		ldr	r0, .L28
+ 305              	.LVL25:
+ 135:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 306              		.loc 1 135 13 is_stmt 0 view .LVU75
+ 307 0016 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 308              	.LVL26:
+ 136:../../Secure/Core/Src/secboot_diag.c ****             
+ 309              		.loc 1 136 13 is_stmt 1 view .LVU76
+ 310 001a F8E7     		b	.L22
+ 311              	.LVL27:
+ 312              	.L23:
+ 139:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 313              		.loc 1 139 13 view .LVU77
+ 314 001c FFF7FEFF 		bl	try_recovery_from_backup
+ 315              	.LVL28:
+ 140:../../Secure/Core/Src/secboot_diag.c ****             
+ 316              		.loc 1 140 13 view .LVU78
+ 317 0020 F5E7     		b	.L22
+ 318              	.LVL29:
+ 319              	.L24:
+ 143:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 320              		.loc 1 143 13 view .LVU79
+ 321 0022 FFF7FEFF 		bl	system_lockdown
+ 322              	.LVL30:
+ 323              	.L29:
+ 143:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 324              		.loc 1 143 13 is_stmt 0 view .LVU80
+ 325 0026 00BF     		.align	2
+ARM GAS  /tmp/ccOYQKtx.s 			page 11
+
+
+ 326              	.L28:
+ 327 0028 000C0252 		.word	1375865856
+ 328              		.cfi_endproc
+ 329              	.LFE207:
+ 331              		.section	.text.SECBOOT_Diag_HandleCrcFail,"ax",%progbits
+ 332              		.align	1
+ 333              		.global	SECBOOT_Diag_HandleCrcFail
+ 334              		.syntax unified
+ 335              		.thumb
+ 336              		.thumb_func
+ 338              	SECBOOT_Diag_HandleCrcFail:
+ 339              	.LVL31:
+ 340              	.LFB206:
+ 104:../../Secure/Core/Src/secboot_diag.c ****     // 1. Always log the failure first
+ 341              		.loc 1 104 1 is_stmt 1 view -0
+ 342              		.cfi_startproc
+ 343              		@ args = 0, pretend = 0, frame = 0
+ 344              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104:../../Secure/Core/Src/secboot_diag.c ****     // 1. Always log the failure first
+ 345              		.loc 1 104 1 is_stmt 0 view .LVU82
+ 346 0000 10B5     		push	{r4, lr}
+ 347              	.LCFI7:
+ 348              		.cfi_def_cfa_offset 8
+ 349              		.cfi_offset 4, -8
+ 350              		.cfi_offset 14, -4
+ 351 0002 0446     		mov	r4, r0
+ 106:../../Secure/Core/Src/secboot_diag.c ****     
+ 352              		.loc 1 106 5 is_stmt 1 view .LVU83
+ 353 0004 FFF7FEFF 		bl	HAL_GetTick
+ 354              	.LVL32:
+ 106:../../Secure/Core/Src/secboot_diag.c ****     
+ 355              		.loc 1 106 5 is_stmt 0 view .LVU84
+ 356 0008 0246     		mov	r2, r0
+ 357 000a 2146     		mov	r1, r4
+ 358 000c 1020     		movs	r0, #16
+ 359 000e FFF7FEFF 		bl	SECBOOT_Diag_LogEvent
+ 360              	.LVL33:
+ 109:../../Secure/Core/Src/secboot_diag.c ****     
+ 361              		.loc 1 109 5 is_stmt 1 view .LVU85
+ 111:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_RECOVER;  // Try recovery
+ 362              		.loc 1 111 5 view .LVU86
+ 111:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_RECOVER;  // Try recovery
+ 363              		.loc 1 111 8 is_stmt 0 view .LVU87
+ 364 0012 042C     		cmp	r4, #4
+ 365 0014 09D0     		beq	.L32
+ 114:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_WARN;     // Just log warning
+ 366              		.loc 1 114 10 is_stmt 1 view .LVU88
+ 114:../../Secure/Core/Src/secboot_diag.c ****         response = SECBOOT_DIAG_RESP_WARN;     // Just log warning
+ 367              		.loc 1 114 13 is_stmt 0 view .LVU89
+ 368 0016 022C     		cmp	r4, #2
+ 369 0018 05D0     		beq	.L35
+ 118:../../Secure/Core/Src/secboot_diag.c ****     }
+ 370              		.loc 1 118 18 view .LVU90
+ 371 001a 0324     		movs	r4, #3
+ 372              	.L31:
+ 373              	.LVL34:
+ 122:../../Secure/Core/Src/secboot_diag.c ****     
+ARM GAS  /tmp/ccOYQKtx.s 			page 12
+
+
+ 374              		.loc 1 122 5 is_stmt 1 view .LVU91
+ 375 001c 2046     		mov	r0, r4
+ 376 001e FFF7FEFF 		bl	SECBOOT_Diag_ExecuteResponse
+ 377              	.LVL35:
+ 124:../../Secure/Core/Src/secboot_diag.c **** }
+ 378              		.loc 1 124 5 view .LVU92
+ 125:../../Secure/Core/Src/secboot_diag.c **** 
+ 379              		.loc 1 125 1 is_stmt 0 view .LVU93
+ 380 0022 2046     		mov	r0, r4
+ 381 0024 10BD     		pop	{r4, pc}
+ 382              	.LVL36:
+ 383              	.L35:
+ 115:../../Secure/Core/Src/secboot_diag.c ****     }
+ 384              		.loc 1 115 18 view .LVU94
+ 385 0026 0124     		movs	r4, #1
+ 386 0028 F8E7     		b	.L31
+ 387              	.L32:
+ 112:../../Secure/Core/Src/secboot_diag.c ****     }
+ 388              		.loc 1 112 18 view .LVU95
+ 389 002a 0224     		movs	r4, #2
+ 390 002c F6E7     		b	.L31
+ 391              		.cfi_endproc
+ 392              	.LFE206:
+ 394              		.section	.text.try_recovery_from_backup,"ax",%progbits
+ 395              		.align	1
+ 396              		.syntax unified
+ 397              		.thumb
+ 398              		.thumb_func
+ 400              	try_recovery_from_backup:
+ 401              	.LFB208:
+ 157:../../Secure/Core/Src/secboot_diag.c ****     // 1. Log recovery attempt start
+ 402              		.loc 1 157 1 is_stmt 1 view -0
+ 403              		.cfi_startproc
+ 404              		@ args = 0, pretend = 0, frame = 0
+ 405              		@ frame_needed = 0, uses_anonymous_args = 0
+ 406 0000 08B5     		push	{r3, lr}
+ 407              	.LCFI8:
+ 408              		.cfi_def_cfa_offset 8
+ 409              		.cfi_offset 3, -8
+ 410              		.cfi_offset 14, -4
+ 159:../../Secure/Core/Src/secboot_diag.c ****                          ROLLBACK_NORMAL_RECOVERY,  // Basic attempt code
+ 411              		.loc 1 159 5 view .LVU97
+ 412 0002 FFF7FEFF 		bl	HAL_GetTick
+ 413              	.LVL37:
+ 414 0006 0246     		mov	r2, r0
+ 415 0008 4021     		movs	r1, #64
+ 416 000a 0846     		mov	r0, r1
+ 417 000c FFF7FEFF 		bl	SECBOOT_Diag_LogEvent
+ 418              	.LVL38:
+ 164:../../Secure/Core/Src/secboot_diag.c ****     {
+ 419              		.loc 1 164 5 view .LVU98
+ 164:../../Secure/Core/Src/secboot_diag.c ****     {
+ 420              		.loc 1 164 8 is_stmt 0 view .LVU99
+ 421 0010 0E48     		ldr	r0, .L44
+ 422 0012 FFF7FEFF 		bl	SECBOOT_BootManager_VerifyAppSignature
+ 423              	.LVL39:
+ 164:../../Secure/Core/Src/secboot_diag.c ****     {
+ARM GAS  /tmp/ccOYQKtx.s 			page 13
+
+
+ 424              		.loc 1 164 7 view .LVU100
+ 425 0016 38B9     		cbnz	r0, .L42
+ 175:../../Secure/Core/Src/secboot_diag.c ****     {
+ 426              		.loc 1 175 5 is_stmt 1 view .LVU101
+ 175:../../Secure/Core/Src/secboot_diag.c ****     {
+ 427              		.loc 1 175 8 is_stmt 0 view .LVU102
+ 428 0018 0C48     		ldr	r0, .L44
+ 429 001a FFF7FEFF 		bl	SECBOOT_BootManager_JumpTo
+ 430              	.LVL40:
+ 175:../../Secure/Core/Src/secboot_diag.c ****     {
+ 431              		.loc 1 175 7 view .LVU103
+ 432 001e 60B9     		cbnz	r0, .L43
+ 433              	.L38:
+ 184:../../Secure/Core/Src/secboot_diag.c ****     while(1);
+ 434              		.loc 1 184 5 is_stmt 1 view .LVU104
+ 435 0020 0320     		movs	r0, #3
+ 436 0022 FFF7FEFF 		bl	SECBOOT_Diag_ExecuteResponse
+ 437              	.LVL41:
+ 438              	.L39:
+ 185:../../Secure/Core/Src/secboot_diag.c **** }
+ 439              		.loc 1 185 5 discriminator 1 view .LVU105
+ 185:../../Secure/Core/Src/secboot_diag.c **** }
+ 440              		.loc 1 185 10 discriminator 1 view .LVU106
+ 441 0026 FEE7     		b	.L39
+ 442              	.L42:
+ 167:../../Secure/Core/Src/secboot_diag.c ****                              SIG_FAIL_BACKUP_IMAGE,  // Signature fail code
+ 443              		.loc 1 167 9 view .LVU107
+ 444 0028 0022     		movs	r2, #0
+ 445 002a 2121     		movs	r1, #33
+ 446 002c 4020     		movs	r0, #64
+ 447 002e FFF7FEFF 		bl	SECBOOT_Diag_LogEvent
+ 448              	.LVL42:
+ 170:../../Secure/Core/Src/secboot_diag.c ****         return;
+ 449              		.loc 1 170 9 view .LVU108
+ 450 0032 0320     		movs	r0, #3
+ 451 0034 FFF7FEFF 		bl	SECBOOT_Diag_ExecuteResponse
+ 452              	.LVL43:
+ 171:../../Secure/Core/Src/secboot_diag.c ****     }
+ 453              		.loc 1 171 9 view .LVU109
+ 186:../../Secure/Core/Src/secboot_diag.c **** 
+ 454              		.loc 1 186 1 is_stmt 0 view .LVU110
+ 455 0038 08BD     		pop	{r3, pc}
+ 456              	.L43:
+ 178:../../Secure/Core/Src/secboot_diag.c ****                              ROOLBACK_JUMP_FAILED,  // Jump fail code
+ 457              		.loc 1 178 9 is_stmt 1 view .LVU111
+ 458 003a FFF7FEFF 		bl	HAL_GetTick
+ 459              	.LVL44:
+ 460 003e 0246     		mov	r2, r0
+ 461 0040 4521     		movs	r1, #69
+ 462 0042 4020     		movs	r0, #64
+ 463 0044 FFF7FEFF 		bl	SECBOOT_Diag_LogEvent
+ 464              	.LVL45:
+ 465 0048 EAE7     		b	.L38
+ 466              	.L45:
+ 467 004a 00BF     		.align	2
+ 468              	.L44:
+ 469 004c 00300708 		.word	134688768
+ARM GAS  /tmp/ccOYQKtx.s 			page 14
+
+
+ 470              		.cfi_endproc
+ 471              	.LFE208:
+ 473              		.section	.text.SECBOOT_Diag_HandleSigFail,"ax",%progbits
+ 474              		.align	1
+ 475              		.global	SECBOOT_Diag_HandleSigFail
+ 476              		.syntax unified
+ 477              		.thumb
+ 478              		.thumb_func
+ 480              	SECBOOT_Diag_HandleSigFail:
+ 481              	.LVL46:
+ 482              	.LFB210:
+ 196:../../Secure/Core/Src/secboot_diag.c **** }
+ 197:../../Secure/Core/Src/secboot_diag.c **** 
+ 198:../../Secure/Core/Src/secboot_diag.c **** 
+ 199:../../Secure/Core/Src/secboot_diag.c **** /**
+ 200:../../Secure/Core/Src/secboot_diag.c ****   * @brief  Handles ECDSA signature verification failures
+ 201:../../Secure/Core/Src/secboot_diag.c ****   * @param  status ECDSA verification status code
+ 202:../../Secure/Core/Src/secboot_diag.c ****   * @retval SECBOOT_Diag_ResponseLevel 
+ 203:../../Secure/Core/Src/secboot_diag.c ****   *         LOCKDOWN for security failures, RECOVER for hardware issues
+ 204:../../Secure/Core/Src/secboot_diag.c ****   *
+ 205:../../Secure/Core/Src/secboot_diag.c ****   * @note Response Policy:
+ 206:../../Secure/Core/Src/secboot_diag.c ****   * ┌──────────────────────────────�
+ 207:../../Secure/Core/Src/secboot_diag.c ****   * │ ECDSA Status                │ System Response      │
+ 208:../../Secure/Core/Src/secboot_diag.c ****   * ├──────────────────────────────�
+ 209:../../Secure/Core/Src/secboot_diag.c ****   * │ VERIFICATION_FAIL           │ Lockdown             │
+ 210:../../Secure/Core/Src/secboot_diag.c ****   * │ INVALID_SIGNATURE           │ Lockdown             │
+ 211:../../Secure/Core/Src/secboot_diag.c ****   * │ INVALID_PUBKEY              │ Lockdown             │
+ 212:../../Secure/Core/Src/secboot_diag.c ****   * │ PKA_TIMEOUT/COMP_ERROR      │ Recover              │
+ 213:../../Secure/Core/Src/secboot_diag.c ****   * │ Other Errors                │ Lockdown             │
+ 214:../../Secure/Core/Src/secboot_diag.c ****   * └──────────────────────────────�
+ 215:../../Secure/Core/Src/secboot_diag.c ****   */
+ 216:../../Secure/Core/Src/secboot_diag.c **** SECBOOT_Diag_ResponseLevel SECBOOT_Diag_HandleSigFail(SECBOOT_ECDSA_StatusTypeDef status)
+ 217:../../Secure/Core/Src/secboot_diag.c **** {
+ 483              		.loc 1 217 1 view -0
+ 484              		.cfi_startproc
+ 485              		@ args = 0, pretend = 0, frame = 0
+ 486              		@ frame_needed = 0, uses_anonymous_args = 0
+ 487              		.loc 1 217 1 is_stmt 0 view .LVU113
+ 488 0000 10B5     		push	{r4, lr}
+ 489              	.LCFI9:
+ 490              		.cfi_def_cfa_offset 8
+ 491              		.cfi_offset 4, -8
+ 492              		.cfi_offset 14, -4
+ 493 0002 0246     		mov	r2, r0
+ 218:../../Secure/Core/Src/secboot_diag.c ****     uint8_t error_code;
+ 494              		.loc 1 218 5 is_stmt 1 view .LVU114
+ 219:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_ResponseLevel response;
+ 495              		.loc 1 219 5 view .LVU115
+ 220:../../Secure/Core/Src/secboot_diag.c ****     
+ 221:../../Secure/Core/Src/secboot_diag.c ****     switch(status) {
+ 496              		.loc 1 221 5 view .LVU116
+ 497 0004 431F     		subs	r3, r0, #5
+ 498 0006 052B     		cmp	r3, #5
+ 499 0008 14D8     		bhi	.L47
+ 500 000a DFE803F0 		tbb	[pc, r3]
+ 501              	.L49:
+ 502 000e 10       		.byte	(.L52-.L49)/2
+ARM GAS  /tmp/ccOYQKtx.s 			page 15
+
+
+ 503 000f 10       		.byte	(.L52-.L49)/2
+ 504 0010 13       		.byte	(.L47-.L49)/2
+ 505 0011 03       		.byte	(.L51-.L49)/2
+ 506 0012 16       		.byte	(.L53-.L49)/2
+ 507 0013 06       		.byte	(.L48-.L49)/2
+ 508              		.p2align 1
+ 509              	.L51:
+ 510 0014 0324     		movs	r4, #3
+ 511 0016 2021     		movs	r1, #32
+ 512 0018 01E0     		b	.L50
+ 513              	.L48:
+ 222:../../Secure/Core/Src/secboot_diag.c ****         /* Critical security failures */
+ 223:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_ECDSA_VERIFICATION_FAIL:
+ 224:../../Secure/Core/Src/secboot_diag.c ****             error_code = SIG_FAIL_MAIN_IMAGE;
+ 225:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 226:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 227:../../Secure/Core/Src/secboot_diag.c ****             
+ 228:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_ECDSA_INVALID_SIGNATURE:
+ 229:../../Secure/Core/Src/secboot_diag.c ****             error_code = SIG_FAIL_CONFIG_SIGNATURE;
+ 230:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 231:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 232:../../Secure/Core/Src/secboot_diag.c ****             
+ 233:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_ECDSA_INVALID_PUBKEY:
+ 234:../../Secure/Core/Src/secboot_diag.c ****             error_code = SIG_FAIL_KEY_EXPIRED; // Treat as key validity issue
+ 514              		.loc 1 234 13 view .LVU117
+ 515              	.LVL47:
+ 235:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 516              		.loc 1 235 13 view .LVU118
+ 236:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 517              		.loc 1 236 13 view .LVU119
+ 235:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 518              		.loc 1 235 22 is_stmt 0 view .LVU120
+ 519 001a 0324     		movs	r4, #3
+ 234:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 520              		.loc 1 234 24 view .LVU121
+ 521 001c 2321     		movs	r1, #35
+ 522              	.LVL48:
+ 523              	.L50:
+ 237:../../Secure/Core/Src/secboot_diag.c ****             
+ 238:../../Secure/Core/Src/secboot_diag.c ****         /* Hardware recoverable errors */
+ 239:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_ECDSA_PKA_TIMEOUT:
+ 240:../../Secure/Core/Src/secboot_diag.c ****         case SECBOOT_ECDSA_PKA_COMP_ERROR:
+ 241:../../Secure/Core/Src/secboot_diag.c ****             error_code = SIG_FAIL_HW_CRYPTO_ERROR;
+ 242:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_RECOVER;
+ 243:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 244:../../Secure/Core/Src/secboot_diag.c ****             
+ 245:../../Secure/Core/Src/secboot_diag.c ****         /* Default lockdown for other errors */
+ 246:../../Secure/Core/Src/secboot_diag.c ****         default:
+ 247:../../Secure/Core/Src/secboot_diag.c ****             error_code = 0x2F; // Unknown signature error
+ 248:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 249:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 250:../../Secure/Core/Src/secboot_diag.c ****     }
+ 251:../../Secure/Core/Src/secboot_diag.c ****     
+ 252:../../Secure/Core/Src/secboot_diag.c ****     /* Log with precise error code and raw status */
+ 253:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_LogEvent(SECBOOT_DIAG_SIG_FAIL, 
+ 524              		.loc 1 253 5 is_stmt 1 view .LVU122
+ 525 001e 2020     		movs	r0, #32
+ARM GAS  /tmp/ccOYQKtx.s 			page 16
+
+
+ 526              	.LVL49:
+ 527              		.loc 1 253 5 is_stmt 0 view .LVU123
+ 528 0020 FFF7FEFF 		bl	SECBOOT_Diag_LogEvent
+ 529              	.LVL50:
+ 254:../../Secure/Core/Src/secboot_diag.c ****                          error_code,
+ 255:../../Secure/Core/Src/secboot_diag.c ****                          (uint32_t)status);
+ 256:../../Secure/Core/Src/secboot_diag.c ****     
+ 257:../../Secure/Core/Src/secboot_diag.c ****     /* Execute determined response */
+ 258:../../Secure/Core/Src/secboot_diag.c ****     SECBOOT_Diag_ExecuteResponse(response);
+ 530              		.loc 1 258 5 is_stmt 1 view .LVU124
+ 531 0024 2046     		mov	r0, r4
+ 532 0026 FFF7FEFF 		bl	SECBOOT_Diag_ExecuteResponse
+ 533              	.LVL51:
+ 259:../../Secure/Core/Src/secboot_diag.c ****     return response;
+ 534              		.loc 1 259 5 view .LVU125
+ 260:../../Secure/Core/Src/secboot_diag.c **** }
+ 535              		.loc 1 260 1 is_stmt 0 view .LVU126
+ 536 002a 2046     		mov	r0, r4
+ 537 002c 10BD     		pop	{r4, pc}
+ 538              	.LVL52:
+ 539              	.L52:
+ 241:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_RECOVER;
+ 540              		.loc 1 241 13 is_stmt 1 view .LVU127
+ 242:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 541              		.loc 1 242 13 view .LVU128
+ 243:../../Secure/Core/Src/secboot_diag.c ****             
+ 542              		.loc 1 243 13 view .LVU129
+ 242:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 543              		.loc 1 242 22 is_stmt 0 view .LVU130
+ 544 002e 0224     		movs	r4, #2
+ 241:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_RECOVER;
+ 545              		.loc 1 241 24 view .LVU131
+ 546 0030 2421     		movs	r1, #36
+ 243:../../Secure/Core/Src/secboot_diag.c ****             
+ 547              		.loc 1 243 13 view .LVU132
+ 548 0032 F4E7     		b	.L50
+ 549              	.LVL53:
+ 550              	.L47:
+ 247:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 551              		.loc 1 247 13 is_stmt 1 view .LVU133
+ 248:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 552              		.loc 1 248 13 view .LVU134
+ 249:../../Secure/Core/Src/secboot_diag.c ****     }
+ 553              		.loc 1 249 13 view .LVU135
+ 248:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 554              		.loc 1 248 22 is_stmt 0 view .LVU136
+ 555 0034 0324     		movs	r4, #3
+ 247:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 556              		.loc 1 247 24 view .LVU137
+ 557 0036 2F21     		movs	r1, #47
+ 249:../../Secure/Core/Src/secboot_diag.c ****     }
+ 558              		.loc 1 249 13 view .LVU138
+ 559 0038 F1E7     		b	.L50
+ 560              	.LVL54:
+ 561              	.L53:
+ 230:../../Secure/Core/Src/secboot_diag.c ****             break;
+ 562              		.loc 1 230 22 view .LVU139
+ARM GAS  /tmp/ccOYQKtx.s 			page 17
+
+
+ 563 003a 0324     		movs	r4, #3
+ 229:../../Secure/Core/Src/secboot_diag.c ****             response = SECBOOT_DIAG_RESP_LOCKDOWN;
+ 564              		.loc 1 229 24 view .LVU140
+ 565 003c 2221     		movs	r1, #34
+ 566 003e EEE7     		b	.L50
+ 567              		.cfi_endproc
+ 568              	.LFE210:
+ 570              		.section	.bss.log_index.0,"aw",%nobits
+ 571              		.align	2
+ 574              	log_index.0:
+ 575 0000 00000000 		.space	4
+ 576              		.text
+ 577              	.Letext0:
+ 578              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stddef.h"
+ 579              		.file 3 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 580              		.file 4 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 581              		.file 5 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 582              		.file 6 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_gpio.h"
+ 583              		.file 7 "../../Secure/Core/Inc/secboot_crc.h"
+ 584              		.file 8 "../../Secure/Core/Inc/secboot_ecdsa.h"
+ 585              		.file 9 "../../Secure/Core/Inc/secboot_bootmanager.h"
+ 586              		.file 10 "../../Secure/Core/Inc/secboot_diag.h"
+ 587              		.file 11 "/usr/include/newlib/string.h"
+ 588              		.file 12 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_flash.h"
+ 589              		.file 13 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal.h"
+ARM GAS  /tmp/ccOYQKtx.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secboot_diag.c
+     /tmp/ccOYQKtx.s:22     .text.SECBOOT_Diag_LogEvent:00000000 $t
+     /tmp/ccOYQKtx.s:28     .text.SECBOOT_Diag_LogEvent:00000000 SECBOOT_Diag_LogEvent
+     /tmp/ccOYQKtx.s:243    .text.SECBOOT_Diag_LogEvent:000000c4 $d
+     /tmp/ccOYQKtx.s:574    .bss.log_index.0:00000000 log_index.0
+     /tmp/ccOYQKtx.s:248    .text.system_lockdown:00000000 $t
+     /tmp/ccOYQKtx.s:254    .text.system_lockdown:00000000 system_lockdown
+     /tmp/ccOYQKtx.s:270    .text.SECBOOT_Diag_ExecuteResponse:00000000 $t
+     /tmp/ccOYQKtx.s:275    .text.SECBOOT_Diag_ExecuteResponse:00000000 SECBOOT_Diag_ExecuteResponse
+     /tmp/ccOYQKtx.s:400    .text.try_recovery_from_backup:00000000 try_recovery_from_backup
+     /tmp/ccOYQKtx.s:327    .text.SECBOOT_Diag_ExecuteResponse:00000028 $d
+     /tmp/ccOYQKtx.s:332    .text.SECBOOT_Diag_HandleCrcFail:00000000 $t
+     /tmp/ccOYQKtx.s:338    .text.SECBOOT_Diag_HandleCrcFail:00000000 SECBOOT_Diag_HandleCrcFail
+     /tmp/ccOYQKtx.s:395    .text.try_recovery_from_backup:00000000 $t
+     /tmp/ccOYQKtx.s:469    .text.try_recovery_from_backup:0000004c $d
+     /tmp/ccOYQKtx.s:474    .text.SECBOOT_Diag_HandleSigFail:00000000 $t
+     /tmp/ccOYQKtx.s:480    .text.SECBOOT_Diag_HandleSigFail:00000000 SECBOOT_Diag_HandleSigFail
+     /tmp/ccOYQKtx.s:502    .text.SECBOOT_Diag_HandleSigFail:0000000e $d
+     /tmp/ccOYQKtx.s:508    .text.SECBOOT_Diag_HandleSigFail:00000014 $t
+     /tmp/ccOYQKtx.s:571    .bss.log_index.0:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_GetTick
+SECBOOT_CRC_Calculate
+HAL_FLASH_Unlock
+HAL_FLASH_Program
+HAL_FLASH_Lock
+HAL_GPIO_WritePin
+SECBOOT_BootManager_VerifyAppSignature
+SECBOOT_BootManager_JumpTo

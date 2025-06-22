@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Secure World (S)",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/Makefile/Secure/build/SecBoot_S.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "pyocd",
+            "device": "stm32l562qeixq",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "vscode",
+            "svdFile": "${workspaceFolder}/STM32L562.svd",
+            "overrideLaunchCommands": [
+                "mon load ${workspaceFolder}/Makefile/Secure/build/SecBoot_S.elf",
+                "mon load ${workspaceFolder}/Makefile/Secure/build/SecBoot_NS.elf",
+                "mon reset halt"
+            ]
+        },
+        {
+            "name": "Non-Secure World (NS)",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/Makefile/NonSecure/build/SecBoot_NS.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "pyocd",
+            "device": "stm32l562qeixq",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "vscode",
+            "svdFile": "${workspaceFolder}/STM32L562.svd",
+            "preLaunchTask": "Flash Secure First"
+        }
+    ]
+}

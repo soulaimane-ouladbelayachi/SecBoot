@@ -1,0 +1,292 @@
+ARM GAS  /tmp/ccY1Go7a.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"stm32l5xx_it.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../NonSecure/Core/Src/stm32l5xx_it.c"
+  21              		.section	.text.MemManage_Handler,"ax",%progbits
+  22              		.align	1
+  23              		.global	MemManage_Handler
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	MemManage_Handler:
+  29              	.LFB152:
+   1:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN Header */
+   2:../../NonSecure/Core/Src/stm32l5xx_it.c **** /**
+   3:../../NonSecure/Core/Src/stm32l5xx_it.c ****   ******************************************************************************
+   4:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @file    stm32l5xx_it.c
+   5:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @brief   Interrupt Service Routines.
+   6:../../NonSecure/Core/Src/stm32l5xx_it.c ****   ******************************************************************************
+   7:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @attention
+   8:../../NonSecure/Core/Src/stm32l5xx_it.c ****   *
+   9:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * Copyright (c) 2025 STMicroelectronics.
+  10:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * All rights reserved.
+  11:../../NonSecure/Core/Src/stm32l5xx_it.c ****   *
+  12:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  13:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * in the root directory of this software component.
+  14:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  15:../../NonSecure/Core/Src/stm32l5xx_it.c ****   *
+  16:../../NonSecure/Core/Src/stm32l5xx_it.c ****   ******************************************************************************
+  17:../../NonSecure/Core/Src/stm32l5xx_it.c ****   */
+  18:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END Header */
+  19:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  20:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Includes ------------------------------------------------------------------*/
+  21:../../NonSecure/Core/Src/stm32l5xx_it.c **** #include "main.h"
+  22:../../NonSecure/Core/Src/stm32l5xx_it.c **** #include "stm32l5xx_it.h"
+  23:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private includes ----------------------------------------------------------*/
+  24:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN Includes */
+  25:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END Includes */
+  26:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  27:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private typedef -----------------------------------------------------------*/
+  28:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN TD */
+  29:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ARM GAS  /tmp/ccY1Go7a.s 			page 2
+
+
+  30:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END TD */
+  31:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  32:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private define ------------------------------------------------------------*/
+  33:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN PD */
+  34:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  35:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END PD */
+  36:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  37:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private macro -------------------------------------------------------------*/
+  38:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN PM */
+  39:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  40:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END PM */
+  41:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  42:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private variables ---------------------------------------------------------*/
+  43:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN PV */
+  44:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  45:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END PV */
+  46:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  47:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private function prototypes -----------------------------------------------*/
+  48:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN PFP */
+  49:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  50:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END PFP */
+  51:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  52:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* Private user code ---------------------------------------------------------*/
+  53:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN 0 */
+  54:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  55:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END 0 */
+  56:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  57:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* External variables --------------------------------------------------------*/
+  58:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  59:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE BEGIN EV */
+  60:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  61:../../NonSecure/Core/Src/stm32l5xx_it.c **** /* USER CODE END EV */
+  62:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  63:../../NonSecure/Core/Src/stm32l5xx_it.c **** /******************************************************************************/
+  64:../../NonSecure/Core/Src/stm32l5xx_it.c **** /*           Cortex Processor Interruption and Exception Handlers          */
+  65:../../NonSecure/Core/Src/stm32l5xx_it.c **** /******************************************************************************/
+  66:../../NonSecure/Core/Src/stm32l5xx_it.c **** /**
+  67:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @brief This function handles Memory management fault.
+  68:../../NonSecure/Core/Src/stm32l5xx_it.c ****   */
+  69:../../NonSecure/Core/Src/stm32l5xx_it.c **** void MemManage_Handler(void)
+  70:../../NonSecure/Core/Src/stm32l5xx_it.c **** {
+  30              		.loc 1 70 1 view -0
+  31              		.cfi_startproc
+  32              		@ Volatile: function does not return.
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		@ link register save eliminated.
+  36              	.L2:
+  71:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+  72:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  73:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END MemoryManagement_IRQn 0 */
+  74:../../NonSecure/Core/Src/stm32l5xx_it.c ****   while (1)
+  37              		.loc 1 74 3 discriminator 1 view .LVU1
+  75:../../NonSecure/Core/Src/stm32l5xx_it.c ****   {
+  76:../../NonSecure/Core/Src/stm32l5xx_it.c ****     /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
+  77:../../NonSecure/Core/Src/stm32l5xx_it.c ****     /* USER CODE END W1_MemoryManagement_IRQn 0 */
+  78:../../NonSecure/Core/Src/stm32l5xx_it.c ****   }
+ARM GAS  /tmp/ccY1Go7a.s 			page 3
+
+
+  38              		.loc 1 78 3 discriminator 1 view .LVU2
+  74:../../NonSecure/Core/Src/stm32l5xx_it.c ****   {
+  39              		.loc 1 74 9 discriminator 1 view .LVU3
+  40 0000 FEE7     		b	.L2
+  41              		.cfi_endproc
+  42              	.LFE152:
+  44              		.section	.text.UsageFault_Handler,"ax",%progbits
+  45              		.align	1
+  46              		.global	UsageFault_Handler
+  47              		.syntax unified
+  48              		.thumb
+  49              		.thumb_func
+  51              	UsageFault_Handler:
+  52              	.LFB153:
+  79:../../NonSecure/Core/Src/stm32l5xx_it.c **** }
+  80:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  81:../../NonSecure/Core/Src/stm32l5xx_it.c **** /**
+  82:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @brief This function handles Undefined instruction or illegal state.
+  83:../../NonSecure/Core/Src/stm32l5xx_it.c ****   */
+  84:../../NonSecure/Core/Src/stm32l5xx_it.c **** void UsageFault_Handler(void)
+  85:../../NonSecure/Core/Src/stm32l5xx_it.c **** {
+  53              		.loc 1 85 1 view -0
+  54              		.cfi_startproc
+  55              		@ Volatile: function does not return.
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 0, uses_anonymous_args = 0
+  58              		@ link register save eliminated.
+  59              	.L4:
+  86:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN UsageFault_IRQn 0 */
+  87:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  88:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END UsageFault_IRQn 0 */
+  89:../../NonSecure/Core/Src/stm32l5xx_it.c ****   while (1)
+  60              		.loc 1 89 3 discriminator 1 view .LVU5
+  90:../../NonSecure/Core/Src/stm32l5xx_it.c ****   {
+  91:../../NonSecure/Core/Src/stm32l5xx_it.c ****     /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
+  92:../../NonSecure/Core/Src/stm32l5xx_it.c ****     /* USER CODE END W1_UsageFault_IRQn 0 */
+  93:../../NonSecure/Core/Src/stm32l5xx_it.c ****   }
+  61              		.loc 1 93 3 discriminator 1 view .LVU6
+  89:../../NonSecure/Core/Src/stm32l5xx_it.c ****   {
+  62              		.loc 1 89 9 discriminator 1 view .LVU7
+  63 0000 FEE7     		b	.L4
+  64              		.cfi_endproc
+  65              	.LFE153:
+  67              		.section	.text.SVC_Handler,"ax",%progbits
+  68              		.align	1
+  69              		.global	SVC_Handler
+  70              		.syntax unified
+  71              		.thumb
+  72              		.thumb_func
+  74              	SVC_Handler:
+  75              	.LFB154:
+  94:../../NonSecure/Core/Src/stm32l5xx_it.c **** }
+  95:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+  96:../../NonSecure/Core/Src/stm32l5xx_it.c **** /**
+  97:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @brief This function handles System service call via SWI instruction.
+  98:../../NonSecure/Core/Src/stm32l5xx_it.c ****   */
+  99:../../NonSecure/Core/Src/stm32l5xx_it.c **** void SVC_Handler(void)
+ARM GAS  /tmp/ccY1Go7a.s 			page 4
+
+
+ 100:../../NonSecure/Core/Src/stm32l5xx_it.c **** {
+  76              		.loc 1 100 1 view -0
+  77              		.cfi_startproc
+  78              		@ args = 0, pretend = 0, frame = 0
+  79              		@ frame_needed = 0, uses_anonymous_args = 0
+  80              		@ link register save eliminated.
+ 101:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN SVCall_IRQn 0 */
+ 102:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 103:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END SVCall_IRQn 0 */
+ 104:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN SVCall_IRQn 1 */
+ 105:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 106:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END SVCall_IRQn 1 */
+ 107:../../NonSecure/Core/Src/stm32l5xx_it.c **** }
+  81              		.loc 1 107 1 view .LVU9
+  82 0000 7047     		bx	lr
+  83              		.cfi_endproc
+  84              	.LFE154:
+  86              		.section	.text.PendSV_Handler,"ax",%progbits
+  87              		.align	1
+  88              		.global	PendSV_Handler
+  89              		.syntax unified
+  90              		.thumb
+  91              		.thumb_func
+  93              	PendSV_Handler:
+  94              	.LFB155:
+ 108:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 109:../../NonSecure/Core/Src/stm32l5xx_it.c **** /**
+ 110:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @brief This function handles Pendable request for system service.
+ 111:../../NonSecure/Core/Src/stm32l5xx_it.c ****   */
+ 112:../../NonSecure/Core/Src/stm32l5xx_it.c **** void PendSV_Handler(void)
+ 113:../../NonSecure/Core/Src/stm32l5xx_it.c **** {
+  95              		.loc 1 113 1 view -0
+  96              		.cfi_startproc
+  97              		@ args = 0, pretend = 0, frame = 0
+  98              		@ frame_needed = 0, uses_anonymous_args = 0
+  99              		@ link register save eliminated.
+ 114:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN PendSV_IRQn 0 */
+ 115:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 116:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END PendSV_IRQn 0 */
+ 117:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN PendSV_IRQn 1 */
+ 118:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 119:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END PendSV_IRQn 1 */
+ 120:../../NonSecure/Core/Src/stm32l5xx_it.c **** }
+ 100              		.loc 1 120 1 view .LVU11
+ 101 0000 7047     		bx	lr
+ 102              		.cfi_endproc
+ 103              	.LFE155:
+ 105              		.section	.text.SysTick_Handler,"ax",%progbits
+ 106              		.align	1
+ 107              		.global	SysTick_Handler
+ 108              		.syntax unified
+ 109              		.thumb
+ 110              		.thumb_func
+ 112              	SysTick_Handler:
+ 113              	.LFB156:
+ 121:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 122:../../NonSecure/Core/Src/stm32l5xx_it.c **** /**
+ARM GAS  /tmp/ccY1Go7a.s 			page 5
+
+
+ 123:../../NonSecure/Core/Src/stm32l5xx_it.c ****   * @brief This function handles System tick timer.
+ 124:../../NonSecure/Core/Src/stm32l5xx_it.c ****   */
+ 125:../../NonSecure/Core/Src/stm32l5xx_it.c **** void SysTick_Handler(void)
+ 126:../../NonSecure/Core/Src/stm32l5xx_it.c **** {
+ 114              		.loc 1 126 1 view -0
+ 115              		.cfi_startproc
+ 116              		@ args = 0, pretend = 0, frame = 0
+ 117              		@ frame_needed = 0, uses_anonymous_args = 0
+ 118 0000 08B5     		push	{r3, lr}
+ 119              	.LCFI0:
+ 120              		.cfi_def_cfa_offset 8
+ 121              		.cfi_offset 3, -8
+ 122              		.cfi_offset 14, -4
+ 127:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN SysTick_IRQn 0 */
+ 128:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 129:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END SysTick_IRQn 0 */
+ 130:../../NonSecure/Core/Src/stm32l5xx_it.c ****   HAL_IncTick();
+ 123              		.loc 1 130 3 view .LVU13
+ 124 0002 FFF7FEFF 		bl	HAL_IncTick
+ 125              	.LVL0:
+ 131:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE BEGIN SysTick_IRQn 1 */
+ 132:../../NonSecure/Core/Src/stm32l5xx_it.c **** 
+ 133:../../NonSecure/Core/Src/stm32l5xx_it.c ****   /* USER CODE END SysTick_IRQn 1 */
+ 134:../../NonSecure/Core/Src/stm32l5xx_it.c **** }
+ 126              		.loc 1 134 1 is_stmt 0 view .LVU14
+ 127 0006 08BD     		pop	{r3, pc}
+ 128              		.cfi_endproc
+ 129              	.LFE156:
+ 131              		.text
+ 132              	.Letext0:
+ 133              		.file 2 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal.h"
+ARM GAS  /tmp/ccY1Go7a.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32l5xx_it.c
+     /tmp/ccY1Go7a.s:22     .text.MemManage_Handler:00000000 $t
+     /tmp/ccY1Go7a.s:28     .text.MemManage_Handler:00000000 MemManage_Handler
+     /tmp/ccY1Go7a.s:45     .text.UsageFault_Handler:00000000 $t
+     /tmp/ccY1Go7a.s:51     .text.UsageFault_Handler:00000000 UsageFault_Handler
+     /tmp/ccY1Go7a.s:68     .text.SVC_Handler:00000000 $t
+     /tmp/ccY1Go7a.s:74     .text.SVC_Handler:00000000 SVC_Handler
+     /tmp/ccY1Go7a.s:87     .text.PendSV_Handler:00000000 $t
+     /tmp/ccY1Go7a.s:93     .text.PendSV_Handler:00000000 PendSV_Handler
+     /tmp/ccY1Go7a.s:106    .text.SysTick_Handler:00000000 $t
+     /tmp/ccY1Go7a.s:112    .text.SysTick_Handler:00000000 SysTick_Handler
+
+UNDEFINED SYMBOLS
+HAL_IncTick

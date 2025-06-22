@@ -1,0 +1,294 @@
+ARM GAS  /tmp/ccKJwAMC.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secboot_sha256.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secboot_sha256.c"
+  21              		.section	.text.SECBOOT_SHA256_Init,"ax",%progbits
+  22              		.align	1
+  23              		.global	SECBOOT_SHA256_Init
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	SECBOOT_SHA256_Init:
+  29              	.LFB202:
+   1:../../Secure/Core/Src/secboot_sha256.c **** /** 
+   2:../../Secure/Core/Src/secboot_sha256.c ****   * @file    secboot_sha256.c
+   3:../../Secure/Core/Src/secboot_sha256.c ****   * @brief   Implementation of secure boot SHA-256 computation
+   4:../../Secure/Core/Src/secboot_sha256.c ****   * @author  Soulaimane Oulad Belayachi
+   5:../../Secure/Core/Src/secboot_sha256.c ****   * @date    2025-06-05
+   6:../../Secure/Core/Src/secboot_sha256.c ****   * @note    Uses STM32L5 HASH peripheral in blocking mode
+   7:../../Secure/Core/Src/secboot_sha256.c ****   * @details Handles full SHA-256 computation pipeline with error checking
+   8:../../Secure/Core/Src/secboot_sha256.c ****   */
+   9:../../Secure/Core/Src/secboot_sha256.c **** 
+  10:../../Secure/Core/Src/secboot_sha256.c **** #include "secboot_sha256.h"
+  11:../../Secure/Core/Src/secboot_sha256.c **** 
+  12:../../Secure/Core/Src/secboot_sha256.c **** static HASH_HandleTypeDef hhash;
+  13:../../Secure/Core/Src/secboot_sha256.c **** 
+  14:../../Secure/Core/Src/secboot_sha256.c **** /**
+  15:../../Secure/Core/Src/secboot_sha256.c ****   * @brief  Initialize HASH peripheral for SHA-256
+  16:../../Secure/Core/Src/secboot_sha256.c ****   * @retval SECBOOT_SHA_StatusTypeDef
+  17:../../Secure/Core/Src/secboot_sha256.c ****   * @note   Configures the peripheral for 8-bit data input
+  18:../../Secure/Core/Src/secboot_sha256.c ****   */
+  19:../../Secure/Core/Src/secboot_sha256.c **** SECBOOT_SHA_StatusTypeDef SECBOOT_SHA256_Init(void) {
+  30              		.loc 1 19 53 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+  20:../../Secure/Core/Src/secboot_sha256.c **** 
+ARM GAS  /tmp/ccKJwAMC.s 			page 2
+
+
+  21:../../Secure/Core/Src/secboot_sha256.c **** 
+  22:../../Secure/Core/Src/secboot_sha256.c ****     hhash.Init.DataType = HASH_DATATYPE_8B;
+  39              		.loc 1 22 5 view .LVU1
+  40              		.loc 1 22 25 is_stmt 0 view .LVU2
+  41 0002 0448     		ldr	r0, .L6
+  42 0004 2023     		movs	r3, #32
+  43 0006 0360     		str	r3, [r0]
+  23:../../Secure/Core/Src/secboot_sha256.c **** 
+  24:../../Secure/Core/Src/secboot_sha256.c ****     if (HAL_HASH_Init(&hhash) != HAL_OK) {
+  44              		.loc 1 24 5 is_stmt 1 view .LVU3
+  45              		.loc 1 24 9 is_stmt 0 view .LVU4
+  46 0008 FFF7FEFF 		bl	HAL_HASH_Init
+  47              	.LVL0:
+  48              		.loc 1 24 8 view .LVU5
+  49 000c 00B9     		cbnz	r0, .L5
+  50              	.L2:
+  25:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_INIT;
+  26:../../Secure/Core/Src/secboot_sha256.c ****     }
+  27:../../Secure/Core/Src/secboot_sha256.c **** 
+  28:../../Secure/Core/Src/secboot_sha256.c ****     return SECBOOT_SHA256_OK;
+  29:../../Secure/Core/Src/secboot_sha256.c **** }
+  51              		.loc 1 29 1 view .LVU6
+  52 000e 08BD     		pop	{r3, pc}
+  53              	.L5:
+  25:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_INIT;
+  54              		.loc 1 25 16 view .LVU7
+  55 0010 0120     		movs	r0, #1
+  56 0012 FCE7     		b	.L2
+  57              	.L7:
+  58              		.align	2
+  59              	.L6:
+  60 0014 00000000 		.word	hhash
+  61              		.cfi_endproc
+  62              	.LFE202:
+  64              		.section	.text.SECBOOT_SHA256_Compute,"ax",%progbits
+  65              		.align	1
+  66              		.global	SECBOOT_SHA256_Compute
+  67              		.syntax unified
+  68              		.thumb
+  69              		.thumb_func
+  71              	SECBOOT_SHA256_Compute:
+  72              	.LVL1:
+  73              	.LFB203:
+  30:../../Secure/Core/Src/secboot_sha256.c **** 
+  31:../../Secure/Core/Src/secboot_sha256.c **** /**
+  32:../../Secure/Core/Src/secboot_sha256.c ****   * @brief  Compute SHA-256 digest
+  33:../../Secure/Core/Src/secboot_sha256.c ****   * @param[in]  pInput        Input data buffer
+  34:../../Secure/Core/Src/secboot_sha256.c ****   * @param[in]  inputLength   Data length in bytes
+  35:../../Secure/Core/Src/secboot_sha256.c ****   * @param[out] pOutputHash   32-byte output buffer
+  36:../../Secure/Core/Src/secboot_sha256.c ****   * @retval SECBOOT_SHA_StatusTypeDef
+  37:../../Secure/Core/Src/secboot_sha256.c ****   * @note   Implements full pipeline:
+  38:../../Secure/Core/Src/secboot_sha256.c ****   *         1. Input validation
+  39:../../Secure/Core/Src/secboot_sha256.c ****   *         2. Hardware computation (blocking)
+  40:../../Secure/Core/Src/secboot_sha256.c ****   *         3. Digest extraction
+  41:../../Secure/Core/Src/secboot_sha256.c ****   */
+  42:../../Secure/Core/Src/secboot_sha256.c **** SECBOOT_SHA_StatusTypeDef SECBOOT_SHA256_Compute(uint8_t *pInput, uint32_t inputLength, uint8_t *pO
+  74              		.loc 1 42 111 is_stmt 1 view -0
+ARM GAS  /tmp/ccKJwAMC.s 			page 3
+
+
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 0
+  77              		@ frame_needed = 0, uses_anonymous_args = 0
+  43:../../Secure/Core/Src/secboot_sha256.c ****     /* Parameter validation */
+  44:../../Secure/Core/Src/secboot_sha256.c ****     if (pInput == NULL || pOutputHash == NULL) {
+  78              		.loc 1 44 5 view .LVU9
+  79              		.loc 1 44 8 is_stmt 0 view .LVU10
+  80 0000 C0B1     		cbz	r0, .L10
+  42:../../Secure/Core/Src/secboot_sha256.c ****     /* Parameter validation */
+  81              		.loc 1 42 111 discriminator 1 view .LVU11
+  82 0002 30B5     		push	{r4, r5, lr}
+  83              	.LCFI1:
+  84              		.cfi_def_cfa_offset 12
+  85              		.cfi_offset 4, -12
+  86              		.cfi_offset 5, -8
+  87              		.cfi_offset 14, -4
+  88 0004 83B0     		sub	sp, sp, #12
+  89              	.LCFI2:
+  90              		.cfi_def_cfa_offset 24
+  91 0006 0D46     		mov	r5, r1
+  92 0008 1446     		mov	r4, r2
+  93 000a 0146     		mov	r1, r0
+  94              	.LVL2:
+  95              		.loc 1 44 24 discriminator 1 view .LVU12
+  96 000c A2B1     		cbz	r2, .L11
+  45:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_NULL_PTR;
+  46:../../Secure/Core/Src/secboot_sha256.c ****     }
+  47:../../Secure/Core/Src/secboot_sha256.c ****     
+  48:../../Secure/Core/Src/secboot_sha256.c ****     if (inputLength == 0) {
+  97              		.loc 1 48 5 is_stmt 1 view .LVU13
+  98              		.loc 1 48 8 is_stmt 0 view .LVU14
+  99 000e ADB1     		cbz	r5, .L12
+  49:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_INVALID_LENGTH;
+  50:../../Secure/Core/Src/secboot_sha256.c ****     }
+  51:../../Secure/Core/Src/secboot_sha256.c **** 
+  52:../../Secure/Core/Src/secboot_sha256.c ****     /* Compute digest */
+  53:../../Secure/Core/Src/secboot_sha256.c ****     if (HAL_HASHEx_SHA256_Start(&hhash, pInput, inputLength, pOutputHash, HAL_MAX_DELAY) != HAL_OK)
+ 100              		.loc 1 53 5 is_stmt 1 view .LVU15
+ 101              		.loc 1 53 9 is_stmt 0 view .LVU16
+ 102 0010 4FF0FF33 		mov	r3, #-1
+ 103 0014 0093     		str	r3, [sp]
+ 104 0016 1346     		mov	r3, r2
+ 105 0018 2A46     		mov	r2, r5
+ 106              	.LVL3:
+ 107              		.loc 1 53 9 view .LVU17
+ 108 001a 0B48     		ldr	r0, .L19
+ 109              	.LVL4:
+ 110              		.loc 1 53 9 view .LVU18
+ 111 001c FFF7FEFF 		bl	HAL_HASHEx_SHA256_Start
+ 112              	.LVL5:
+ 113              		.loc 1 53 8 view .LVU19
+ 114 0020 78B9     		cbnz	r0, .L13
+  54:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_COMPUTE;
+  55:../../Secure/Core/Src/secboot_sha256.c ****     }
+  56:../../Secure/Core/Src/secboot_sha256.c **** 
+  57:../../Secure/Core/Src/secboot_sha256.c ****     /* Finalize computation */
+  58:../../Secure/Core/Src/secboot_sha256.c ****     if (HAL_HASHEx_SHA256_Finish(&hhash, pOutputHash, HAL_MAX_DELAY) != HAL_OK) {
+ARM GAS  /tmp/ccKJwAMC.s 			page 4
+
+
+ 115              		.loc 1 58 5 is_stmt 1 view .LVU20
+ 116              		.loc 1 58 9 is_stmt 0 view .LVU21
+ 117 0022 4FF0FF32 		mov	r2, #-1
+ 118 0026 2146     		mov	r1, r4
+ 119 0028 0748     		ldr	r0, .L19
+ 120 002a FFF7FEFF 		bl	HAL_HASHEx_SHA256_Finish
+ 121              	.LVL6:
+ 122              		.loc 1 58 8 view .LVU22
+ 123 002e 30B1     		cbz	r0, .L9
+  59:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_COMPUTE;
+ 124              		.loc 1 59 16 view .LVU23
+ 125 0030 0220     		movs	r0, #2
+ 126 0032 04E0     		b	.L9
+ 127              	.LVL7:
+ 128              	.L10:
+ 129              	.LCFI3:
+ 130              		.cfi_def_cfa_offset 0
+ 131              		.cfi_restore 4
+ 132              		.cfi_restore 5
+ 133              		.cfi_restore 14
+  45:../../Secure/Core/Src/secboot_sha256.c ****     }
+ 134              		.loc 1 45 16 view .LVU24
+ 135 0034 0320     		movs	r0, #3
+ 136              	.LVL8:
+  60:../../Secure/Core/Src/secboot_sha256.c ****     }
+  61:../../Secure/Core/Src/secboot_sha256.c **** 
+  62:../../Secure/Core/Src/secboot_sha256.c ****     return SECBOOT_SHA256_OK;
+  63:../../Secure/Core/Src/secboot_sha256.c **** }...
+ 137              		.loc 1 63 1 view .LVU25
+ 138 0036 7047     		bx	lr
+ 139              	.LVL9:
+ 140              	.L11:
+ 141              	.LCFI4:
+ 142              		.cfi_def_cfa_offset 24
+ 143              		.cfi_offset 4, -12
+ 144              		.cfi_offset 5, -8
+ 145              		.cfi_offset 14, -4
+  45:../../Secure/Core/Src/secboot_sha256.c ****     }
+ 146              		.loc 1 45 16 view .LVU26
+ 147 0038 0320     		movs	r0, #3
+ 148              	.LVL10:
+  45:../../Secure/Core/Src/secboot_sha256.c ****     }
+ 149              		.loc 1 45 16 view .LVU27
+ 150 003a 00E0     		b	.L9
+ 151              	.LVL11:
+ 152              	.L12:
+  49:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_INVALID_LENGTH;
+ 153              		.loc 1 49 16 view .LVU28
+ 154 003c 0420     		movs	r0, #4
+ 155              	.LVL12:
+ 156              	.L9:
+ 157              		.loc 1 63 1 view .LVU29
+ 158 003e 03B0     		add	sp, sp, #12
+ 159              	.LCFI5:
+ 160              		.cfi_remember_state
+ 161              		.cfi_def_cfa_offset 12
+ 162              		@ sp needed
+ARM GAS  /tmp/ccKJwAMC.s 			page 5
+
+
+ 163 0040 30BD     		pop	{r4, r5, pc}
+ 164              	.LVL13:
+ 165              	.L13:
+ 166              	.LCFI6:
+ 167              		.cfi_restore_state
+  54:../../Secure/Core/Src/secboot_sha256.c ****         return SECBOOT_SHA256_ERROR_COMPUTE;
+ 168              		.loc 1 54 16 view .LVU30
+ 169 0042 0220     		movs	r0, #2
+ 170 0044 FBE7     		b	.L9
+ 171              	.L20:
+ 172 0046 00BF     		.align	2
+ 173              	.L19:
+ 174 0048 00000000 		.word	hhash
+ 175              		.cfi_endproc
+ 176              	.LFE203:
+ 178              		.section	.bss.hhash,"aw",%nobits
+ 179              		.align	2
+ 182              	hhash:
+ 183 0000 00000000 		.space	68
+ 183      00000000 
+ 183      00000000 
+ 183      00000000 
+ 183      00000000 
+ 184              		.text
+ 185              	.Letext0:
+ 186              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 187              		.file 3 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 188              		.file 4 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l5xx.h"
+ 189              		.file 5 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 190              		.file 6 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_dma.h"
+ 191              		.file 7 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_hash.h"
+ 192              		.file 8 "../../Secure/Core/Inc/secboot_sha256.h"
+ 193              		.file 9 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_hash_ex.h"
+ARM GAS  /tmp/ccKJwAMC.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secboot_sha256.c
+     /tmp/ccKJwAMC.s:22     .text.SECBOOT_SHA256_Init:00000000 $t
+     /tmp/ccKJwAMC.s:28     .text.SECBOOT_SHA256_Init:00000000 SECBOOT_SHA256_Init
+     /tmp/ccKJwAMC.s:60     .text.SECBOOT_SHA256_Init:00000014 $d
+     /tmp/ccKJwAMC.s:182    .bss.hhash:00000000 hhash
+     /tmp/ccKJwAMC.s:65     .text.SECBOOT_SHA256_Compute:00000000 $t
+     /tmp/ccKJwAMC.s:71     .text.SECBOOT_SHA256_Compute:00000000 SECBOOT_SHA256_Compute
+     /tmp/ccKJwAMC.s:174    .text.SECBOOT_SHA256_Compute:00000048 $d
+     /tmp/ccKJwAMC.s:179    .bss.hhash:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_HASH_Init
+HAL_HASHEx_SHA256_Start
+HAL_HASHEx_SHA256_Finish

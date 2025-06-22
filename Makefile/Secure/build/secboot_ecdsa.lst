@@ -1,0 +1,682 @@
+ARM GAS  /tmp/ccozigkR.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secboot_ecdsa.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secboot_ecdsa.c"
+  21              		.section	.text.SECBOOT_ECDSA_Init,"ax",%progbits
+  22              		.align	1
+  23              		.global	SECBOOT_ECDSA_Init
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	SECBOOT_ECDSA_Init:
+  29              	.LFB202:
+   1:../../Secure/Core/Src/secboot_ecdsa.c **** /** 
+   2:../../Secure/Core/Src/secboot_ecdsa.c ****   * @file    secboot_ecdsa.c
+   3:../../Secure/Core/Src/secboot_ecdsa.c ****   * @brief   STM32L5 PKA-based ECDSA-P256 Signature Verification Implementation
+   4:../../Secure/Core/Src/secboot_ecdsa.c ****   * @author  Soulaimane Oulad Belayachi
+   5:../../Secure/Core/Src/secboot_ecdsa.c ****   * @date    2025-06-05
+   6:../../Secure/Core/Src/secboot_ecdsa.c ****   * @note    Uses HAL_PKA driver with prime256v1 curve parameters
+   7:../../Secure/Core/Src/secboot_ecdsa.c ****   * @warning All buffers must be in accessible memory regions (secure/non-secure)
+   8:../../Secure/Core/Src/secboot_ecdsa.c ****   */
+   9:../../Secure/Core/Src/secboot_ecdsa.c **** 
+  10:../../Secure/Core/Src/secboot_ecdsa.c **** #include "secboot_ecdsa.h"
+  11:../../Secure/Core/Src/secboot_ecdsa.c **** 
+  12:../../Secure/Core/Src/secboot_ecdsa.c **** static PKA_HandleTypeDef hpka;  ///< PKA hardware instance handle
+  13:../../Secure/Core/Src/secboot_ecdsa.c **** 
+  14:../../Secure/Core/Src/secboot_ecdsa.c **** /**
+  15:../../Secure/Core/Src/secboot_ecdsa.c ****   * @brief  Initialize PKA peripheral for ECDSA operations
+  16:../../Secure/Core/Src/secboot_ecdsa.c ****   * @retval SECBOOT_ECDSA_StatusTypeDef 
+  17:../../Secure/Core/Src/secboot_ecdsa.c ****   * @note   Implements state tracking to prevent double-init
+  18:../../Secure/Core/Src/secboot_ecdsa.c ****   */
+  19:../../Secure/Core/Src/secboot_ecdsa.c **** SECBOOT_ECDSA_StatusTypeDef SECBOOT_ECDSA_Init(void)
+  20:../../Secure/Core/Src/secboot_ecdsa.c **** {
+  30              		.loc 1 20 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 8
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34 0000 10B5     		push	{r4, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 4, -8
+  38              		.cfi_offset 14, -4
+ARM GAS  /tmp/ccozigkR.s 			page 2
+
+
+  39 0002 82B0     		sub	sp, sp, #8
+  40              	.LCFI1:
+  41              		.cfi_def_cfa_offset 16
+  21:../../Secure/Core/Src/secboot_ecdsa.c ****     static bool is_initialized = false;
+  42              		.loc 1 21 5 view .LVU1
+  22:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  23:../../Secure/Core/Src/secboot_ecdsa.c ****     /* State check */
+  24:../../Secure/Core/Src/secboot_ecdsa.c ****     if(is_initialized) {
+  43              		.loc 1 24 5 view .LVU2
+  44              		.loc 1 24 8 is_stmt 0 view .LVU3
+  45 0004 194B     		ldr	r3, .L11
+  46 0006 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  47              		.loc 1 24 7 view .LVU4
+  48 0008 5BBB     		cbnz	r3, .L6
+  25:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_STATE;
+  26:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+  27:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  28:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Hardware initialization */
+  29:../../Secure/Core/Src/secboot_ecdsa.c ****     hpka.Instance = PKA;
+  49              		.loc 1 29 5 is_stmt 1 view .LVU5
+  50              		.loc 1 29 19 is_stmt 0 view .LVU6
+  51 000a 1948     		ldr	r0, .L11+4
+  52 000c 194B     		ldr	r3, .L11+8
+  53 000e 0360     		str	r3, [r0]
+  30:../../Secure/Core/Src/secboot_ecdsa.c ****     hpka.State = HAL_PKA_STATE_RESET;
+  54              		.loc 1 30 5 is_stmt 1 view .LVU7
+  55              		.loc 1 30 16 is_stmt 0 view .LVU8
+  56 0010 0023     		movs	r3, #0
+  57 0012 0371     		strb	r3, [r0, #4]
+  31:../../Secure/Core/Src/secboot_ecdsa.c ****     __HAL_RCC_PKA_CLK_ENABLE();
+  58              		.loc 1 31 5 is_stmt 1 view .LVU9
+  59              	.LBB2:
+  60              		.loc 1 31 5 view .LVU10
+  61              		.loc 1 31 5 view .LVU11
+  62 0014 184B     		ldr	r3, .L11+12
+  63 0016 DA6C     		ldr	r2, [r3, #76]
+  64 0018 42F40022 		orr	r2, r2, #524288
+  65 001c DA64     		str	r2, [r3, #76]
+  66              		.loc 1 31 5 view .LVU12
+  67 001e DB6C     		ldr	r3, [r3, #76]
+  68 0020 03F40023 		and	r3, r3, #524288
+  69 0024 0193     		str	r3, [sp, #4]
+  70              		.loc 1 31 5 view .LVU13
+  71 0026 019B     		ldr	r3, [sp, #4]
+  72              	.LBE2:
+  73              		.loc 1 31 5 view .LVU14
+  32:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  33:../../Secure/Core/Src/secboot_ecdsa.c ****     HAL_StatusTypeDef hal_status = HAL_PKA_Init(&hpka);
+  74              		.loc 1 33 5 view .LVU15
+  75              		.loc 1 33 36 is_stmt 0 view .LVU16
+  76 0028 FFF7FEFF 		bl	HAL_PKA_Init
+  77              	.LVL0:
+  34:../../Secure/Core/Src/secboot_ecdsa.c ****     if(hal_status != HAL_OK) {
+  78              		.loc 1 34 5 is_stmt 1 view .LVU17
+  79              		.loc 1 34 7 is_stmt 0 view .LVU18
+  80 002c 0446     		mov	r4, r0
+  81 002e 50B1     		cbz	r0, .L3
+ARM GAS  /tmp/ccozigkR.s 			page 3
+
+
+  35:../../Secure/Core/Src/secboot_ecdsa.c ****         __HAL_RCC_PKA_CLK_DISABLE();
+  82              		.loc 1 35 9 is_stmt 1 view .LVU19
+  83 0030 114A     		ldr	r2, .L11+12
+  84 0032 D36C     		ldr	r3, [r2, #76]
+  85 0034 23F40023 		bic	r3, r3, #524288
+  86 0038 D364     		str	r3, [r2, #76]
+  36:../../Secure/Core/Src/secboot_ecdsa.c ****         return (hal_status == HAL_TIMEOUT) ? 
+  87              		.loc 1 36 9 view .LVU20
+  37:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_PKA_TIMEOUT : 
+  88              		.loc 1 37 42 is_stmt 0 view .LVU21
+  89 003a 0328     		cmp	r0, #3
+  90 003c 01D0     		beq	.L9
+  91 003e 0424     		movs	r4, #4
+  92 0040 10E0     		b	.L2
+  93              	.L9:
+  94 0042 0624     		movs	r4, #6
+  95 0044 0EE0     		b	.L2
+  96              	.L3:
+  38:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_PKA_INIT_FAIL;
+  39:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+  40:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  41:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Verify ready state */
+  42:../../Secure/Core/Src/secboot_ecdsa.c ****     if(HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+  97              		.loc 1 42 5 is_stmt 1 view .LVU22
+  98              		.loc 1 42 8 is_stmt 0 view .LVU23
+  99 0046 0A48     		ldr	r0, .L11+4
+ 100              	.LVL1:
+ 101              		.loc 1 42 8 view .LVU24
+ 102 0048 FFF7FEFF 		bl	HAL_PKA_GetState
+ 103              	.LVL2:
+ 104              		.loc 1 42 7 view .LVU25
+ 105 004c 0128     		cmp	r0, #1
+ 106 004e 03D1     		bne	.L10
+  43:../../Secure/Core/Src/secboot_ecdsa.c ****         HAL_PKA_DeInit(&hpka);
+  44:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_PKA_INIT_FAIL;
+  45:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+  46:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  47:../../Secure/Core/Src/secboot_ecdsa.c ****     is_initialized = true;
+ 107              		.loc 1 47 5 is_stmt 1 view .LVU26
+ 108              		.loc 1 47 20 is_stmt 0 view .LVU27
+ 109 0050 064B     		ldr	r3, .L11
+ 110 0052 0122     		movs	r2, #1
+ 111 0054 1A70     		strb	r2, [r3]
+  48:../../Secure/Core/Src/secboot_ecdsa.c ****     return SECBOOT_ECDSA_OK;
+ 112              		.loc 1 48 5 is_stmt 1 view .LVU28
+ 113              		.loc 1 48 12 is_stmt 0 view .LVU29
+ 114 0056 05E0     		b	.L2
+ 115              	.L10:
+  43:../../Secure/Core/Src/secboot_ecdsa.c ****         HAL_PKA_DeInit(&hpka);
+ 116              		.loc 1 43 9 is_stmt 1 view .LVU30
+ 117 0058 0548     		ldr	r0, .L11+4
+ 118 005a FFF7FEFF 		bl	HAL_PKA_DeInit
+ 119              	.LVL3:
+  44:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 120              		.loc 1 44 9 view .LVU31
+  44:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 121              		.loc 1 44 16 is_stmt 0 view .LVU32
+ARM GAS  /tmp/ccozigkR.s 			page 4
+
+
+ 122 005e 0424     		movs	r4, #4
+ 123 0060 00E0     		b	.L2
+ 124              	.LVL4:
+ 125              	.L6:
+  25:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 126              		.loc 1 25 16 view .LVU33
+ 127 0062 0324     		movs	r4, #3
+ 128              	.L2:
+  49:../../Secure/Core/Src/secboot_ecdsa.c **** }
+ 129              		.loc 1 49 1 view .LVU34
+ 130 0064 2046     		mov	r0, r4
+ 131 0066 02B0     		add	sp, sp, #8
+ 132              	.LCFI2:
+ 133              		.cfi_def_cfa_offset 8
+ 134              		@ sp needed
+ 135 0068 10BD     		pop	{r4, pc}
+ 136              	.L12:
+ 137 006a 00BF     		.align	2
+ 138              	.L11:
+ 139 006c 00000000 		.word	is_initialized.1
+ 140 0070 00000000 		.word	hpka
+ 141 0074 00200C52 		.word	1376526336
+ 142 0078 00100250 		.word	1342312448
+ 143              		.cfi_endproc
+ 144              	.LFE202:
+ 146              		.section	.text.SECBOOT_ECDSA_DeInit,"ax",%progbits
+ 147              		.align	1
+ 148              		.global	SECBOOT_ECDSA_DeInit
+ 149              		.syntax unified
+ 150              		.thumb
+ 151              		.thumb_func
+ 153              	SECBOOT_ECDSA_DeInit:
+ 154              	.LFB203:
+  50:../../Secure/Core/Src/secboot_ecdsa.c **** 
+  51:../../Secure/Core/Src/secboot_ecdsa.c **** /**
+  52:../../Secure/Core/Src/secboot_ecdsa.c ****   * @brief  Clean up PKA resources
+  53:../../Secure/Core/Src/secboot_ecdsa.c ****   * @retval SECBOOT_ECDSA_StatusTypeDef
+  54:../../Secure/Core/Src/secboot_ecdsa.c ****   * @note   Disables PKA clock for power savings
+  55:../../Secure/Core/Src/secboot_ecdsa.c ****   */
+  56:../../Secure/Core/Src/secboot_ecdsa.c **** SECBOOT_ECDSA_StatusTypeDef SECBOOT_ECDSA_DeInit(void)
+  57:../../Secure/Core/Src/secboot_ecdsa.c **** {
+ 155              		.loc 1 57 1 is_stmt 1 view -0
+ 156              		.cfi_startproc
+ 157              		@ args = 0, pretend = 0, frame = 0
+ 158              		@ frame_needed = 0, uses_anonymous_args = 0
+ 159 0000 08B5     		push	{r3, lr}
+ 160              	.LCFI3:
+ 161              		.cfi_def_cfa_offset 8
+ 162              		.cfi_offset 3, -8
+ 163              		.cfi_offset 14, -4
+  58:../../Secure/Core/Src/secboot_ecdsa.c ****     static bool is_initialized = false;
+ 164              		.loc 1 58 5 view .LVU36
+  59:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  60:../../Secure/Core/Src/secboot_ecdsa.c ****     if(!is_initialized) {
+ 165              		.loc 1 60 5 view .LVU37
+ 166              		.loc 1 60 8 is_stmt 0 view .LVU38
+ 167 0002 0C4B     		ldr	r3, .L22
+ARM GAS  /tmp/ccozigkR.s 			page 5
+
+
+ 168 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 169              		.loc 1 60 7 view .LVU39
+ 170 0006 93B1     		cbz	r3, .L17
+  61:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_STATE;
+  62:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+  63:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  64:../../Secure/Core/Src/secboot_ecdsa.c ****     HAL_StatusTypeDef hal_status = HAL_PKA_DeInit(&hpka);
+ 171              		.loc 1 64 5 is_stmt 1 view .LVU40
+ 172              		.loc 1 64 36 is_stmt 0 view .LVU41
+ 173 0008 0B48     		ldr	r0, .L22+4
+ 174 000a FFF7FEFF 		bl	HAL_PKA_DeInit
+ 175              	.LVL5:
+  65:../../Secure/Core/Src/secboot_ecdsa.c ****     __HAL_RCC_PKA_CLK_DISABLE();
+ 176              		.loc 1 65 5 is_stmt 1 view .LVU42
+ 177 000e 0B49     		ldr	r1, .L22+8
+ 178 0010 CB6C     		ldr	r3, [r1, #76]
+ 179 0012 23F40023 		bic	r3, r3, #524288
+ 180 0016 CB64     		str	r3, [r1, #76]
+  66:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  67:../../Secure/Core/Src/secboot_ecdsa.c ****     if(hal_status != HAL_OK) {
+ 181              		.loc 1 67 5 view .LVU43
+ 182              		.loc 1 67 7 is_stmt 0 view .LVU44
+ 183 0018 18B9     		cbnz	r0, .L20
+  68:../../Secure/Core/Src/secboot_ecdsa.c ****         return (hal_status == HAL_TIMEOUT) ? 
+  69:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_PKA_TIMEOUT : 
+  70:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_ERROR;
+  71:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+  72:../../Secure/Core/Src/secboot_ecdsa.c ****     
+  73:../../Secure/Core/Src/secboot_ecdsa.c ****     is_initialized = false;
+ 184              		.loc 1 73 5 is_stmt 1 view .LVU45
+ 185              		.loc 1 73 20 is_stmt 0 view .LVU46
+ 186 001a 064B     		ldr	r3, .L22
+ 187 001c 0022     		movs	r2, #0
+ 188 001e 1A70     		strb	r2, [r3]
+  74:../../Secure/Core/Src/secboot_ecdsa.c ****     return SECBOOT_ECDSA_OK;
+ 189              		.loc 1 74 5 is_stmt 1 view .LVU47
+ 190              	.LVL6:
+ 191              	.L14:
+  75:../../Secure/Core/Src/secboot_ecdsa.c **** }
+ 192              		.loc 1 75 1 is_stmt 0 view .LVU48
+ 193 0020 08BD     		pop	{r3, pc}
+ 194              	.LVL7:
+ 195              	.L20:
+  68:../../Secure/Core/Src/secboot_ecdsa.c ****         return (hal_status == HAL_TIMEOUT) ? 
+ 196              		.loc 1 68 9 is_stmt 1 view .LVU49
+  69:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_ERROR;
+ 197              		.loc 1 69 42 is_stmt 0 view .LVU50
+ 198 0022 0328     		cmp	r0, #3
+ 199 0024 01D0     		beq	.L21
+ 200 0026 0120     		movs	r0, #1
+ 201              	.LVL8:
+  69:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_ERROR;
+ 202              		.loc 1 69 42 view .LVU51
+ 203 0028 FAE7     		b	.L14
+ 204              	.LVL9:
+ 205              	.L21:
+  69:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_ERROR;
+ARM GAS  /tmp/ccozigkR.s 			page 6
+
+
+ 206              		.loc 1 69 42 view .LVU52
+ 207 002a 0620     		movs	r0, #6
+ 208              	.LVL10:
+  69:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_ERROR;
+ 209              		.loc 1 69 42 view .LVU53
+ 210 002c F8E7     		b	.L14
+ 211              	.LVL11:
+ 212              	.L17:
+  61:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 213              		.loc 1 61 16 view .LVU54
+ 214 002e 0320     		movs	r0, #3
+ 215 0030 F6E7     		b	.L14
+ 216              	.L23:
+ 217 0032 00BF     		.align	2
+ 218              	.L22:
+ 219 0034 00000000 		.word	is_initialized.0
+ 220 0038 00000000 		.word	hpka
+ 221 003c 00100250 		.word	1342312448
+ 222              		.cfi_endproc
+ 223              	.LFE203:
+ 225              		.section	.text.SECBOOT_ECDSA_Verify_Signature,"ax",%progbits
+ 226              		.align	1
+ 227              		.global	SECBOOT_ECDSA_Verify_Signature
+ 228              		.syntax unified
+ 229              		.thumb
+ 230              		.thumb_func
+ 232              	SECBOOT_ECDSA_Verify_Signature:
+ 233              	.LVL12:
+ 234              	.LFB204:
+  76:../../Secure/Core/Src/secboot_ecdsa.c **** 
+  77:../../Secure/Core/Src/secboot_ecdsa.c **** /**
+  78:../../Secure/Core/Src/secboot_ecdsa.c ****   * @brief  Perform ECDSA signature verification
+  79:../../Secure/Core/Src/secboot_ecdsa.c ****   * @param  pDigest     32-byte SHA-256 hash
+  80:../../Secure/Core/Src/secboot_ecdsa.c ****   * @param  DigestLen   Must equal SECBOOT_ECDSA_SHA256_DIGEST_SIZE
+  81:../../Secure/Core/Src/secboot_ecdsa.c ****   * @param  pSignature  Signature to verify
+  82:../../Secure/Core/Src/secboot_ecdsa.c ****   * @param  pPubKey     Trusted public key
+  83:../../Secure/Core/Src/secboot_ecdsa.c ****   * @retval SECBOOT_ECDSA_StatusTypeDef
+  84:../../Secure/Core/Src/secboot_ecdsa.c ****   * @note   Uses PKA hardware for constant-time verification
+  85:../../Secure/Core/Src/secboot_ecdsa.c ****   */
+  86:../../Secure/Core/Src/secboot_ecdsa.c **** SECBOOT_ECDSA_StatusTypeDef SECBOOT_ECDSA_Verify_Signature(
+  87:../../Secure/Core/Src/secboot_ecdsa.c ****     uint8_t* pDigest,
+  88:../../Secure/Core/Src/secboot_ecdsa.c ****     uint32_t DigestLen,
+  89:../../Secure/Core/Src/secboot_ecdsa.c ****     SECBOOT_ECC_Signature* pSignature,
+  90:../../Secure/Core/Src/secboot_ecdsa.c ****     SECBOOT_ECC_PublicKey* pPubKey)
+  91:../../Secure/Core/Src/secboot_ecdsa.c **** {
+ 235              		.loc 1 91 1 is_stmt 1 view -0
+ 236              		.cfi_startproc
+ 237              		@ args = 0, pretend = 0, frame = 56
+ 238              		@ frame_needed = 0, uses_anonymous_args = 0
+ 239              		.loc 1 91 1 is_stmt 0 view .LVU56
+ 240 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 241              	.LCFI4:
+ 242              		.cfi_def_cfa_offset 20
+ 243              		.cfi_offset 4, -20
+ 244              		.cfi_offset 5, -16
+ 245              		.cfi_offset 6, -12
+ 246              		.cfi_offset 7, -8
+ARM GAS  /tmp/ccozigkR.s 			page 7
+
+
+ 247              		.cfi_offset 14, -4
+ 248 0002 8FB0     		sub	sp, sp, #60
+ 249              	.LCFI5:
+ 250              		.cfi_def_cfa_offset 80
+  92:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Parameter validation */
+  93:../../Secure/Core/Src/secboot_ecdsa.c ****     if (!pDigest || !pSignature || !pPubKey) {
+ 251              		.loc 1 93 5 is_stmt 1 view .LVU57
+ 252              		.loc 1 93 8 is_stmt 0 view .LVU58
+ 253 0004 0028     		cmp	r0, #0
+ 254 0006 42D0     		beq	.L28
+ 255 0008 1446     		mov	r4, r2
+ 256 000a 1D46     		mov	r5, r3
+ 257 000c 0746     		mov	r7, r0
+ 258              		.loc 1 93 18 discriminator 1 view .LVU59
+ 259 000e 002A     		cmp	r2, #0
+ 260 0010 3FD0     		beq	.L29
+ 261              		.loc 1 93 33 discriminator 2 view .LVU60
+ 262 0012 002B     		cmp	r3, #0
+ 263 0014 3FD0     		beq	.L30
+  94:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_PARAM;
+  95:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+  96:../../Secure/Core/Src/secboot_ecdsa.c **** 
+  97:../../Secure/Core/Src/secboot_ecdsa.c ****     if (DigestLen != SECBOOT_ECDSA_SHA256_DIGEST_SIZE) {
+ 264              		.loc 1 97 5 is_stmt 1 view .LVU61
+ 265              		.loc 1 97 8 is_stmt 0 view .LVU62
+ 266 0016 2029     		cmp	r1, #32
+ 267 0018 03D0     		beq	.L36
+  98:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_PARAM;
+ 268              		.loc 1 98 16 view .LVU63
+ 269 001a 0226     		movs	r6, #2
+ 270              	.LVL13:
+ 271              	.L25:
+  99:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 100:../../Secure/Core/Src/secboot_ecdsa.c **** 
+ 101:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Hardware state check */
+ 102:../../Secure/Core/Src/secboot_ecdsa.c ****     if (HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+ 103:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_STATE;
+ 104:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 105:../../Secure/Core/Src/secboot_ecdsa.c **** 
+ 106:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Get curve parameters */
+ 107:../../Secure/Core/Src/secboot_ecdsa.c ****     const ECC_Curve_Parameters *curve = get_prime256v1_curve();
+ 108:../../Secure/Core/Src/secboot_ecdsa.c ****     if (!curve) {
+ 109:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_ERROR;
+ 110:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 111:../../Secure/Core/Src/secboot_ecdsa.c **** 
+ 112:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Configure PKA operation */
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 114:../../Secure/Core/Src/secboot_ecdsa.c ****         .primeOrderSize = curve->order_len,
+ 115:../../Secure/Core/Src/secboot_ecdsa.c ****         .modulusSize = curve->prime_len,
+ 116:../../Secure/Core/Src/secboot_ecdsa.c ****         .coefSign = curve->A_sign,
+ 117:../../Secure/Core/Src/secboot_ecdsa.c ****         .coef = curve->absA,
+ 118:../../Secure/Core/Src/secboot_ecdsa.c ****         .modulus = curve->prime,
+ 119:../../Secure/Core/Src/secboot_ecdsa.c ****         .basePointX = curve->Gx,
+ 120:../../Secure/Core/Src/secboot_ecdsa.c ****         .basePointY = curve->Gy,
+ 121:../../Secure/Core/Src/secboot_ecdsa.c ****         .primeOrder = curve->order,
+ 122:../../Secure/Core/Src/secboot_ecdsa.c ****         .pPubKeyCurvePtX = pPubKey->Qx,
+ 123:../../Secure/Core/Src/secboot_ecdsa.c ****         .pPubKeyCurvePtY = pPubKey->Qy,
+ARM GAS  /tmp/ccozigkR.s 			page 8
+
+
+ 124:../../Secure/Core/Src/secboot_ecdsa.c ****         .RSign = pSignature->R,
+ 125:../../Secure/Core/Src/secboot_ecdsa.c ****         .SSign = pSignature->S,
+ 126:../../Secure/Core/Src/secboot_ecdsa.c ****         .hash = pDigest
+ 127:../../Secure/Core/Src/secboot_ecdsa.c ****     };
+ 128:../../Secure/Core/Src/secboot_ecdsa.c **** 
+ 129:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Execute verification */
+ 130:../../Secure/Core/Src/secboot_ecdsa.c ****     HAL_StatusTypeDef hal_status = HAL_PKA_ECDSAVerif(&hpka, &Sig_verify, 
+ 131:../../Secure/Core/Src/secboot_ecdsa.c ****                                                      SECBOOT_ECDSA_PKA_TIMEOUT_MS);
+ 132:../../Secure/Core/Src/secboot_ecdsa.c ****     if (hal_status != HAL_OK) {
+ 133:../../Secure/Core/Src/secboot_ecdsa.c ****         return (hal_status == HAL_TIMEOUT) ? 
+ 134:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_PKA_TIMEOUT : 
+ 135:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_PKA_COMP_ERROR;
+ 136:../../Secure/Core/Src/secboot_ecdsa.c ****     }
+ 137:../../Secure/Core/Src/secboot_ecdsa.c **** 
+ 138:../../Secure/Core/Src/secboot_ecdsa.c ****     /* Check result */
+ 139:../../Secure/Core/Src/secboot_ecdsa.c ****     return HAL_PKA_ECDSAVerif_IsValidSignature(&hpka) ? 
+ 140:../../Secure/Core/Src/secboot_ecdsa.c ****            SECBOOT_ECDSA_VERIFICATION_SUCCESS : 
+ 141:../../Secure/Core/Src/secboot_ecdsa.c ****            SECBOOT_ECDSA_VERIFICATION_FAIL;
+ 142:../../Secure/Core/Src/secboot_ecdsa.c **** }...
+ 272              		.loc 1 142 1 view .LVU64
+ 273 001c 3046     		mov	r0, r6
+ 274 001e 0FB0     		add	sp, sp, #60
+ 275              	.LCFI6:
+ 276              		.cfi_remember_state
+ 277              		.cfi_def_cfa_offset 20
+ 278              		@ sp needed
+ 279 0020 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 280              	.LVL14:
+ 281              	.L36:
+ 282              	.LCFI7:
+ 283              		.cfi_restore_state
+ 102:../../Secure/Core/Src/secboot_ecdsa.c ****     if (HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+ 284              		.loc 1 102 5 is_stmt 1 view .LVU65
+ 102:../../Secure/Core/Src/secboot_ecdsa.c ****     if (HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+ 285              		.loc 1 102 9 is_stmt 0 view .LVU66
+ 286 0022 1F48     		ldr	r0, .L39
+ 287              	.LVL15:
+ 102:../../Secure/Core/Src/secboot_ecdsa.c ****     if (HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+ 288              		.loc 1 102 9 view .LVU67
+ 289 0024 FFF7FEFF 		bl	HAL_PKA_GetState
+ 290              	.LVL16:
+ 102:../../Secure/Core/Src/secboot_ecdsa.c ****     if (HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+ 291              		.loc 1 102 9 view .LVU68
+ 292 0028 0646     		mov	r6, r0
+ 102:../../Secure/Core/Src/secboot_ecdsa.c ****     if (HAL_PKA_GetState(&hpka) != HAL_PKA_STATE_READY) {
+ 293              		.loc 1 102 8 view .LVU69
+ 294 002a 0128     		cmp	r0, #1
+ 295 002c 01D0     		beq	.L37
+ 103:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_STATE;
+ 296              		.loc 1 103 16 view .LVU70
+ 297 002e 0326     		movs	r6, #3
+ 298 0030 F4E7     		b	.L25
+ 299              	.L37:
+ 107:../../Secure/Core/Src/secboot_ecdsa.c ****     const ECC_Curve_Parameters *curve = get_prime256v1_curve();
+ 300              		.loc 1 107 5 is_stmt 1 view .LVU71
+ 107:../../Secure/Core/Src/secboot_ecdsa.c ****     const ECC_Curve_Parameters *curve = get_prime256v1_curve();
+ 301              		.loc 1 107 41 is_stmt 0 view .LVU72
+ARM GAS  /tmp/ccozigkR.s 			page 9
+
+
+ 302 0032 FFF7FEFF 		bl	get_prime256v1_curve
+ 303              	.LVL17:
+ 108:../../Secure/Core/Src/secboot_ecdsa.c ****     if (!curve) {
+ 304              		.loc 1 108 5 is_stmt 1 view .LVU73
+ 108:../../Secure/Core/Src/secboot_ecdsa.c ****     if (!curve) {
+ 305              		.loc 1 108 8 is_stmt 0 view .LVU74
+ 306 0036 0028     		cmp	r0, #0
+ 307 0038 F0D0     		beq	.L25
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 308              		.loc 1 113 5 is_stmt 1 view .LVU75
+ 114:../../Secure/Core/Src/secboot_ecdsa.c ****         .primeOrderSize = curve->order_len,
+ 309              		.loc 1 114 32 is_stmt 0 view .LVU76
+ 310 003a C26B     		ldr	r2, [r0, #60]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 311              		.loc 1 113 29 view .LVU77
+ 312 003c 0192     		str	r2, [sp, #4]
+ 115:../../Secure/Core/Src/secboot_ecdsa.c ****         .modulusSize = curve->prime_len,
+ 313              		.loc 1 115 29 view .LVU78
+ 314 003e 4268     		ldr	r2, [r0, #4]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 315              		.loc 1 113 29 view .LVU79
+ 316 0040 0292     		str	r2, [sp, #8]
+ 116:../../Secure/Core/Src/secboot_ecdsa.c ****         .coefSign = curve->A_sign,
+ 317              		.loc 1 116 26 view .LVU80
+ 318 0042 4269     		ldr	r2, [r0, #20]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 319              		.loc 1 113 29 view .LVU81
+ 320 0044 0392     		str	r2, [sp, #12]
+ 117:../../Secure/Core/Src/secboot_ecdsa.c ****         .coef = curve->absA,
+ 321              		.loc 1 117 22 view .LVU82
+ 322 0046 C268     		ldr	r2, [r0, #12]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 323              		.loc 1 113 29 view .LVU83
+ 324 0048 0492     		str	r2, [sp, #16]
+ 118:../../Secure/Core/Src/secboot_ecdsa.c ****         .modulus = curve->prime,
+ 325              		.loc 1 118 25 view .LVU84
+ 326 004a 0268     		ldr	r2, [r0]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 327              		.loc 1 113 29 view .LVU85
+ 328 004c 0592     		str	r2, [sp, #20]
+ 119:../../Secure/Core/Src/secboot_ecdsa.c ****         .basePointX = curve->Gx,
+ 329              		.loc 1 119 28 view .LVU86
+ 330 004e 826A     		ldr	r2, [r0, #40]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 331              		.loc 1 113 29 view .LVU87
+ 332 0050 0692     		str	r2, [sp, #24]
+ 120:../../Secure/Core/Src/secboot_ecdsa.c ****         .basePointY = curve->Gy,
+ 333              		.loc 1 120 28 view .LVU88
+ 334 0052 026B     		ldr	r2, [r0, #48]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 335              		.loc 1 113 29 view .LVU89
+ 336 0054 0792     		str	r2, [sp, #28]
+ 337 0056 0895     		str	r5, [sp, #32]
+ 123:../../Secure/Core/Src/secboot_ecdsa.c ****         .pPubKeyCurvePtY = pPubKey->Qy,
+ 338              		.loc 1 123 28 view .LVU90
+ 339 0058 2035     		adds	r5, r5, #32
+ 340              	.LVL18:
+ARM GAS  /tmp/ccozigkR.s 			page 10
+
+
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 341              		.loc 1 113 29 view .LVU91
+ 342 005a 0995     		str	r5, [sp, #36]
+ 343 005c 0A94     		str	r4, [sp, #40]
+ 125:../../Secure/Core/Src/secboot_ecdsa.c ****         .SSign = pSignature->S,
+ 344              		.loc 1 125 18 view .LVU92
+ 345 005e 2034     		adds	r4, r4, #32
+ 346              	.LVL19:
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 347              		.loc 1 113 29 view .LVU93
+ 348 0060 0B94     		str	r4, [sp, #44]
+ 349 0062 0C97     		str	r7, [sp, #48]
+ 121:../../Secure/Core/Src/secboot_ecdsa.c ****         .primeOrder = curve->order,
+ 350              		.loc 1 121 28 view .LVU94
+ 351 0064 836B     		ldr	r3, [r0, #56]
+ 113:../../Secure/Core/Src/secboot_ecdsa.c ****     PKA_ECDSAVerifInTypeDef Sig_verify = {
+ 352              		.loc 1 113 29 view .LVU95
+ 353 0066 0D93     		str	r3, [sp, #52]
+ 130:../../Secure/Core/Src/secboot_ecdsa.c ****     HAL_StatusTypeDef hal_status = HAL_PKA_ECDSAVerif(&hpka, &Sig_verify, 
+ 354              		.loc 1 130 5 is_stmt 1 view .LVU96
+ 130:../../Secure/Core/Src/secboot_ecdsa.c ****     HAL_StatusTypeDef hal_status = HAL_PKA_ECDSAVerif(&hpka, &Sig_verify, 
+ 355              		.loc 1 130 36 is_stmt 0 view .LVU97
+ 356 0068 4FF47A72 		mov	r2, #1000
+ 357 006c 01A9     		add	r1, sp, #4
+ 358 006e 0C48     		ldr	r0, .L39
+ 359              	.LVL20:
+ 130:../../Secure/Core/Src/secboot_ecdsa.c ****     HAL_StatusTypeDef hal_status = HAL_PKA_ECDSAVerif(&hpka, &Sig_verify, 
+ 360              		.loc 1 130 36 view .LVU98
+ 361 0070 FFF7FEFF 		bl	HAL_PKA_ECDSAVerif
+ 362              	.LVL21:
+ 132:../../Secure/Core/Src/secboot_ecdsa.c ****     if (hal_status != HAL_OK) {
+ 363              		.loc 1 132 5 is_stmt 1 view .LVU99
+ 132:../../Secure/Core/Src/secboot_ecdsa.c ****     if (hal_status != HAL_OK) {
+ 364              		.loc 1 132 8 is_stmt 0 view .LVU100
+ 365 0074 28B1     		cbz	r0, .L26
+ 133:../../Secure/Core/Src/secboot_ecdsa.c ****         return (hal_status == HAL_TIMEOUT) ? 
+ 366              		.loc 1 133 9 is_stmt 1 view .LVU101
+ 134:../../Secure/Core/Src/secboot_ecdsa.c ****                SECBOOT_ECDSA_PKA_TIMEOUT : 
+ 367              		.loc 1 134 42 is_stmt 0 view .LVU102
+ 368 0076 0328     		cmp	r0, #3
+ 369 0078 01D0     		beq	.L38
+ 370 007a 0526     		movs	r6, #5
+ 371 007c CEE7     		b	.L25
+ 372              	.L38:
+ 373 007e 0626     		movs	r6, #6
+ 374 0080 CCE7     		b	.L25
+ 375              	.L26:
+ 139:../../Secure/Core/Src/secboot_ecdsa.c ****     return HAL_PKA_ECDSAVerif_IsValidSignature(&hpka) ? 
+ 376              		.loc 1 139 5 is_stmt 1 view .LVU103
+ 139:../../Secure/Core/Src/secboot_ecdsa.c ****     return HAL_PKA_ECDSAVerif_IsValidSignature(&hpka) ? 
+ 377              		.loc 1 139 12 is_stmt 0 view .LVU104
+ 378 0082 0748     		ldr	r0, .L39
+ 379              	.LVL22:
+ 139:../../Secure/Core/Src/secboot_ecdsa.c ****     return HAL_PKA_ECDSAVerif_IsValidSignature(&hpka) ? 
+ 380              		.loc 1 139 12 view .LVU105
+ 381 0084 FFF7FEFF 		bl	HAL_PKA_ECDSAVerif_IsValidSignature
+ 382              	.LVL23:
+ARM GAS  /tmp/ccozigkR.s 			page 11
+
+
+ 140:../../Secure/Core/Src/secboot_ecdsa.c ****            SECBOOT_ECDSA_VERIFICATION_SUCCESS : 
+ 383              		.loc 1 140 47 view .LVU106
+ 384 0088 38B1     		cbz	r0, .L34
+ 385 008a 0726     		movs	r6, #7
+ 386 008c C6E7     		b	.L25
+ 387              	.LVL24:
+ 388              	.L28:
+  94:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_PARAM;
+ 389              		.loc 1 94 16 view .LVU107
+ 390 008e 0226     		movs	r6, #2
+ 391 0090 C4E7     		b	.L25
+ 392              	.L29:
+  94:../../Secure/Core/Src/secboot_ecdsa.c ****         return SECBOOT_ECDSA_INVALID_PARAM;
+ 393              		.loc 1 94 16 view .LVU108
+ 394 0092 0226     		movs	r6, #2
+ 395 0094 C2E7     		b	.L25
+ 396              	.L30:
+ 397 0096 0226     		movs	r6, #2
+ 398 0098 C0E7     		b	.L25
+ 399              	.LVL25:
+ 400              	.L34:
+ 140:../../Secure/Core/Src/secboot_ecdsa.c ****            SECBOOT_ECDSA_VERIFICATION_SUCCESS : 
+ 401              		.loc 1 140 47 view .LVU109
+ 402 009a 0826     		movs	r6, #8
+ 403 009c BEE7     		b	.L25
+ 404              	.L40:
+ 405 009e 00BF     		.align	2
+ 406              	.L39:
+ 407 00a0 00000000 		.word	hpka
+ 408              		.cfi_endproc
+ 409              	.LFE204:
+ 411              		.section	.bss.is_initialized.0,"aw",%nobits
+ 414              	is_initialized.0:
+ 415 0000 00       		.space	1
+ 416              		.section	.bss.is_initialized.1,"aw",%nobits
+ 419              	is_initialized.1:
+ 420 0000 00       		.space	1
+ 421              		.section	.bss.hpka,"aw",%nobits
+ 422              		.align	2
+ 425              	hpka:
+ 426 0000 00000000 		.space	12
+ 426      00000000 
+ 426      00000000 
+ 427              		.text
+ 428              	.Letext0:
+ 429              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 430              		.file 3 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 431              		.file 4 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 432              		.file 5 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_pka.h"
+ 433              		.file 6 "../../Secure/Core/Inc/prime256v1.h"
+ 434              		.file 7 "../../Secure/Core/Inc/secboot_ecdsa.h"
+ARM GAS  /tmp/ccozigkR.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secboot_ecdsa.c
+     /tmp/ccozigkR.s:22     .text.SECBOOT_ECDSA_Init:00000000 $t
+     /tmp/ccozigkR.s:28     .text.SECBOOT_ECDSA_Init:00000000 SECBOOT_ECDSA_Init
+     /tmp/ccozigkR.s:139    .text.SECBOOT_ECDSA_Init:0000006c $d
+     /tmp/ccozigkR.s:419    .bss.is_initialized.1:00000000 is_initialized.1
+     /tmp/ccozigkR.s:425    .bss.hpka:00000000 hpka
+     /tmp/ccozigkR.s:147    .text.SECBOOT_ECDSA_DeInit:00000000 $t
+     /tmp/ccozigkR.s:153    .text.SECBOOT_ECDSA_DeInit:00000000 SECBOOT_ECDSA_DeInit
+     /tmp/ccozigkR.s:219    .text.SECBOOT_ECDSA_DeInit:00000034 $d
+     /tmp/ccozigkR.s:414    .bss.is_initialized.0:00000000 is_initialized.0
+     /tmp/ccozigkR.s:226    .text.SECBOOT_ECDSA_Verify_Signature:00000000 $t
+     /tmp/ccozigkR.s:232    .text.SECBOOT_ECDSA_Verify_Signature:00000000 SECBOOT_ECDSA_Verify_Signature
+     /tmp/ccozigkR.s:407    .text.SECBOOT_ECDSA_Verify_Signature:000000a0 $d
+     /tmp/ccozigkR.s:415    .bss.is_initialized.0:00000000 $d
+     /tmp/ccozigkR.s:420    .bss.is_initialized.1:00000000 $d
+     /tmp/ccozigkR.s:422    .bss.hpka:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_PKA_Init
+HAL_PKA_GetState
+HAL_PKA_DeInit
+get_prime256v1_curve
+HAL_PKA_ECDSAVerif
+HAL_PKA_ECDSAVerif_IsValidSignature

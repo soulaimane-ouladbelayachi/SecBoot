@@ -1,0 +1,1345 @@
+ARM GAS  /tmp/ccVRI40l.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"stm32l5xx_hal_gtzc.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c"
+  21              		.section	.text.HAL_GTZC_TZSC_ConfigPeriphAttributes,"ax",%progbits
+  22              		.align	1
+  23              		.global	HAL_GTZC_TZSC_ConfigPeriphAttributes
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	HAL_GTZC_TZSC_ConfigPeriphAttributes:
+  29              	.LVL0:
+  30              	.LFB152:
+   1:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+   2:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ******************************************************************************
+   3:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @file    stm32l5xx_hal_gtzc.c
+   4:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @author  MCD Application Team
+   5:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief   GTZC HAL module driver.
+   6:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *          This file provides firmware functions to manage the following
+   7:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *          functionalities of GTZC peripheral:
+   8:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *           + TZSC Initialization and Configuration functions
+   9:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *           + TZSC-MPCWM Initialization and Configuration functions
+  10:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *           + MPCBB Initialization and Configuration functions
+  11:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *           + TZSC, TZSC-MPCWM and MPCBB Lock functions
+  12:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *           + TZIC Initialization and Configuration functions
+  13:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+  14:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ******************************************************************************
+  15:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @attention
+  16:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+  17:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * Copyright (c) 2019 STMicroelectronics.
+  18:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * All rights reserved.
+  19:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+  20:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  21:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * in the root directory of this software component.
+  22:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  23:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+  24:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ******************************************************************************
+  25:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   @verbatim
+  26:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+  27:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                 ##### GTZC main features #####
+  28:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ARM GAS  /tmp/ccVRI40l.s 			page 2
+
+
+  29:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   [..]
+  30:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (+) Global TrustZone Controller (GTZC) composed of three sub-blocks:
+  31:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) TZSC: TrustZone security controller
+  32:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             This sub-block defines the secure/privileged state of master and slave
+  33:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             peripherals. It also controls the secure state of subregions
+  34:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             for the watermark memory peripheral controller (MPCWM).
+  35:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) MPCBB: Block-Based memory protection controller
+  36:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             This sub-block defines the secure state of all blocks
+  37:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             (256-byte pages) of the associated SRAM.
+  38:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) TZIC: TrustZone illegal access controller
+  39:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             This sub-block gathers all illegal access events in the system and
+  40:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             generates a secure interrupt towards NVIC.
+  41:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  42:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (+) These sub-blocks are used to configure TrustZone system security in
+  43:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         a product having bus agents with programmable-security and privileged
+  44:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         attributes (securable) such as:
+  45:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) on-chip RAM with programmable secure blocks (pages)
+  46:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) AHB and APB peripherals with programmable security and/or privilege access
+  47:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) AHB master granted as secure and/or privilege
+  48:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       (++) off-chip memories with secure areas
+  49:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  50:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   [..]
+  51:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (+) TZIC accessible only with secure privileged transactions.
+  52:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (+) Secure and non-secure access supported for privileged and unprivileged
+  53:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         part of TZSC and MPCBB
+  54:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  55:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+  56:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                          ##### How to use this driver #####
+  57:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+  58:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   [..]
+  59:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     The GTZC HAL driver can be used as follows:
+  60:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  61:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Configure or get back securable peripherals attributes using
+  62:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_TZSC_ConfigPeriphAttributes() / HAL_GTZC_TZSC_GetConfigPeriphAttributes()
+  63:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  64:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Configure or get back MPCWM memories attributes using
+  65:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_TZSC_MPCWM_ConfigMemAttributes() / HAL_GTZC_TZSC_MPCWM_GetConfigMemAttributes()
+  66:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  67:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Lock TZSC sub-block or get lock status using HAL_GTZC_TZSC_Lock() /
+  68:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_TZSC_GetLock()
+  69:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  70:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Configure or get back MPCBB memories complete configuration using
+  71:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_MPCBB_ConfigMem() / HAL_GTZC_MPCBB_GetConfigMem()
+  72:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  73:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Configure or get back MPCBB memories attributes using
+  74:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_MPCBB_ConfigMemAttributes() / HAL_GTZC_MPCBB_GetConfigMemAttributes()
+  75:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  76:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Lock MPCBB configuration or get lock status using HAL_GTZC_MPCBB_Lock() /
+  77:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_MPCBB_GetLock()
+  78:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  79:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Lock MPCBB super-blocks or get lock status using HAL_GTZC_MPCBB_LockConfig() /
+  80:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_MPCBB_GetLockConfig()
+  81:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  82:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Illegal access detection can be configured through TZIC sub-block using
+  83:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         following functions: HAL_GTZC_TZIC_DisableIT() / HAL_GTZC_TZIC_EnableIT()
+  84:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  85:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Illegal access flags can be retrieved through HAL_GTZC_TZIC_GetFlag() and
+ARM GAS  /tmp/ccVRI40l.s 			page 3
+
+
+  86:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         HAL_GTZC_TZIC_ClearFlag() functions
+  87:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  88:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     (#) Illegal access interrupt service routines are served by HAL_GTZC_IRQHandler()
+  89:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         and user can add his own code using HAL_GTZC_TZIC_Callback()
+  90:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  91:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   @endverbatim
+  92:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ******************************************************************************
+  93:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+  94:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  95:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Includes ------------------------------------------------------------------*/
+  96:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #include "stm32l5xx_hal.h"
+  97:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+  98:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @addtogroup STM32L5xx_HAL_Driver
+  99:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 100:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 101:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 102:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC GTZC
+ 103:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief GTZC HAL module driver
+ 104:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 105:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 106:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 107:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #ifdef HAL_GTZC_MODULE_ENABLED
+ 108:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 109:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Private typedef -----------------------------------------------------------*/
+ 110:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Private constants ---------------------------------------------------------*/
+ 111:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 112:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC_Private_Constants GTZC Private Constants
+ 113:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 114:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 115:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 116:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Definitions for GTZC_TZSC_MPCWM */
+ 117:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define GTZC_TZSC_MPCWM1_MEM_SIZE      0x10000000U    /* 256MB max size */
+ 118:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define GTZC_TZSC_MPCWM2_MEM_SIZE      0x10000000U    /* 256MB max size */
+ 119:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define GTZC_TZSC_MPCWM3_MEM_SIZE      0x10000000U    /* 256MB max size */
+ 120:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 121:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Definitions for GTZC TZSC & TZIC ALL register values */
+ 122:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZSC_SECCFGR1_ALL       (0xFFFFFFFFUL)
+ 123:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined (STM32L562xx)
+ 124:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZSC_SECCFGR2_ALL       (0x0007FFFFUL)
+ 125:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #else
+ 126:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZSC_SECCFGR2_ALL       (0x00076FFFUL)
+ 127:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* STM32L562xx */
+ 128:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZSC_PRIVCFGR1_ALL      (0xFFFFFFFFUL)
+ 129:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined (STM32L562xx)
+ 130:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZSC_PRIVCFGR2_ALL      (0x0007FFFFUL)
+ 131:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #else
+ 132:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZSC_PRIVCFGR2_ALL      (0x00076FFFUL)
+ 133:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* STM32L562xx */
+ 134:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_IER1_ALL           (0xFFFFFFFFUL)
+ 135:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined (STM32L562xx)
+ 136:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_IER2_ALL           (0x3FFFFFFFUL)
+ 137:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #else
+ 138:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_IER2_ALL           (0x3FFF6FFFUL)
+ 139:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* STM32L562xx */
+ 140:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_IER3_ALL           (0x000000FFUL)
+ 141:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_FCR1_ALL           (0xFFFFFFFFUL)
+ 142:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined (STM32L562xx)
+ARM GAS  /tmp/ccVRI40l.s 			page 4
+
+
+ 143:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_FCR2_ALL           (0x3FFFFFFFUL)
+ 144:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #else
+ 145:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_FCR2_ALL           (0x3FFF6FFFUL)
+ 146:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* STM32L562xx */
+ 147:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define TZIC_FCR3_ALL           (0x000000FFUL)
+ 148:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 149:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 150:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @}
+ 151:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 152:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 153:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Private macros ------------------------------------------------------------*/
+ 154:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 155:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC_Private_Macros GTZC Private Macros
+ 156:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 157:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 158:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 159:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define IS_ADDRESS_IN(mem, address)\
+ 160:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   (   (   ( (uint32_t)(address) >= (uint32_t)GTZC_BASE_ADDRESS_NS(mem) )                           
+ 161:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****           && ( (uint32_t)(address) < ((uint32_t)GTZC_BASE_ADDRESS_NS(mem) + (uint32_t)GTZC_MEM_SIZE
+ 162:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || (   ( (uint32_t)(address) >= (uint32_t)GTZC_BASE_ADDRESS_S(mem) )                         
+ 163:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****              && ( (uint32_t)(address) < ((uint32_t)GTZC_BASE_ADDRESS_S(mem) + (uint32_t)GTZC_MEM_SI
+ 164:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 165:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define IS_ADDRESS_IN_S(mem, address)\
+ 166:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   (   ( (uint32_t)(address) >= (uint32_t)GTZC_BASE_ADDRESS_S(mem) )                                
+ 167:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       && ( (uint32_t)(address) < ((uint32_t)GTZC_BASE_ADDRESS_S(mem) + (uint32_t)GTZC_MEM_SIZE(mem)
+ 168:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 169:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define IS_ADDRESS_IN_NS(mem, address)\
+ 170:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   (   ( (uint32_t)(address) >= (uint32_t)GTZC_BASE_ADDRESS_NS(mem) )                               
+ 171:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       && ( (uint32_t)(address) < ((uint32_t)GTZC_BASE_ADDRESS_NS(mem) + (uint32_t)GTZC_MEM_SIZE(mem
+ 172:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 173:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #define GTZC_BASE_ADDRESS(mem)\
+ 174:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ( mem ## _BASE )
+ 175:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 176:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 177:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @}
+ 178:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 179:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 180:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Private variables ---------------------------------------------------------*/
+ 181:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Private function prototypes -----------------------------------------------*/
+ 182:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /* Exported functions --------------------------------------------------------*/
+ 183:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 184:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC_Exported_Functions GTZC Exported Functions
+ 185:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 186:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 187:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 188:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC_Exported_Functions_Group1  TZSC Configuration functions
+ 189:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief    TZSC Configuration functions
+ 190:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+ 191:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   @verbatim
+ 192:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ 193:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             ##### TZSC Configuration functions #####
+ 194:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ 195:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   [..]
+ 196:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     This section provides functions allowing to configure TZSC
+ 197:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     TZSC is TrustZone Security Controller
+ 198:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** @endverbatim
+ 199:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ARM GAS  /tmp/ccVRI40l.s 			page 5
+
+
+ 200:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 201:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 202:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 203:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief  Configure TZSC on a single peripheral or on all peripherals.
+ 204:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @note   Secure and non-secure attributes can only be set from the secure
+ 205:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         state when the system implements the security (TZEN=1).
+ 206:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @note   Privilege and non-privilege attributes can only be set from the
+ 207:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         privilege state when TZEN=0 or TZEN=1
+ 208:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @note   Security and privilege attributes can be set independently.
+ 209:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @note   Default state is non-secure and unprivileged access allowed.
+ 210:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  PeriphId Peripheral identifier
+ 211:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         This parameter can be a value of @ref GTZC_TZSC_TZIC_PeriphId.
+ 212:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         Use GTZC_PERIPH_ALL to select all peripherals.
+ 213:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  PeriphAttributes Peripheral attributes, see @ref GTZC_TZSC_PeriphAttributes.
+ 214:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @retval HAL status.
+ 215:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 216:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** HAL_StatusTypeDef HAL_GTZC_TZSC_ConfigPeriphAttributes(uint32_t PeriphId,
+ 217:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                                                        uint32_t PeriphAttributes)
+ 218:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** {
+  31              		.loc 1 218 1 view -0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		@ link register save eliminated.
+ 219:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t register_address;
+  36              		.loc 1 219 3 view .LVU1
+ 220:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 221:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* check entry parameters */
+ 222:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if ((PeriphAttributes > (GTZC_TZSC_PERIPH_SEC | GTZC_TZSC_PERIPH_PRIV))
+  37              		.loc 1 222 3 view .LVU2
+  38              		.loc 1 222 6 is_stmt 0 view .LVU3
+  39 0000 B1F5417F 		cmp	r1, #772
+  40 0004 44D2     		bcs	.L7
+ 223:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || (HAL_GTZC_GET_ARRAY_INDEX(PeriphId) >= GTZC_TZSC_PERIPH_NUMBER)
+  41              		.loc 1 223 11 view .LVU4
+  42 0006 020F     		lsrs	r2, r0, #28
+  43 0008 00F01F0C 		and	ip, r0, #31
+  44 000c 0CEB4213 		add	r3, ip, r2, lsl #5
+  45              		.loc 1 223 7 view .LVU5
+  46 0010 322B     		cmp	r3, #50
+  47 0012 3FD8     		bhi	.L8
+ 224:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || (((PeriphId & GTZC_PERIPH_ALL) != 0U) && (HAL_GTZC_GET_ARRAY_INDEX(PeriphId) != 0U)))
+  48              		.loc 1 224 7 view .LVU6
+  49 0014 10F02000 		ands	r0, r0, #32
+  50              	.LVL1:
+  51              		.loc 1 224 7 view .LVU7
+  52 0018 01D0     		beq	.L3
+  53              		.loc 1 224 48 discriminator 1 view .LVU8
+  54 001a 002B     		cmp	r3, #0
+  55 001c 3CD1     		bne	.L9
+  56              	.L3:
+ 225:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 226:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     return HAL_ERROR;
+ 227:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 228:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 229:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if ((PeriphId & GTZC_PERIPH_ALL) != 0U)
+  57              		.loc 1 229 3 is_stmt 1 view .LVU9
+ARM GAS  /tmp/ccVRI40l.s 			page 6
+
+
+  58              		.loc 1 229 6 is_stmt 0 view .LVU10
+  59 001e E0B1     		cbz	r0, .L4
+ 230:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 231:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* special case where same attributes are applied to all peripherals */
+ 232:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 233:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+ 234:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* secure configuration */
+ 235:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_SEC) == GTZC_TZSC_PERIPH_SEC)
+ 236:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 237:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(GTZC_TZSC->SECCFGR1, TZSC_SECCFGR1_ALL);
+ 238:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(GTZC_TZSC->SECCFGR2, TZSC_SECCFGR2_ALL);
+ 239:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 240:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else if ((PeriphAttributes & GTZC_TZSC_PERIPH_NSEC) == GTZC_TZSC_PERIPH_NSEC)
+ 241:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 242:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       CLEAR_BIT(GTZC_TZSC->SECCFGR1, TZSC_SECCFGR1_ALL);
+ 243:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       CLEAR_BIT(GTZC_TZSC->SECCFGR2, TZSC_SECCFGR2_ALL);
+ 244:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 245:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else
+ 246:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 247:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       /* do nothing */
+ 248:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 249:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U) */
+ 250:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 251:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* privilege configuration */
+ 252:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_PRIV) == GTZC_TZSC_PERIPH_PRIV)
+  60              		.loc 1 252 5 is_stmt 1 view .LVU11
+  61              		.loc 1 252 8 is_stmt 0 view .LVU12
+  62 0020 40F20223 		movw	r3, #514
+  63 0024 8B43     		bics	r3, r3, r1
+  64 0026 0BD0     		beq	.L12
+ 253:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 254:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(GTZC_TZSC->PRIVCFGR1, TZSC_PRIVCFGR1_ALL);
+ 255:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(GTZC_TZSC->PRIVCFGR2, TZSC_PRIVCFGR2_ALL);
+ 256:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 257:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else if ((PeriphAttributes & GTZC_TZSC_PERIPH_NPRIV) == GTZC_TZSC_PERIPH_NPRIV)
+  65              		.loc 1 257 10 is_stmt 1 view .LVU13
+  66              		.loc 1 257 13 is_stmt 0 view .LVU14
+  67 0028 11F4007F 		tst	r1, #512
+  68 002c 36D0     		beq	.L10
+ 258:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 259:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       CLEAR_BIT(GTZC_TZSC->PRIVCFGR1, TZSC_PRIVCFGR1_ALL);
+  69              		.loc 1 259 7 is_stmt 1 view .LVU15
+  70 002e 1D4A     		ldr	r2, .L14
+  71 0030 136A     		ldr	r3, [r2, #32]
+  72 0032 0020     		movs	r0, #0
+  73 0034 1062     		str	r0, [r2, #32]
+ 260:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       CLEAR_BIT(GTZC_TZSC->PRIVCFGR2, TZSC_PRIVCFGR2_ALL);
+  74              		.loc 1 260 7 view .LVU16
+  75 0036 536A     		ldr	r3, [r2, #36]
+  76 0038 DB0C     		lsrs	r3, r3, #19
+  77 003a DB04     		lsls	r3, r3, #19
+  78 003c 5362     		str	r3, [r2, #36]
+  79 003e 7047     		bx	lr
+  80              	.L12:
+ 254:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(GTZC_TZSC->PRIVCFGR2, TZSC_PRIVCFGR2_ALL);
+  81              		.loc 1 254 7 view .LVU17
+  82 0040 184A     		ldr	r2, .L14
+ARM GAS  /tmp/ccVRI40l.s 			page 7
+
+
+  83 0042 136A     		ldr	r3, [r2, #32]
+  84 0044 4FF0FF33 		mov	r3, #-1
+  85 0048 1362     		str	r3, [r2, #32]
+ 255:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+  86              		.loc 1 255 7 view .LVU18
+  87 004a 536A     		ldr	r3, [r2, #36]
+  88 004c 6FEAD343 		mvn	r3, r3, lsr #19
+  89 0050 6FEAC343 		mvn	r3, r3, lsl #19
+  90 0054 5362     		str	r3, [r2, #36]
+ 261:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 262:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else
+ 263:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 264:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       /* do nothing */
+ 265:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 266:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 267:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   else
+ 268:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 269:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* common case where only one peripheral is configured */
+ 270:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 271:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+ 272:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* secure configuration */
+ 273:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     register_address = (uint32_t) &(GTZC_TZSC->SECCFGR1) + (4U * GTZC_GET_REG_INDEX(PeriphId));
+ 274:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_SEC) == GTZC_TZSC_PERIPH_SEC)
+ 275:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 276:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(*(__IO uint32_t *)register_address, 1UL << GTZC_GET_PERIPH_POS(PeriphId));
+ 277:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 278:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else if ((PeriphAttributes & GTZC_TZSC_PERIPH_NSEC) == GTZC_TZSC_PERIPH_NSEC)
+ 279:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 280:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       CLEAR_BIT(*(__IO uint32_t *)register_address, 1UL << GTZC_GET_PERIPH_POS(PeriphId));
+ 281:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 282:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else
+ 283:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 284:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       /* do nothing */
+ 285:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 286:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U) */
+ 287:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 288:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* privilege configuration */
+ 289:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     register_address = (uint32_t) &(GTZC_TZSC->PRIVCFGR1) + (4U * GTZC_GET_REG_INDEX(PeriphId));
+ 290:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_PRIV) == GTZC_TZSC_PERIPH_PRIV)
+ 291:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 292:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       SET_BIT(*(__IO uint32_t *)register_address, 1UL << GTZC_GET_PERIPH_POS(PeriphId));
+ 293:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 294:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else if ((PeriphAttributes & GTZC_TZSC_PERIPH_NPRIV) == GTZC_TZSC_PERIPH_NPRIV)
+ 295:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 296:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       CLEAR_BIT(*(__IO uint32_t *)register_address, 1UL << GTZC_GET_PERIPH_POS(PeriphId));
+ 297:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 298:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else
+ 299:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 300:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       /* do nothing */
+ 301:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 302:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 303:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   return HAL_OK;
+  91              		.loc 1 303 10 is_stmt 0 view .LVU19
+  92 0056 0020     		movs	r0, #0
+  93 0058 7047     		bx	lr
+  94              	.L4:
+ 289:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_PRIV) == GTZC_TZSC_PERIPH_PRIV)
+ARM GAS  /tmp/ccVRI40l.s 			page 8
+
+
+  95              		.loc 1 289 5 is_stmt 1 view .LVU20
+ 289:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_PRIV) == GTZC_TZSC_PERIPH_PRIV)
+  96              		.loc 1 289 59 is_stmt 0 view .LVU21
+  97 005a 134B     		ldr	r3, .L14+4
+  98 005c 1344     		add	r3, r3, r2
+ 289:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if ((PeriphAttributes & GTZC_TZSC_PERIPH_PRIV) == GTZC_TZSC_PERIPH_PRIV)
+  99              		.loc 1 289 22 view .LVU22
+ 100 005e 9B00     		lsls	r3, r3, #2
+ 101              	.LVL2:
+ 290:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 102              		.loc 1 290 5 is_stmt 1 view .LVU23
+ 290:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 103              		.loc 1 290 8 is_stmt 0 view .LVU24
+ 104 0060 40F20222 		movw	r2, #514
+ 105 0064 8A43     		bics	r2, r2, r1
+ 106 0066 0BD0     		beq	.L13
+ 294:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 107              		.loc 1 294 10 is_stmt 1 view .LVU25
+ 294:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 108              		.loc 1 294 13 is_stmt 0 view .LVU26
+ 109 0068 11F4007F 		tst	r1, #512
+ 110 006c 18D0     		beq	.L11
+ 296:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 111              		.loc 1 296 7 is_stmt 1 view .LVU27
+ 112 006e 1A68     		ldr	r2, [r3]
+ 113 0070 0121     		movs	r1, #1
+ 114              	.LVL3:
+ 296:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 115              		.loc 1 296 7 is_stmt 0 view .LVU28
+ 116 0072 01FA0CF1 		lsl	r1, r1, ip
+ 117 0076 22EA0102 		bic	r2, r2, r1
+ 118 007a 1A60     		str	r2, [r3]
+ 119              		.loc 1 303 10 view .LVU29
+ 120 007c 0020     		movs	r0, #0
+ 121 007e 7047     		bx	lr
+ 122              	.LVL4:
+ 123              	.L13:
+ 292:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 124              		.loc 1 292 7 is_stmt 1 view .LVU30
+ 125 0080 1A68     		ldr	r2, [r3]
+ 126 0082 0121     		movs	r1, #1
+ 127              	.LVL5:
+ 292:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 128              		.loc 1 292 7 is_stmt 0 view .LVU31
+ 129 0084 01FA0CF1 		lsl	r1, r1, ip
+ 130 0088 0A43     		orrs	r2, r2, r1
+ 131 008a 1A60     		str	r2, [r3]
+ 132              		.loc 1 303 10 view .LVU32
+ 133 008c 0020     		movs	r0, #0
+ 134 008e 7047     		bx	lr
+ 135              	.LVL6:
+ 136              	.L7:
+ 226:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 137              		.loc 1 226 12 view .LVU33
+ 138 0090 0120     		movs	r0, #1
+ 139              	.LVL7:
+ 226:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ARM GAS  /tmp/ccVRI40l.s 			page 9
+
+
+ 140              		.loc 1 226 12 view .LVU34
+ 141 0092 7047     		bx	lr
+ 142              	.LVL8:
+ 143              	.L8:
+ 226:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 144              		.loc 1 226 12 view .LVU35
+ 145 0094 0120     		movs	r0, #1
+ 146              	.LVL9:
+ 226:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 147              		.loc 1 226 12 view .LVU36
+ 148 0096 7047     		bx	lr
+ 149              	.L9:
+ 150 0098 0120     		movs	r0, #1
+ 151 009a 7047     		bx	lr
+ 152              	.L10:
+ 153              		.loc 1 303 10 view .LVU37
+ 154 009c 0020     		movs	r0, #0
+ 155 009e 7047     		bx	lr
+ 156              	.LVL10:
+ 157              	.L11:
+ 158              		.loc 1 303 10 view .LVU38
+ 159 00a0 0020     		movs	r0, #0
+ 304:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** }
+ 160              		.loc 1 304 1 view .LVU39
+ 161 00a2 7047     		bx	lr
+ 162              	.L15:
+ 163              		.align	2
+ 164              	.L14:
+ 165 00a4 00240340 		.word	1073947648
+ 166 00a8 08C90010 		.word	268486920
+ 167              		.cfi_endproc
+ 168              	.LFE152:
+ 170              		.section	.text.HAL_GTZC_TZSC_GetConfigPeriphAttributes,"ax",%progbits
+ 171              		.align	1
+ 172              		.global	HAL_GTZC_TZSC_GetConfigPeriphAttributes
+ 173              		.syntax unified
+ 174              		.thumb
+ 175              		.thumb_func
+ 177              	HAL_GTZC_TZSC_GetConfigPeriphAttributes:
+ 178              	.LVL11:
+ 179              	.LFB153:
+ 305:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 306:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 307:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief  Get TZSC configuration on a single peripheral or on all peripherals.
+ 308:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  PeriphId Peripheral identifier.
+ 309:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         This parameter can be a value of @ref GTZC_TZSC_TZIC_PeriphId.
+ 310:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         Use GTZC_PERIPH_ALL to select all peripherals.
+ 311:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  PeriphAttributes Peripheral attribute pointer.
+ 312:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         This parameter can be a value of @ref GTZC_TZSC_PeriphAttributes.
+ 313:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         If PeriphId target a single peripheral, pointer on a single element.
+ 314:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         If all peripherals selected (GTZC_PERIPH_ALL), pointer to an array of
+ 315:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         GTZC_TZSC_PERIPH_NUMBER elements is to be provided.
+ 316:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @retval HAL status.
+ 317:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 318:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** HAL_StatusTypeDef HAL_GTZC_TZSC_GetConfigPeriphAttributes(uint32_t PeriphId,
+ 319:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                                                           uint32_t *PeriphAttributes)
+ 320:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** {
+ARM GAS  /tmp/ccVRI40l.s 			page 10
+
+
+ 180              		.loc 1 320 1 is_stmt 1 view -0
+ 181              		.cfi_startproc
+ 182              		@ args = 0, pretend = 0, frame = 0
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184              		@ link register save eliminated.
+ 321:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t i;
+ 185              		.loc 1 321 3 view .LVU41
+ 322:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t reg_value;
+ 186              		.loc 1 322 3 view .LVU42
+ 323:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t register_address;
+ 187              		.loc 1 323 3 view .LVU43
+ 324:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 325:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* check entry parameters */
+ 326:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if ((PeriphAttributes == NULL)
+ 188              		.loc 1 326 3 view .LVU44
+ 189              		.loc 1 326 6 is_stmt 0 view .LVU45
+ 190 0000 8C46     		mov	ip, r1
+ 191 0002 0029     		cmp	r1, #0
+ 192 0004 00F09F80 		beq	.L39
+ 327:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || (HAL_GTZC_GET_ARRAY_INDEX(PeriphId) >= GTZC_TZSC_PERIPH_NUMBER)
+ 193              		.loc 1 327 11 view .LVU46
+ 194 0008 020F     		lsrs	r2, r0, #28
+ 195 000a 00F01F03 		and	r3, r0, #31
+ 196 000e 03EB4211 		add	r1, r3, r2, lsl #5
+ 197              	.LVL12:
+ 198              		.loc 1 327 7 view .LVU47
+ 199 0012 3229     		cmp	r1, #50
+ 200 0014 00F29980 		bhi	.L40
+ 328:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || (((PeriphId & GTZC_PERIPH_ALL) != 0U) && (HAL_GTZC_GET_ARRAY_INDEX(PeriphId) != 0U)))
+ 201              		.loc 1 328 7 view .LVU48
+ 202 0018 10F02000 		ands	r0, r0, #32
+ 203              	.LVL13:
+ 204              		.loc 1 328 7 view .LVU49
+ 205 001c 02D0     		beq	.L18
+ 206              		.loc 1 328 48 discriminator 1 view .LVU50
+ 207 001e 0029     		cmp	r1, #0
+ 208 0020 40F09580 		bne	.L41
+ 209              	.L18:
+ 329:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 330:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     return HAL_ERROR;
+ 331:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 332:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 333:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if ((PeriphId & GTZC_PERIPH_ALL) != 0U)
+ 210              		.loc 1 333 3 is_stmt 1 view .LVU51
+ 211              		.loc 1 333 6 is_stmt 0 view .LVU52
+ 212 0024 0028     		cmp	r0, #0
+ 213 0026 63D0     		beq	.L19
+ 334:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 335:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* get secure configuration: read each register and deploy each bit value
+ 336:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      * of corresponding index in the destination array
+ 337:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      */
+ 338:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     reg_value = READ_REG(GTZC_TZSC->SECCFGR1);
+ 214              		.loc 1 338 5 is_stmt 1 view .LVU53
+ 215              		.loc 1 338 15 is_stmt 0 view .LVU54
+ 216 0028 4A4B     		ldr	r3, .L46
+ 217 002a 1969     		ldr	r1, [r3, #16]
+ 218              	.LVL14:
+ARM GAS  /tmp/ccVRI40l.s 			page 11
+
+
+ 339:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (i = 0U; i < 32U; i++)
+ 219              		.loc 1 339 5 is_stmt 1 view .LVU55
+ 220              		.loc 1 339 12 is_stmt 0 view .LVU56
+ 221 002c 0023     		movs	r3, #0
+ 222              		.loc 1 339 5 view .LVU57
+ 223 002e 04E0     		b	.L20
+ 224              	.LVL15:
+ 225              	.L21:
+ 340:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 341:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       if (((reg_value & (1UL << i)) >> i) != 0U)
+ 342:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 343:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] = GTZC_TZSC_PERIPH_SEC;
+ 344:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 345:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       else
+ 346:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 347:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] = GTZC_TZSC_PERIPH_NSEC;
+ 226              		.loc 1 347 9 is_stmt 1 view .LVU58
+ 227              		.loc 1 347 29 is_stmt 0 view .LVU59
+ 228 0030 4FF48072 		mov	r2, #256
+ 229 0034 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 230              	.L22:
+ 339:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (i = 0U; i < 32U; i++)
+ 231              		.loc 1 339 28 is_stmt 1 discriminator 2 view .LVU60
+ 232 0038 0133     		adds	r3, r3, #1
+ 233              	.LVL16:
+ 234              	.L20:
+ 339:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (i = 0U; i < 32U; i++)
+ 235              		.loc 1 339 20 discriminator 1 view .LVU61
+ 236 003a 1F2B     		cmp	r3, #31
+ 237 003c 09D8     		bhi	.L42
+ 341:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 238              		.loc 1 341 7 view .LVU62
+ 341:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 239              		.loc 1 341 30 is_stmt 0 view .LVU63
+ 240 003e 0122     		movs	r2, #1
+ 241 0040 9A40     		lsls	r2, r2, r3
+ 341:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 242              		.loc 1 341 23 view .LVU64
+ 243 0042 0A40     		ands	r2, r2, r1
+ 341:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 244              		.loc 1 341 10 view .LVU65
+ 245 0044 DA40     		lsrs	r2, r2, r3
+ 246 0046 F3D0     		beq	.L21
+ 343:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 247              		.loc 1 343 9 is_stmt 1 view .LVU66
+ 343:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 248              		.loc 1 343 29 is_stmt 0 view .LVU67
+ 249 0048 40F20112 		movw	r2, #257
+ 250 004c 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 251 0050 F2E7     		b	.L22
+ 252              	.L42:
+ 348:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 349:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 350:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 351:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     reg_value = READ_REG(GTZC_TZSC->SECCFGR2);
+ 253              		.loc 1 351 5 is_stmt 1 view .LVU68
+ 254              		.loc 1 351 15 is_stmt 0 view .LVU69
+ARM GAS  /tmp/ccVRI40l.s 			page 12
+
+
+ 255 0052 404A     		ldr	r2, .L46
+ 256 0054 5069     		ldr	r0, [r2, #20]
+ 257              	.LVL17:
+ 352:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (/*i = 32U*/; i < GTZC_TZSC_PERIPH_NUMBER; i++)
+ 258              		.loc 1 352 5 is_stmt 1 view .LVU70
+ 259 0056 04E0     		b	.L24
+ 260              	.L25:
+ 353:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       if (((reg_value & (1UL << (i - 32U))) >> (i - 32U)) != 0U)
+ 355:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 356:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] = GTZC_TZSC_PERIPH_SEC;
+ 357:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 358:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       else
+ 359:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 360:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] = GTZC_TZSC_PERIPH_NSEC;
+ 261              		.loc 1 360 9 view .LVU71
+ 262              		.loc 1 360 29 is_stmt 0 view .LVU72
+ 263 0058 4FF48072 		mov	r2, #256
+ 264 005c 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 265              	.L26:
+ 352:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (/*i = 32U*/; i < GTZC_TZSC_PERIPH_NUMBER; i++)
+ 266              		.loc 1 352 53 is_stmt 1 view .LVU73
+ 267 0060 0133     		adds	r3, r3, #1
+ 268              	.LVL18:
+ 269              	.L24:
+ 352:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (/*i = 32U*/; i < GTZC_TZSC_PERIPH_NUMBER; i++)
+ 270              		.loc 1 352 25 discriminator 1 view .LVU74
+ 271 0062 322B     		cmp	r3, #50
+ 272 0064 0BD8     		bhi	.L43
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 273              		.loc 1 354 7 view .LVU75
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 274              		.loc 1 354 36 is_stmt 0 view .LVU76
+ 275 0066 A3F12001 		sub	r1, r3, #32
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 276              		.loc 1 354 30 view .LVU77
+ 277 006a 0122     		movs	r2, #1
+ 278 006c 8A40     		lsls	r2, r2, r1
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 279              		.loc 1 354 23 view .LVU78
+ 280 006e 0240     		ands	r2, r2, r0
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 281              		.loc 1 354 10 view .LVU79
+ 282 0070 CA40     		lsrs	r2, r2, r1
+ 283 0072 F1D0     		beq	.L25
+ 356:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 284              		.loc 1 356 9 is_stmt 1 view .LVU80
+ 356:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 285              		.loc 1 356 29 is_stmt 0 view .LVU81
+ 286 0074 40F20112 		movw	r2, #257
+ 287 0078 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 288 007c F0E7     		b	.L26
+ 289              	.L43:
+ 361:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 362:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 363:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 364:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* get privilege configuration: read each register and deploy each bit value
+ARM GAS  /tmp/ccVRI40l.s 			page 13
+
+
+ 365:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      * of corresponding index in the destination array
+ 366:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      */
+ 367:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     reg_value = READ_REG(GTZC_TZSC->PRIVCFGR1);
+ 290              		.loc 1 367 5 is_stmt 1 view .LVU82
+ 291              		.loc 1 367 15 is_stmt 0 view .LVU83
+ 292 007e 354B     		ldr	r3, .L46
+ 293              	.LVL19:
+ 294              		.loc 1 367 15 view .LVU84
+ 295 0080 196A     		ldr	r1, [r3, #32]
+ 296              	.LVL20:
+ 368:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (i = 0U; i < 32U; i++)
+ 297              		.loc 1 368 5 is_stmt 1 view .LVU85
+ 298              		.loc 1 368 12 is_stmt 0 view .LVU86
+ 299 0082 0023     		movs	r3, #0
+ 300              		.loc 1 368 5 view .LVU87
+ 301 0084 06E0     		b	.L28
+ 302              	.LVL21:
+ 303              	.L29:
+ 369:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 370:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       if (((reg_value & (1UL << i)) >> i) != 0U)
+ 371:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 372:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] |= GTZC_TZSC_PERIPH_PRIV;
+ 373:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 374:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       else
+ 375:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 376:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] |= GTZC_TZSC_PERIPH_NPRIV;
+ 304              		.loc 1 376 9 is_stmt 1 view .LVU88
+ 305              		.loc 1 376 25 is_stmt 0 view .LVU89
+ 306 0086 5CF82320 		ldr	r2, [ip, r3, lsl #2]
+ 307              		.loc 1 376 29 view .LVU90
+ 308 008a 42F40072 		orr	r2, r2, #512
+ 309 008e 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 310              	.L30:
+ 368:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (i = 0U; i < 32U; i++)
+ 311              		.loc 1 368 28 is_stmt 1 discriminator 2 view .LVU91
+ 312 0092 0133     		adds	r3, r3, #1
+ 313              	.LVL22:
+ 314              	.L28:
+ 368:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (i = 0U; i < 32U; i++)
+ 315              		.loc 1 368 20 discriminator 1 view .LVU92
+ 316 0094 1F2B     		cmp	r3, #31
+ 317 0096 0DD8     		bhi	.L44
+ 370:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 318              		.loc 1 370 7 view .LVU93
+ 370:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 319              		.loc 1 370 30 is_stmt 0 view .LVU94
+ 320 0098 0122     		movs	r2, #1
+ 321 009a 9A40     		lsls	r2, r2, r3
+ 370:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 322              		.loc 1 370 23 view .LVU95
+ 323 009c 0A40     		ands	r2, r2, r1
+ 370:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 324              		.loc 1 370 10 view .LVU96
+ 325 009e DA40     		lsrs	r2, r2, r3
+ 326 00a0 F1D0     		beq	.L29
+ 372:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 327              		.loc 1 372 9 is_stmt 1 view .LVU97
+ARM GAS  /tmp/ccVRI40l.s 			page 14
+
+
+ 372:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 328              		.loc 1 372 25 is_stmt 0 view .LVU98
+ 329 00a2 5CF82320 		ldr	r2, [ip, r3, lsl #2]
+ 372:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 330              		.loc 1 372 29 view .LVU99
+ 331 00a6 42F40072 		orr	r2, r2, #512
+ 332 00aa 42F00202 		orr	r2, r2, #2
+ 333 00ae 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 334 00b2 EEE7     		b	.L30
+ 335              	.L44:
+ 377:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 378:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 379:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 380:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     reg_value = READ_REG(GTZC_TZSC->PRIVCFGR2);
+ 336              		.loc 1 380 5 is_stmt 1 view .LVU100
+ 337              		.loc 1 380 15 is_stmt 0 view .LVU101
+ 338 00b4 274A     		ldr	r2, .L46
+ 339 00b6 506A     		ldr	r0, [r2, #36]
+ 340              	.LVL23:
+ 381:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (/*i = 32U*/; i < GTZC_TZSC_PERIPH_NUMBER; i++)
+ 341              		.loc 1 381 5 is_stmt 1 view .LVU102
+ 342 00b8 06E0     		b	.L32
+ 343              	.L33:
+ 382:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       if (((reg_value & (1UL << (i - 32U))) >> (i - 32U)) != 0U)
+ 384:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 385:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] |= GTZC_TZSC_PERIPH_PRIV;
+ 386:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 387:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       else
+ 388:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 389:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         PeriphAttributes[i] |= GTZC_TZSC_PERIPH_NPRIV;
+ 344              		.loc 1 389 9 view .LVU103
+ 345              		.loc 1 389 25 is_stmt 0 view .LVU104
+ 346 00ba 5CF82320 		ldr	r2, [ip, r3, lsl #2]
+ 347              		.loc 1 389 29 view .LVU105
+ 348 00be 42F40072 		orr	r2, r2, #512
+ 349 00c2 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 350              	.L34:
+ 381:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (/*i = 32U*/; i < GTZC_TZSC_PERIPH_NUMBER; i++)
+ 351              		.loc 1 381 53 is_stmt 1 view .LVU106
+ 352 00c6 0133     		adds	r3, r3, #1
+ 353              	.LVL24:
+ 354              	.L32:
+ 381:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     for (/*i = 32U*/; i < GTZC_TZSC_PERIPH_NUMBER; i++)
+ 355              		.loc 1 381 25 discriminator 1 view .LVU107
+ 356 00c8 322B     		cmp	r3, #50
+ 357 00ca 0FD8     		bhi	.L45
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 358              		.loc 1 383 7 view .LVU108
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 359              		.loc 1 383 36 is_stmt 0 view .LVU109
+ 360 00cc A3F12001 		sub	r1, r3, #32
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 361              		.loc 1 383 30 view .LVU110
+ 362 00d0 0122     		movs	r2, #1
+ 363 00d2 8A40     		lsls	r2, r2, r1
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ARM GAS  /tmp/ccVRI40l.s 			page 15
+
+
+ 364              		.loc 1 383 23 view .LVU111
+ 365 00d4 0240     		ands	r2, r2, r0
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 366              		.loc 1 383 10 view .LVU112
+ 367 00d6 CA40     		lsrs	r2, r2, r1
+ 368 00d8 EFD0     		beq	.L33
+ 385:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 369              		.loc 1 385 9 is_stmt 1 view .LVU113
+ 385:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 370              		.loc 1 385 25 is_stmt 0 view .LVU114
+ 371 00da 5CF82320 		ldr	r2, [ip, r3, lsl #2]
+ 385:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 372              		.loc 1 385 29 view .LVU115
+ 373 00de 42F40072 		orr	r2, r2, #512
+ 374 00e2 42F00202 		orr	r2, r2, #2
+ 375 00e6 4CF82320 		str	r2, [ip, r3, lsl #2]
+ 376 00ea ECE7     		b	.L34
+ 377              	.L45:
+ 390:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 391:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 392:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 393:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 394:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   else
+ 395:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 396:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* common case where only one peripheral is configured */
+ 397:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 398:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* secure configuration */
+ 399:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     register_address = (uint32_t) &(GTZC_TZSC->SECCFGR1) + (4U * GTZC_GET_REG_INDEX(PeriphId));
+ 400:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 401:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if (((READ_BIT(*(__IO uint32_t *)register_address,
+ 402:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 403:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         != 0U)
+ 404:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 405:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       *PeriphAttributes = GTZC_TZSC_PERIPH_SEC;
+ 406:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 407:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else
+ 408:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 409:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       *PeriphAttributes = GTZC_TZSC_PERIPH_NSEC;
+ 410:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 411:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 412:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* privilege configuration */
+ 413:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     register_address = (uint32_t) &(GTZC_TZSC->PRIVCFGR1) + (4U * GTZC_GET_REG_INDEX(PeriphId));
+ 414:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 415:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     if (((READ_BIT(*(__IO uint32_t *)register_address,
+ 416:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 417:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         != 0U)
+ 418:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 419:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       *PeriphAttributes |= GTZC_TZSC_PERIPH_PRIV;
+ 420:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 421:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     else
+ 422:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 423:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       *PeriphAttributes |= GTZC_TZSC_PERIPH_NPRIV;
+ 424:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 425:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 426:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   return HAL_OK;
+ 378              		.loc 1 426 10 view .LVU116
+ 379 00ec 0020     		movs	r0, #0
+ARM GAS  /tmp/ccVRI40l.s 			page 16
+
+
+ 380              	.LVL25:
+ 381              		.loc 1 426 10 view .LVU117
+ 382 00ee 7047     		bx	lr
+ 383              	.LVL26:
+ 384              	.L19:
+ 399:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 385              		.loc 1 399 5 is_stmt 1 view .LVU118
+ 399:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 386              		.loc 1 399 58 is_stmt 0 view .LVU119
+ 387 00f0 1949     		ldr	r1, .L46+4
+ 388 00f2 1144     		add	r1, r1, r2
+ 399:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 389              		.loc 1 399 22 view .LVU120
+ 390 00f4 8900     		lsls	r1, r1, #2
+ 391              	.LVL27:
+ 401:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 392              		.loc 1 401 5 is_stmt 1 view .LVU121
+ 401:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 393              		.loc 1 401 11 is_stmt 0 view .LVU122
+ 394 00f6 0868     		ldr	r0, [r1]
+ 395 00f8 0121     		movs	r1, #1
+ 396              	.LVL28:
+ 401:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 397              		.loc 1 401 11 view .LVU123
+ 398 00fa 9940     		lsls	r1, r1, r3
+ 399 00fc 0840     		ands	r0, r0, r1
+ 401:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 400              		.loc 1 401 8 view .LVU124
+ 401 00fe D840     		lsrs	r0, r0, r3
+ 402 0100 14D0     		beq	.L36
+ 405:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 403              		.loc 1 405 7 is_stmt 1 view .LVU125
+ 405:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 404              		.loc 1 405 25 is_stmt 0 view .LVU126
+ 405 0102 40F20110 		movw	r0, #257
+ 406 0106 CCF80000 		str	r0, [ip]
+ 407              	.L37:
+ 413:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 408              		.loc 1 413 5 is_stmt 1 view .LVU127
+ 413:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 409              		.loc 1 413 59 is_stmt 0 view .LVU128
+ 410 010a 1448     		ldr	r0, .L46+8
+ 411 010c 1044     		add	r0, r0, r2
+ 413:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 412              		.loc 1 413 22 view .LVU129
+ 413 010e 8000     		lsls	r0, r0, #2
+ 414              	.LVL29:
+ 415:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 415              		.loc 1 415 5 is_stmt 1 view .LVU130
+ 415:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 416              		.loc 1 415 11 is_stmt 0 view .LVU131
+ 417 0110 0268     		ldr	r2, [r0]
+ 418 0112 1140     		ands	r1, r1, r2
+ 415:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                    1UL << GTZC_GET_PERIPH_POS(PeriphId))) >> GTZC_GET_PERIPH_POS(PeriphId))
+ 419              		.loc 1 415 8 view .LVU132
+ 420 0114 D940     		lsrs	r1, r1, r3
+ 421 0116 0ED0     		beq	.L38
+ARM GAS  /tmp/ccVRI40l.s 			page 17
+
+
+ 419:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 422              		.loc 1 419 7 is_stmt 1 view .LVU133
+ 423 0118 DCF80030 		ldr	r3, [ip]
+ 419:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 424              		.loc 1 419 25 is_stmt 0 view .LVU134
+ 425 011c 43F40073 		orr	r3, r3, #512
+ 426 0120 43F00203 		orr	r3, r3, #2
+ 427 0124 CCF80030 		str	r3, [ip]
+ 428              		.loc 1 426 10 view .LVU135
+ 429 0128 0020     		movs	r0, #0
+ 430              	.LVL30:
+ 431              		.loc 1 426 10 view .LVU136
+ 432 012a 7047     		bx	lr
+ 433              	.LVL31:
+ 434              	.L36:
+ 409:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 435              		.loc 1 409 7 is_stmt 1 view .LVU137
+ 409:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 436              		.loc 1 409 25 is_stmt 0 view .LVU138
+ 437 012c 4FF48070 		mov	r0, #256
+ 438 0130 CCF80000 		str	r0, [ip]
+ 439 0134 E9E7     		b	.L37
+ 440              	.LVL32:
+ 441              	.L38:
+ 423:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 442              		.loc 1 423 7 is_stmt 1 view .LVU139
+ 443 0136 DCF80030 		ldr	r3, [ip]
+ 423:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 444              		.loc 1 423 25 is_stmt 0 view .LVU140
+ 445 013a 43F40073 		orr	r3, r3, #512
+ 446 013e CCF80030 		str	r3, [ip]
+ 447              		.loc 1 426 10 view .LVU141
+ 448 0142 0020     		movs	r0, #0
+ 449              	.LVL33:
+ 450              		.loc 1 426 10 view .LVU142
+ 451 0144 7047     		bx	lr
+ 452              	.LVL34:
+ 453              	.L39:
+ 330:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 454              		.loc 1 330 12 view .LVU143
+ 455 0146 0120     		movs	r0, #1
+ 456              	.LVL35:
+ 330:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 457              		.loc 1 330 12 view .LVU144
+ 458 0148 7047     		bx	lr
+ 459              	.LVL36:
+ 460              	.L40:
+ 330:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 461              		.loc 1 330 12 view .LVU145
+ 462 014a 0120     		movs	r0, #1
+ 463              	.LVL37:
+ 330:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 464              		.loc 1 330 12 view .LVU146
+ 465 014c 7047     		bx	lr
+ 466              	.L41:
+ 467 014e 0120     		movs	r0, #1
+ 427:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** }
+ARM GAS  /tmp/ccVRI40l.s 			page 18
+
+
+ 468              		.loc 1 427 1 view .LVU147
+ 469 0150 7047     		bx	lr
+ 470              	.L47:
+ 471 0152 00BF     		.align	2
+ 472              	.L46:
+ 473 0154 00240340 		.word	1073947648
+ 474 0158 04C90010 		.word	268486916
+ 475 015c 08C90010 		.word	268486920
+ 476              		.cfi_endproc
+ 477              	.LFE153:
+ 479              		.section	.text.HAL_GTZC_TZSC_GetLock,"ax",%progbits
+ 480              		.align	1
+ 481              		.global	HAL_GTZC_TZSC_GetLock
+ 482              		.syntax unified
+ 483              		.thumb
+ 484              		.thumb_func
+ 486              	HAL_GTZC_TZSC_GetLock:
+ 487              	.LVL38:
+ 488              	.LFB154:
+ 428:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 429:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 430:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @}
+ 431:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 432:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 433:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+ 434:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 435:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC_Exported_Functions_Group2 MPCWM Configuration functions
+ 436:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief    MPCWM Configuration functions
+ 437:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+ 438:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   @verbatim
+ 439:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ 440:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             ##### MPCWM Configuration functions #####
+ 441:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ 442:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   [..]
+ 443:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     This section provides functions allowing to configure MPCWM
+ 444:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     MPCWM is Memory Protection Controller WaterMark
+ 445:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** @endverbatim
+ 446:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 447:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 448:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 449:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 450:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief  Configure a TZSC-MPCWM area.
+ 451:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  MemBaseAddress WM identifier.
+ 452:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  pMPCWM_Desc TZSC-MPCWM descriptor pointer.
+ 453:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         The structure description is available in @ref GTZC_Exported_Types.
+ 454:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @retval HAL status.
+ 455:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 456:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** HAL_StatusTypeDef HAL_GTZC_TZSC_MPCWM_ConfigMemAttributes(uint32_t MemBaseAddress,
+ 457:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                                                           const MPCWM_ConfigTypeDef *pMPCWM_Desc)
+ 458:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** {
+ 459:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t register_address;
+ 460:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t reg_value;
+ 461:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t size;
+ 462:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t start_pos, start_msk;
+ 463:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t length_pos, length_msk;
+ 464:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 465:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* check entry parameters */
+ARM GAS  /tmp/ccVRI40l.s 			page 19
+
+
+ 466:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if ((pMPCWM_Desc->AreaId > GTZC_TZSC_MPCWM_ID2)
+ 467:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || ((MemBaseAddress == FMC_BANK3) && (pMPCWM_Desc->AreaId == GTZC_TZSC_MPCWM_ID2))
+ 468:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || ((pMPCWM_Desc->Offset % GTZC_TZSC_MPCWM_GRANULARITY) != 0U)
+ 469:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || ((pMPCWM_Desc->Length % GTZC_TZSC_MPCWM_GRANULARITY) != 0U))
+ 470:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 471:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     return HAL_ERROR;
+ 472:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 473:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 474:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* check descriptor content vs. memory capacity */
+ 475:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   switch (MemBaseAddress)
+ 476:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 477:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     case OCTOSPI1_BASE:
+ 478:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       size = GTZC_TZSC_MPCWM1_MEM_SIZE;
+ 479:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       if (pMPCWM_Desc->AreaId == GTZC_TZSC_MPCWM_ID1)
+ 480:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 481:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM1_NSWMR1);
+ 482:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_pos = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1STRT_Pos;
+ 483:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_msk = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1STRT_Msk;
+ 484:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_pos = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1LGTH_Pos;
+ 485:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_msk = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1LGTH_Msk;
+ 486:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 487:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       else
+ 488:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 489:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         /* Here pMPCWM_Desc->AreaId == GTZC_TZSC_MPCWM_ID2
+ 490:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****          * (Parameter already checked)
+ 491:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****          */
+ 492:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM1_NSWMR2);
+ 493:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_pos = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2STRT_Pos;
+ 494:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_msk = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2STRT_Msk;
+ 495:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_pos = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2LGTH_Pos;
+ 496:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_msk = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2LGTH_Msk;
+ 497:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 498:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 499:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     case FMC_BANK1:
+ 500:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       size = GTZC_TZSC_MPCWM1_MEM_SIZE;
+ 501:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       if (pMPCWM_Desc->AreaId == GTZC_TZSC_MPCWM_ID1)
+ 502:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 503:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM2_NSWMR1);
+ 504:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_pos = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1STRT_Pos;
+ 505:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_msk = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1STRT_Msk;
+ 506:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_pos = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1LGTH_Pos;
+ 507:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_msk = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1LGTH_Msk;
+ 508:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 509:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       else
+ 510:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       {
+ 511:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         /* Here pMPCWM_Desc->AreaId == GTZC_TZSC_MPCWM_ID2
+ 512:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****          * (Parameter already checked)
+ 513:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****          */
+ 514:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM2_NSWMR2);
+ 515:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_pos = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2STRT_Pos;
+ 516:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_msk = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2STRT_Msk;
+ 517:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_pos = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2LGTH_Pos;
+ 518:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_msk = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2LGTH_Msk;
+ 519:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       }
+ 520:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 521:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     case FMC_BANK3:
+ 522:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       /* Here pMPCWM_Desc->AreaId == GTZC_TZSC_MPCWM_ID1
+ARM GAS  /tmp/ccVRI40l.s 			page 20
+
+
+ 523:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****        * (Parameter already checked)
+ 524:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****        */
+ 525:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       size = GTZC_TZSC_MPCWM3_MEM_SIZE;
+ 526:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM3_NSWMR1);
+ 527:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_pos = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1STRT_Pos;
+ 528:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_msk = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1STRT_Msk;
+ 529:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_pos = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1LGTH_Pos;
+ 530:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_msk = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1LGTH_Msk;
+ 531:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 532:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     default:
+ 533:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       return HAL_ERROR;
+ 534:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 535:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 536:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 537:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if ((pMPCWM_Desc->Offset > size)
+ 538:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       || ((pMPCWM_Desc->Offset + pMPCWM_Desc->Length) > size))
+ 539:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 540:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     return HAL_ERROR;
+ 541:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 542:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 543:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* write descriptor value */
+ 544:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   reg_value = ((pMPCWM_Desc->Offset / GTZC_TZSC_MPCWM_GRANULARITY) << start_pos) & start_msk;
+ 545:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   reg_value |= ((pMPCWM_Desc->Length / GTZC_TZSC_MPCWM_GRANULARITY) << length_pos) & length_msk;
+ 546:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   MODIFY_REG(*(__IO uint32_t *)register_address, start_msk | length_msk, reg_value);
+ 547:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 548:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   return HAL_OK;
+ 549:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** }
+ 550:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 551:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 552:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief  Get a TZSC-MPCWM area configuration.
+ 553:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  MemBaseAddress WM identifier.
+ 554:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  pMPCWM_Desc pointer to a TZSC-MPCWM descriptor.
+ 555:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *         The structure description is available in @ref GTZC_Exported_Types.
+ 556:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @retval HAL status.
+ 557:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 558:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** HAL_StatusTypeDef HAL_GTZC_TZSC_MPCWM_GetConfigMemAttributes(uint32_t MemBaseAddress,
+ 559:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****                                                              MPCWM_ConfigTypeDef *pMPCWM_Desc)
+ 560:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** {
+ 561:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t register_address;
+ 562:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t reg_value;
+ 563:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t start_pos, start_msk;
+ 564:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   uint32_t length_pos, length_msk;
+ 565:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 566:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* firstly take care of the first area, present on all MPCWM sub-blocks */
+ 567:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   switch (MemBaseAddress)
+ 568:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 569:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     case OCTOSPI1_BASE:
+ 570:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM1_NSWMR1);
+ 571:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_pos = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1STRT_Pos;
+ 572:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_msk = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1STRT_Msk;
+ 573:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_pos = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1LGTH_Pos;
+ 574:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_msk = GTZC_TZSC_MPCWM1_NSWMR1_NSWM1LGTH_Msk;
+ 575:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 576:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     case FMC_BANK1:
+ 577:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM2_NSWMR1);
+ 578:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_pos = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1STRT_Pos;
+ 579:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_msk = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1STRT_Msk;
+ARM GAS  /tmp/ccVRI40l.s 			page 21
+
+
+ 580:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_pos = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1LGTH_Pos;
+ 581:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_msk = GTZC_TZSC_MPCWM2_NSWMR1_NSWM1LGTH_Msk;
+ 582:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 583:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     case FMC_BANK3:
+ 584:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM3_NSWMR1);
+ 585:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_pos = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1STRT_Pos;
+ 586:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       start_msk = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1STRT_Msk;
+ 587:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_pos = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1LGTH_Pos;
+ 588:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       length_msk = GTZC_TZSC_MPCWM3_NSWMR1_NSWM1LGTH_Msk;
+ 589:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 590:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     default:
+ 591:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       return HAL_ERROR;
+ 592:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       break;
+ 593:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 594:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 595:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   /* read register and update the descriptor for first area*/
+ 596:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   reg_value = READ_REG(*(__IO uint32_t *)register_address);
+ 597:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   pMPCWM_Desc[0].AreaId = GTZC_TZSC_MPCWM_ID1;
+ 598:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   pMPCWM_Desc[0].Offset = ((reg_value & start_msk) >> start_pos) * GTZC_TZSC_MPCWM_GRANULARITY;
+ 599:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   pMPCWM_Desc[0].Length = ((reg_value & length_msk) >> length_pos) * GTZC_TZSC_MPCWM_GRANULARITY;
+ 600:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 601:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   if (MemBaseAddress != FMC_BANK3)
+ 602:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   {
+ 603:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* Here MemBaseAddress = OCTOSPI1_BASE
+ 604:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      * or FMC_BANK1 (already tested)
+ 605:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      * Now take care of the second area, present on these sub-blocks
+ 606:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****      */
+ 607:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     switch (MemBaseAddress)
+ 608:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     {
+ 609:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       case OCTOSPI1_BASE:
+ 610:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM1_NSWMR2);
+ 611:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_pos = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2STRT_Pos;
+ 612:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_msk = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2STRT_Msk;
+ 613:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_pos = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2LGTH_Pos;
+ 614:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_msk = GTZC_TZSC_MPCWM1_NSWMR2_NSWM2LGTH_Msk;
+ 615:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         break;
+ 616:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       case FMC_BANK1:
+ 617:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         register_address = (uint32_t) &(GTZC_TZSC_S->MPCWM2_NSWMR2);
+ 618:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_pos = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2STRT_Pos;
+ 619:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         start_msk = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2STRT_Msk;
+ 620:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_pos = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2LGTH_Pos;
+ 621:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         length_msk = GTZC_TZSC_MPCWM2_NSWMR2_NSWM2LGTH_Msk;
+ 622:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         break;
+ 623:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****       default:
+ 624:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         return HAL_ERROR;
+ 625:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****         break;
+ 626:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     }
+ 627:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 628:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     /* read register and update the descriptor for second area*/
+ 629:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     reg_value = READ_REG(*(__IO uint32_t *)register_address);
+ 630:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     pMPCWM_Desc[1].AreaId = GTZC_TZSC_MPCWM_ID2;
+ 631:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     pMPCWM_Desc[1].Offset = ((reg_value & start_msk) >> start_pos) * GTZC_TZSC_MPCWM_GRANULARITY;
+ 632:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     pMPCWM_Desc[1].Length = ((reg_value & length_msk) >> length_pos) * GTZC_TZSC_MPCWM_GRANULARITY;
+ 633:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   }
+ 634:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 635:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   return HAL_OK;
+ 636:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** }
+ARM GAS  /tmp/ccVRI40l.s 			page 22
+
+
+ 637:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 638:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 639:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @}
+ 640:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 641:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 642:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U) */
+ 643:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 644:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /** @defgroup GTZC_Exported_Functions_Group3 TZSC and TZSC-MPCWM Lock functions
+ 645:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief    TZSC and TZSC-MPCWM Lock functions
+ 646:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   *
+ 647:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   @verbatim
+ 648:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ 649:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****             ##### TZSC and TZSC-MPCWM Lock functions #####
+ 650:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   ==============================================================================
+ 651:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   [..]
+ 652:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     This section provides functions allowing to manage the common TZSC and
+ 653:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     TZSC-MPCWM lock. It includes lock enable, and current value read.
+ 654:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     TZSC is TrustZone Security Controller
+ 655:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****     MPCWM is Memory Protection Controller WaterMark
+ 656:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** @endverbatim
+ 657:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @{
+ 658:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 659:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 660:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 661:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief  Lock TZSC and TZSC-MPCWM configuration.
+ 662:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  TZSC_Instance TZSC sub-block instance.
+ 663:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 664:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+ 665:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 666:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** void HAL_GTZC_TZSC_Lock(GTZC_TZSC_TypeDef *TZSC_Instance)
+ 667:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** {
+ 668:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   SET_BIT(TZSC_Instance->CR, GTZC_TZSC_CR_LCK_Msk);
+ 669:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** }
+ 670:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 671:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** #endif /* defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U) */
+ 672:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** 
+ 673:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** /**
+ 674:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @brief  Get TZSC and TZSC-MPCWM configuration lock state.
+ 675:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @param  TZSC_Instance TZSC sub-block instance.
+ 676:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   * @retval Lock State (GTZC_TZSC_LOCK_OFF or GTZC_TZSC_LOCK_ON)
+ 677:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   */
+ 678:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** uint32_t HAL_GTZC_TZSC_GetLock(const GTZC_TZSC_TypeDef *TZSC_Instance)
+ 679:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** {
+ 489              		.loc 1 679 1 is_stmt 1 view -0
+ 490              		.cfi_startproc
+ 491              		@ args = 0, pretend = 0, frame = 0
+ 492              		@ frame_needed = 0, uses_anonymous_args = 0
+ 493              		@ link register save eliminated.
+ 680:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c ****   return READ_BIT(TZSC_Instance->CR, GTZC_TZSC_CR_LCK_Msk);
+ 494              		.loc 1 680 3 view .LVU149
+ 495              		.loc 1 680 10 is_stmt 0 view .LVU150
+ 496 0000 0068     		ldr	r0, [r0]
+ 497              	.LVL39:
+ 681:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_gtzc.c **** }
+ 498              		.loc 1 681 1 view .LVU151
+ 499 0002 00F00100 		and	r0, r0, #1
+ 500 0006 7047     		bx	lr
+ARM GAS  /tmp/ccVRI40l.s 			page 23
+
+
+ 501              		.cfi_endproc
+ 502              	.LFE154:
+ 504              		.text
+ 505              	.Letext0:
+ 506              		.file 2 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 507              		.file 3 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 508              		.file 4 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ARM GAS  /tmp/ccVRI40l.s 			page 24
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32l5xx_hal_gtzc.c
+     /tmp/ccVRI40l.s:22     .text.HAL_GTZC_TZSC_ConfigPeriphAttributes:00000000 $t
+     /tmp/ccVRI40l.s:28     .text.HAL_GTZC_TZSC_ConfigPeriphAttributes:00000000 HAL_GTZC_TZSC_ConfigPeriphAttributes
+     /tmp/ccVRI40l.s:165    .text.HAL_GTZC_TZSC_ConfigPeriphAttributes:000000a4 $d
+     /tmp/ccVRI40l.s:171    .text.HAL_GTZC_TZSC_GetConfigPeriphAttributes:00000000 $t
+     /tmp/ccVRI40l.s:177    .text.HAL_GTZC_TZSC_GetConfigPeriphAttributes:00000000 HAL_GTZC_TZSC_GetConfigPeriphAttributes
+     /tmp/ccVRI40l.s:473    .text.HAL_GTZC_TZSC_GetConfigPeriphAttributes:00000154 $d
+     /tmp/ccVRI40l.s:480    .text.HAL_GTZC_TZSC_GetLock:00000000 $t
+     /tmp/ccVRI40l.s:486    .text.HAL_GTZC_TZSC_GetLock:00000000 HAL_GTZC_TZSC_GetLock
+
+NO UNDEFINED SYMBOLS

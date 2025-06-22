@@ -1,0 +1,346 @@
+ARM GAS  /tmp/ccA9l1Ls.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"prime256v1.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/prime256v1.c"
+  21              		.section	.text.get_prime256v1_curve,"ax",%progbits
+  22              		.align	1
+  23              		.global	get_prime256v1_curve
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	get_prime256v1_curve:
+  29              	.LFB0:
+   1:../../Secure/Core/Src/prime256v1.c **** #include "prime256v1.h"
+   2:../../Secure/Core/Src/prime256v1.c **** 
+   3:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_Prime[] = {
+   4:../../Secure/Core/Src/prime256v1.c ****     0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x01,
+   5:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   6:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff,
+   7:../../Secure/Core/Src/prime256v1.c ****     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+   8:../../Secure/Core/Src/prime256v1.c **** };
+   9:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_Prime_len = 32;
+  10:../../Secure/Core/Src/prime256v1.c **** 
+  11:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_A[] = {
+  12:../../Secure/Core/Src/prime256v1.c ****     0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x01,
+  13:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  14:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff,
+  15:../../Secure/Core/Src/prime256v1.c ****     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfc
+  16:../../Secure/Core/Src/prime256v1.c **** };
+  17:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_absA[] = {
+  18:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  19:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  20:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  21:../../Secure/Core/Src/prime256v1.c ****     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03
+  22:../../Secure/Core/Src/prime256v1.c **** };
+  23:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_A_len = 32;
+  24:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_A_sign = 1;
+  25:../../Secure/Core/Src/prime256v1.c **** 
+  26:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_B[] = {
+  27:../../Secure/Core/Src/prime256v1.c ****     0x5a, 0xc6, 0x35, 0xd8, 0xaa, 0x3a, 0x93, 0xe7,
+  28:../../Secure/Core/Src/prime256v1.c ****     0xb3, 0xeb, 0xbd, 0x55, 0x76, 0x98, 0x86, 0xbc,
+  29:../../Secure/Core/Src/prime256v1.c ****     0x65, 0x1d, 0x06, 0xb0, 0xcc, 0x53, 0xb0, 0xf6,
+ARM GAS  /tmp/ccA9l1Ls.s 			page 2
+
+
+  30:../../Secure/Core/Src/prime256v1.c ****     0x3b, 0xce, 0x3c, 0x3e, 0x27, 0xd2, 0x60, 0x4b
+  31:../../Secure/Core/Src/prime256v1.c **** };
+  32:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_B_len = 32;
+  33:../../Secure/Core/Src/prime256v1.c **** 
+  34:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_Generator[] = {
+  35:../../Secure/Core/Src/prime256v1.c ****     0x04, 0x6b, 0x17, 0xd1, 0xf2, 0xe1, 0x2c, 0x42,
+  36:../../Secure/Core/Src/prime256v1.c ****     0x47, 0xf8, 0xbc, 0xe6, 0xe5, 0x63, 0xa4, 0x40,
+  37:../../Secure/Core/Src/prime256v1.c ****     0xf2, 0x77, 0x03, 0x7d, 0x81, 0x2d, 0xeb, 0x33,
+  38:../../Secure/Core/Src/prime256v1.c ****     0xa0, 0xf4, 0xa1, 0x39, 0x45, 0xd8, 0x98, 0xc2,
+  39:../../Secure/Core/Src/prime256v1.c ****     0x96, 0x4f, 0xe3, 0x42, 0xe2, 0xfe, 0x1a, 0x7f,
+  40:../../Secure/Core/Src/prime256v1.c ****     0x9b, 0x8e, 0xe7, 0xeb, 0x4a, 0x7c, 0x0f, 0x9e,
+  41:../../Secure/Core/Src/prime256v1.c ****     0x16, 0x2b, 0xce, 0x33, 0x57, 0x6b, 0x31, 0x5e,
+  42:../../Secure/Core/Src/prime256v1.c ****     0xce, 0xcb, 0xb6, 0x40, 0x68, 0x37, 0xbf, 0x51,
+  43:../../Secure/Core/Src/prime256v1.c ****     0xf5
+  44:../../Secure/Core/Src/prime256v1.c **** };
+  45:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_Generator_len = 65;
+  46:../../Secure/Core/Src/prime256v1.c **** 
+  47:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_GeneratorX[] = {
+  48:../../Secure/Core/Src/prime256v1.c ****     0x6b, 0x17, 0xd1, 0xf2, 0xe1, 0x2c, 0x42, 0x47,
+  49:../../Secure/Core/Src/prime256v1.c ****     0xf8, 0xbc, 0xe6, 0xe5, 0x63, 0xa4, 0x40, 0xf2,
+  50:../../Secure/Core/Src/prime256v1.c ****     0x77, 0x03, 0x7d, 0x81, 0x2d, 0xeb, 0x33, 0xa0,
+  51:../../Secure/Core/Src/prime256v1.c ****     0xf4, 0xa1, 0x39, 0x45, 0xd8, 0x98, 0xc2, 0x96
+  52:../../Secure/Core/Src/prime256v1.c **** };
+  53:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_GeneratorX_len = 32;
+  54:../../Secure/Core/Src/prime256v1.c **** 
+  55:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_GeneratorY[] = {
+  56:../../Secure/Core/Src/prime256v1.c ****     0x4f, 0xe3, 0x42, 0xe2, 0xfe, 0x1a, 0x7f, 0x9b,
+  57:../../Secure/Core/Src/prime256v1.c ****     0x8e, 0xe7, 0xeb, 0x4a, 0x7c, 0x0f, 0x9e, 0x16,
+  58:../../Secure/Core/Src/prime256v1.c ****     0x2b, 0xce, 0x33, 0x57, 0x6b, 0x31, 0x5e, 0xce,
+  59:../../Secure/Core/Src/prime256v1.c ****     0xcb, 0xb6, 0x40, 0x68, 0x37, 0xbf, 0x51, 0xf5
+  60:../../Secure/Core/Src/prime256v1.c **** };
+  61:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_GeneratorY_len = 32;
+  62:../../Secure/Core/Src/prime256v1.c **** 
+  63:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_Order[] = {
+  64:../../Secure/Core/Src/prime256v1.c ****     0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
+  65:../../Secure/Core/Src/prime256v1.c ****     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+  66:../../Secure/Core/Src/prime256v1.c ****     0xbc, 0xe6, 0xfa, 0xad, 0xa7, 0x17, 0x9e, 0x84,
+  67:../../Secure/Core/Src/prime256v1.c ****     0xf3, 0xb9, 0xca, 0xc2, 0xfc, 0x63, 0x25, 0x51
+  68:../../Secure/Core/Src/prime256v1.c **** };
+  69:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_Order_len = 32;
+  70:../../Secure/Core/Src/prime256v1.c **** 
+  71:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_Cofactor = 1;
+  72:../../Secure/Core/Src/prime256v1.c **** 
+  73:../../Secure/Core/Src/prime256v1.c **** static const uint8_t prime256v1_Seed[] = {
+  74:../../Secure/Core/Src/prime256v1.c ****     0xc4, 0x9d, 0x36, 0x08, 0x86, 0xe7, 0x04, 0x93,
+  75:../../Secure/Core/Src/prime256v1.c ****     0x6a, 0x66, 0x78, 0xe1, 0x13, 0x9d, 0x26, 0xb7,
+  76:../../Secure/Core/Src/prime256v1.c ****     0x81, 0x9f, 0x7e, 0x90
+  77:../../Secure/Core/Src/prime256v1.c **** };
+  78:../../Secure/Core/Src/prime256v1.c **** static const uint32_t prime256v1_Seed_len = 20;
+  79:../../Secure/Core/Src/prime256v1.c **** 
+  80:../../Secure/Core/Src/prime256v1.c **** static const ECC_Curve_Parameters prime256v1_curve = {
+  81:../../Secure/Core/Src/prime256v1.c ****     .prime = prime256v1_Prime,
+  82:../../Secure/Core/Src/prime256v1.c ****     .prime_len = prime256v1_Prime_len,
+  83:../../Secure/Core/Src/prime256v1.c **** 
+  84:../../Secure/Core/Src/prime256v1.c ****     .A = prime256v1_A,
+  85:../../Secure/Core/Src/prime256v1.c ****     .absA = prime256v1_absA,
+  86:../../Secure/Core/Src/prime256v1.c ****     .A_len = prime256v1_A_len,
+ARM GAS  /tmp/ccA9l1Ls.s 			page 3
+
+
+  87:../../Secure/Core/Src/prime256v1.c ****     .A_sign = prime256v1_A_sign,
+  88:../../Secure/Core/Src/prime256v1.c **** 
+  89:../../Secure/Core/Src/prime256v1.c ****     .B = prime256v1_B,
+  90:../../Secure/Core/Src/prime256v1.c ****     .B_len = prime256v1_B_len,
+  91:../../Secure/Core/Src/prime256v1.c **** 
+  92:../../Secure/Core/Src/prime256v1.c ****     .G = prime256v1_Generator,
+  93:../../Secure/Core/Src/prime256v1.c ****     .G_len = prime256v1_Generator_len,
+  94:../../Secure/Core/Src/prime256v1.c **** 
+  95:../../Secure/Core/Src/prime256v1.c ****     .Gx = prime256v1_GeneratorX,
+  96:../../Secure/Core/Src/prime256v1.c ****     .Gx_len = prime256v1_GeneratorX_len,
+  97:../../Secure/Core/Src/prime256v1.c **** 
+  98:../../Secure/Core/Src/prime256v1.c ****     .Gy = prime256v1_GeneratorY,
+  99:../../Secure/Core/Src/prime256v1.c ****     .Gy_len = prime256v1_GeneratorY_len,
+ 100:../../Secure/Core/Src/prime256v1.c **** 
+ 101:../../Secure/Core/Src/prime256v1.c ****     .order = prime256v1_Order,
+ 102:../../Secure/Core/Src/prime256v1.c ****     .order_len = prime256v1_Order_len,
+ 103:../../Secure/Core/Src/prime256v1.c **** 
+ 104:../../Secure/Core/Src/prime256v1.c ****     .cofactor = prime256v1_Cofactor,
+ 105:../../Secure/Core/Src/prime256v1.c **** 
+ 106:../../Secure/Core/Src/prime256v1.c ****     .seed = prime256v1_Seed,
+ 107:../../Secure/Core/Src/prime256v1.c ****     .seed_len = prime256v1_Seed_len
+ 108:../../Secure/Core/Src/prime256v1.c **** };
+ 109:../../Secure/Core/Src/prime256v1.c **** 
+ 110:../../Secure/Core/Src/prime256v1.c **** const ECC_Curve_Parameters* get_prime256v1_curve(void) {
+  30              		.loc 1 110 56 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+ 111:../../Secure/Core/Src/prime256v1.c ****     return &prime256v1_curve;
+  35              		.loc 1 111 5 view .LVU1
+ 112:../../Secure/Core/Src/prime256v1.c **** }
+  36              		.loc 1 112 1 is_stmt 0 view .LVU2
+  37 0000 0048     		ldr	r0, .L2
+  38 0002 7047     		bx	lr
+  39              	.L3:
+  40              		.align	2
+  41              	.L2:
+  42 0004 00000000 		.word	prime256v1_curve
+  43              		.cfi_endproc
+  44              	.LFE0:
+  46              		.section	.rodata.prime256v1_curve,"a"
+  47              		.align	2
+  50              	prime256v1_curve:
+  51 0000 00000000 		.word	prime256v1_Prime
+  52 0004 20000000 		.word	32
+  53 0008 00000000 		.word	prime256v1_A
+  54 000c 00000000 		.word	prime256v1_absA
+  55 0010 20000000 		.word	32
+  56 0014 01000000 		.word	1
+  57 0018 00000000 		.word	prime256v1_B
+  58 001c 20000000 		.word	32
+  59 0020 00000000 		.word	prime256v1_Generator
+  60 0024 41000000 		.word	65
+  61 0028 00000000 		.word	prime256v1_GeneratorX
+  62 002c 20000000 		.word	32
+  63 0030 00000000 		.word	prime256v1_GeneratorY
+ARM GAS  /tmp/ccA9l1Ls.s 			page 4
+
+
+  64 0034 20000000 		.word	32
+  65 0038 00000000 		.word	prime256v1_Order
+  66 003c 20000000 		.word	32
+  67 0040 01000000 		.word	1
+  68 0044 00000000 		.word	prime256v1_Seed
+  69 0048 14000000 		.word	20
+  70              		.section	.rodata.prime256v1_Seed,"a"
+  71              		.align	2
+  74              	prime256v1_Seed:
+  75 0000 C49D3608 		.ascii	"\304\2356\010\206\347\004\223jfx\341\023\235&\267\201"
+  75      86E70493 
+  75      6A6678E1 
+  75      139D26B7 
+  75      81
+  76 0011 9F7E90   		.ascii	"\237~\220"
+  77              		.section	.rodata.prime256v1_Order,"a"
+  78              		.align	2
+  81              	prime256v1_Order:
+  82 0000 FFFFFFFF 		.ascii	"\377\377\377\377\000\000\000\000\377\377\377\377\377"
+  82      00000000 
+  82      FFFFFFFF 
+  82      FF
+  83 000d FFFFFFBC 		.ascii	"\377\377\377\274\346\372\255\247\027\236\204\363\271"
+  83      E6FAADA7 
+  83      179E84F3 
+  83      B9
+  84 001a CAC2FC63 		.ascii	"\312\302\374c%Q"
+  84      2551
+  85              		.section	.rodata.prime256v1_GeneratorY,"a"
+  86              		.align	2
+  89              	prime256v1_GeneratorY:
+  90 0000 4FE342E2 		.ascii	"O\343B\342\376\032\177\233\216\347\353J|\017\236\026"
+  90      FE1A7F9B 
+  90      8EE7EB4A 
+  90      7C0F9E16 
+  91 0010 2BCE3357 		.ascii	"+\3163Wk1^\316\313\266@h7\277Q\365"
+  91      6B315ECE 
+  91      CBB64068 
+  91      37BF51F5 
+  92              		.section	.rodata.prime256v1_GeneratorX,"a"
+  93              		.align	2
+  96              	prime256v1_GeneratorX:
+  97 0000 6B17D1F2 		.ascii	"k\027\321\362\341,BG\370\274\346\345c\244@\362w\003"
+  97      E12C4247 
+  97      F8BCE6E5 
+  97      63A440F2 
+  97      7703
+  98 0012 7D812DEB 		.ascii	"}\201-\3533\240\364\2419E\330\230\302\226"
+  98      33A0F4A1 
+  98      3945D898 
+  98      C296
+  99              		.section	.rodata.prime256v1_Generator,"a"
+ 100              		.align	2
+ 103              	prime256v1_Generator:
+ 104 0000 046B17D1 		.ascii	"\004k\027\321\362\341,BG\370\274\346\345c\244@\362w"
+ 104      F2E12C42 
+ 104      47F8BCE6 
+ARM GAS  /tmp/ccA9l1Ls.s 			page 5
+
+
+ 104      E563A440 
+ 104      F277
+ 105 0012 037D812D 		.ascii	"\003}\201-\3533\240\364\2419E\330\230\302\226O\343B"
+ 105      EB33A0F4 
+ 105      A13945D8 
+ 105      98C2964F 
+ 105      E342
+ 106 0024 E2FE1A7F 		.ascii	"\342\376\032\177\233\216\347\353J|\017\236\026+\316"
+ 106      9B8EE7EB 
+ 106      4A7C0F9E 
+ 106      162BCE
+ 107 0033 33576B31 		.ascii	"3Wk1^\316\313\266@h7\277Q\365"
+ 107      5ECECBB6 
+ 107      406837BF 
+ 107      51F5
+ 108              		.section	.rodata.prime256v1_B,"a"
+ 109              		.align	2
+ 112              	prime256v1_B:
+ 113 0000 5AC635D8 		.ascii	"Z\3065\330\252:\223\347\263\353\275Uv\230\206\274e\035"
+ 113      AA3A93E7 
+ 113      B3EBBD55 
+ 113      769886BC 
+ 113      651D
+ 114 0012 06B0CC53 		.ascii	"\006\260\314S\260\366;\316<>'\322`K"
+ 114      B0F63BCE 
+ 114      3C3E27D2 
+ 114      604B
+ 115              		.section	.rodata.prime256v1_absA,"a"
+ 116              		.align	2
+ 119              	prime256v1_absA:
+ 120 0000 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 120      00000000 
+ 120      00000000 
+ 120      00
+ 121 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\000\000\000\000\000\000"
+ 121      00000000 
+ 121      00000000 
+ 121      00
+ 122 001a 00000000 		.ascii	"\000\000\000\000\000\003"
+ 122      0003
+ 123              		.section	.rodata.prime256v1_A,"a"
+ 124              		.align	2
+ 127              	prime256v1_A:
+ 128 0000 FFFFFFFF 		.ascii	"\377\377\377\377\000\000\000\001\000\000\000\000\000"
+ 128      00000001 
+ 128      00000000 
+ 128      00
+ 129 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\377\377\377\377\377\377"
+ 129      000000FF 
+ 129      FFFFFFFF 
+ 129      FF
+ 130 001a FFFFFFFF 		.ascii	"\377\377\377\377\377\374"
+ 130      FFFC
+ 131              		.section	.rodata.prime256v1_Prime,"a"
+ 132              		.align	2
+ 135              	prime256v1_Prime:
+ 136 0000 FFFFFFFF 		.ascii	"\377\377\377\377\000\000\000\001\000\000\000\000\000"
+ARM GAS  /tmp/ccA9l1Ls.s 			page 6
+
+
+ 136      00000001 
+ 136      00000000 
+ 136      00
+ 137 000d 00000000 		.ascii	"\000\000\000\000\000\000\000\377\377\377\377\377\377"
+ 137      000000FF 
+ 137      FFFFFFFF 
+ 137      FF
+ 138 001a FFFFFFFF 		.ascii	"\377\377\377\377\377\377"
+ 138      FFFF
+ 139              		.text
+ 140              	.Letext0:
+ 141              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 142              		.file 3 "../../Secure/Core/Inc/prime256v1.h"
+ARM GAS  /tmp/ccA9l1Ls.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 prime256v1.c
+     /tmp/ccA9l1Ls.s:22     .text.get_prime256v1_curve:00000000 $t
+     /tmp/ccA9l1Ls.s:28     .text.get_prime256v1_curve:00000000 get_prime256v1_curve
+     /tmp/ccA9l1Ls.s:42     .text.get_prime256v1_curve:00000004 $d
+     /tmp/ccA9l1Ls.s:50     .rodata.prime256v1_curve:00000000 prime256v1_curve
+     /tmp/ccA9l1Ls.s:47     .rodata.prime256v1_curve:00000000 $d
+     /tmp/ccA9l1Ls.s:135    .rodata.prime256v1_Prime:00000000 prime256v1_Prime
+     /tmp/ccA9l1Ls.s:127    .rodata.prime256v1_A:00000000 prime256v1_A
+     /tmp/ccA9l1Ls.s:119    .rodata.prime256v1_absA:00000000 prime256v1_absA
+     /tmp/ccA9l1Ls.s:112    .rodata.prime256v1_B:00000000 prime256v1_B
+     /tmp/ccA9l1Ls.s:103    .rodata.prime256v1_Generator:00000000 prime256v1_Generator
+     /tmp/ccA9l1Ls.s:96     .rodata.prime256v1_GeneratorX:00000000 prime256v1_GeneratorX
+     /tmp/ccA9l1Ls.s:89     .rodata.prime256v1_GeneratorY:00000000 prime256v1_GeneratorY
+     /tmp/ccA9l1Ls.s:81     .rodata.prime256v1_Order:00000000 prime256v1_Order
+     /tmp/ccA9l1Ls.s:74     .rodata.prime256v1_Seed:00000000 prime256v1_Seed
+     /tmp/ccA9l1Ls.s:71     .rodata.prime256v1_Seed:00000000 $d
+     /tmp/ccA9l1Ls.s:78     .rodata.prime256v1_Order:00000000 $d
+     /tmp/ccA9l1Ls.s:86     .rodata.prime256v1_GeneratorY:00000000 $d
+     /tmp/ccA9l1Ls.s:93     .rodata.prime256v1_GeneratorX:00000000 $d
+     /tmp/ccA9l1Ls.s:100    .rodata.prime256v1_Generator:00000000 $d
+     /tmp/ccA9l1Ls.s:109    .rodata.prime256v1_B:00000000 $d
+     /tmp/ccA9l1Ls.s:116    .rodata.prime256v1_absA:00000000 $d
+     /tmp/ccA9l1Ls.s:124    .rodata.prime256v1_A:00000000 $d
+     /tmp/ccA9l1Ls.s:132    .rodata.prime256v1_Prime:00000000 $d
+
+NO UNDEFINED SYMBOLS

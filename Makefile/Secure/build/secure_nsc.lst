@@ -1,0 +1,668 @@
+ARM GAS  /tmp/ccPte7gl.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secure_nsc.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secure_nsc.c"
+  21              		.section	.text.SECURE_RegisterCallback,"ax",%progbits
+  22              		.align	1
+  23              		.global	SECURE_RegisterCallback
+  24              		.global	__acle_se_SECURE_RegisterCallback
+  25              		.syntax unified
+  26              		.thumb
+  27              		.thumb_func
+  29              		.syntax unified
+  30              		.thumb
+  31              		.thumb_func
+  33              	SECURE_RegisterCallback:
+  34              	__acle_se_SECURE_RegisterCallback:
+  35              	.LVL0:
+  36              	.LFB202:
+   1:../../Secure/Core/Src/secure_nsc.c **** /* USER CODE BEGIN Header */
+   2:../../Secure/Core/Src/secure_nsc.c **** /**
+   3:../../Secure/Core/Src/secure_nsc.c ****   ******************************************************************************
+   4:../../Secure/Core/Src/secure_nsc.c ****   * @file    Secure/Src/secure_nsc.c
+   5:../../Secure/Core/Src/secure_nsc.c ****   * @author  MCD Application Team
+   6:../../Secure/Core/Src/secure_nsc.c ****   * @brief   This file contains the non-secure callable APIs (secure world)
+   7:../../Secure/Core/Src/secure_nsc.c ****   ******************************************************************************
+   8:../../Secure/Core/Src/secure_nsc.c ****     * @attention
+   9:../../Secure/Core/Src/secure_nsc.c ****   *
+  10:../../Secure/Core/Src/secure_nsc.c ****   * Copyright (c) 2025 STMicroelectronics.
+  11:../../Secure/Core/Src/secure_nsc.c ****   * All rights reserved.
+  12:../../Secure/Core/Src/secure_nsc.c ****   *
+  13:../../Secure/Core/Src/secure_nsc.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  14:../../Secure/Core/Src/secure_nsc.c ****   * in the root directory of this software component.
+  15:../../Secure/Core/Src/secure_nsc.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  16:../../Secure/Core/Src/secure_nsc.c ****   *
+  17:../../Secure/Core/Src/secure_nsc.c ****   ******************************************************************************
+  18:../../Secure/Core/Src/secure_nsc.c ****   */
+  19:../../Secure/Core/Src/secure_nsc.c **** /* USER CODE END Header */
+  20:../../Secure/Core/Src/secure_nsc.c **** 
+  21:../../Secure/Core/Src/secure_nsc.c **** /* USER CODE BEGIN Non_Secure_CallLib */
+  22:../../Secure/Core/Src/secure_nsc.c **** /* Includes ------------------------------------------------------------------*/
+  23:../../Secure/Core/Src/secure_nsc.c **** #include "main.h"
+ARM GAS  /tmp/ccPte7gl.s 			page 2
+
+
+  24:../../Secure/Core/Src/secure_nsc.c **** #include "secure_nsc.h"
+  25:../../Secure/Core/Src/secure_nsc.c **** /** @addtogroup STM32L5xx_HAL_Examples
+  26:../../Secure/Core/Src/secure_nsc.c **** 
+  27:../../Secure/Core/Src/secure_nsc.c ****   * @{
+  28:../../Secure/Core/Src/secure_nsc.c ****   */
+  29:../../Secure/Core/Src/secure_nsc.c **** 
+  30:../../Secure/Core/Src/secure_nsc.c **** /** @addtogroup Templates
+  31:../../Secure/Core/Src/secure_nsc.c ****   * @{
+  32:../../Secure/Core/Src/secure_nsc.c ****   */
+  33:../../Secure/Core/Src/secure_nsc.c **** 
+  34:../../Secure/Core/Src/secure_nsc.c **** /* Global variables ----------------------------------------------------------*/
+  35:../../Secure/Core/Src/secure_nsc.c **** void *pSecureFaultCallback = NULL;   /* Pointer to secure fault callback in Non-secure */
+  36:../../Secure/Core/Src/secure_nsc.c **** void *pSecureErrorCallback = NULL;   /* Pointer to secure error callback in Non-secure */
+  37:../../Secure/Core/Src/secure_nsc.c **** 
+  38:../../Secure/Core/Src/secure_nsc.c **** /* Private typedef -----------------------------------------------------------*/
+  39:../../Secure/Core/Src/secure_nsc.c **** /* Private define ------------------------------------------------------------*/
+  40:../../Secure/Core/Src/secure_nsc.c **** /* Private macro -------------------------------------------------------------*/
+  41:../../Secure/Core/Src/secure_nsc.c **** /* Private variables ---------------------------------------------------------*/
+  42:../../Secure/Core/Src/secure_nsc.c **** extern UART_HandleTypeDef huart1;
+  43:../../Secure/Core/Src/secure_nsc.c **** /* Private function prototypes -----------------------------------------------*/
+  44:../../Secure/Core/Src/secure_nsc.c **** /* Private functions ---------------------------------------------------------*/
+  45:../../Secure/Core/Src/secure_nsc.c **** 
+  46:../../Secure/Core/Src/secure_nsc.c **** /**
+  47:../../Secure/Core/Src/secure_nsc.c ****   * @brief  Secure registration of non-secure callback.
+  48:../../Secure/Core/Src/secure_nsc.c ****   * @param  CallbackId  callback identifier
+  49:../../Secure/Core/Src/secure_nsc.c ****   * @param  func        pointer to non-secure function
+  50:../../Secure/Core/Src/secure_nsc.c ****   * @retval None
+  51:../../Secure/Core/Src/secure_nsc.c ****   */
+  52:../../Secure/Core/Src/secure_nsc.c **** CMSE_NS_ENTRY void SECURE_RegisterCallback(SECURE_CallbackIDTypeDef CallbackId, void *func)
+  53:../../Secure/Core/Src/secure_nsc.c **** {
+  37              		.loc 1 53 1 view -0
+  38              		.cfi_startproc
+  39              		@ Non-secure entry function: called from non-secure code.
+  40              		@ args = 0, pretend = 0, frame = 0
+  41              		@ frame_needed = 0, uses_anonymous_args = 0
+  42              		@ link register save eliminated.
+  54:../../Secure/Core/Src/secure_nsc.c ****   if(func != NULL)
+  43              		.loc 1 54 3 view .LVU1
+  44              		.loc 1 54 5 is_stmt 0 view .LVU2
+  45 0000 11B1     		cbz	r1, .L1
+  55:../../Secure/Core/Src/secure_nsc.c ****   {
+  56:../../Secure/Core/Src/secure_nsc.c ****     switch(CallbackId)
+  46              		.loc 1 56 5 is_stmt 1 view .LVU3
+  47 0002 A8B3     		cbz	r0, .L3
+  48 0004 0128     		cmp	r0, #1
+  49 0006 36D0     		beq	.L4
+  50              	.L1:
+  57:../../Secure/Core/Src/secure_nsc.c ****     {
+  58:../../Secure/Core/Src/secure_nsc.c ****       case SECURE_FAULT_CB_ID:           /* SecureFault Interrupt occurred */
+  59:../../Secure/Core/Src/secure_nsc.c ****         pSecureFaultCallback = func;
+  60:../../Secure/Core/Src/secure_nsc.c ****         break;
+  61:../../Secure/Core/Src/secure_nsc.c ****       case GTZC_ERROR_CB_ID:             /* GTZC Interrupt occurred */
+  62:../../Secure/Core/Src/secure_nsc.c ****         pSecureErrorCallback = func;
+  63:../../Secure/Core/Src/secure_nsc.c ****         break;
+  64:../../Secure/Core/Src/secure_nsc.c ****       default:
+  65:../../Secure/Core/Src/secure_nsc.c ****         /* unknown */
+  66:../../Secure/Core/Src/secure_nsc.c ****         break;
+ARM GAS  /tmp/ccPte7gl.s 			page 3
+
+
+  67:../../Secure/Core/Src/secure_nsc.c ****     }
+  68:../../Secure/Core/Src/secure_nsc.c ****   }
+  69:../../Secure/Core/Src/secure_nsc.c **** }
+  51              		.loc 1 69 1 is_stmt 0 view .LVU4
+  52 0008 7046     		mov	r0, lr
+  53              	.LVL1:
+  54              		.loc 1 69 1 view .LVU5
+  55 000a 7146     		mov	r1, lr
+  56              	.LVL2:
+  57              		.loc 1 69 1 view .LVU6
+  58 000c 7246     		mov	r2, lr
+  59 000e 7346     		mov	r3, lr
+  60 0010 B7EE000A 		vmov.f32	s0, #1.0e+0
+  61 0014 F7EE000A 		vmov.f32	s1, #1.0e+0
+  62 0018 B7EE001A 		vmov.f32	s2, #1.0e+0
+  63 001c F7EE001A 		vmov.f32	s3, #1.0e+0
+  64 0020 B7EE002A 		vmov.f32	s4, #1.0e+0
+  65 0024 F7EE002A 		vmov.f32	s5, #1.0e+0
+  66 0028 B7EE003A 		vmov.f32	s6, #1.0e+0
+  67 002c F7EE003A 		vmov.f32	s7, #1.0e+0
+  68 0030 B7EE004A 		vmov.f32	s8, #1.0e+0
+  69 0034 F7EE004A 		vmov.f32	s9, #1.0e+0
+  70 0038 B7EE005A 		vmov.f32	s10, #1.0e+0
+  71 003c F7EE005A 		vmov.f32	s11, #1.0e+0
+  72 0040 B7EE006A 		vmov.f32	s12, #1.0e+0
+  73 0044 F7EE006A 		vmov.f32	s13, #1.0e+0
+  74 0048 B7EE007A 		vmov.f32	s14, #1.0e+0
+  75 004c F7EE007A 		vmov.f32	s15, #1.0e+0
+  76 0050 8EF3008C 		msr	APSR_nzcvqg, lr
+  77 0054 10B4     		push	{r4}
+  78 0056 F1EE10CA 		vmrs	ip, fpscr
+  79 005a 4FF66074 		movw	r4, #65376
+  80 005e C0F6FF74 		movt	r4, #4095
+  81 0062 0CEA040C 		and	ip, r4
+  82 0066 E1EE10CA 		vmsr	fpscr, ip
+  83 006a 10BC     		pop	{r4}
+  84 006c F446     		mov	ip, lr
+  85 006e 7447     		bxns	lr
+  86              	.LVL3:
+  87              	.L3:
+  59:../../Secure/Core/Src/secure_nsc.c ****         break;
+  88              		.loc 1 59 9 is_stmt 1 view .LVU7
+  59:../../Secure/Core/Src/secure_nsc.c ****         break;
+  89              		.loc 1 59 30 is_stmt 0 view .LVU8
+  90 0070 024A     		ldr	r2, .L5
+  91 0072 1160     		str	r1, [r2]
+  60:../../Secure/Core/Src/secure_nsc.c ****       case GTZC_ERROR_CB_ID:             /* GTZC Interrupt occurred */
+  92              		.loc 1 60 9 is_stmt 1 view .LVU9
+  93 0074 C8E7     		b	.L1
+  94              	.L4:
+  62:../../Secure/Core/Src/secure_nsc.c ****         break;
+  95              		.loc 1 62 9 view .LVU10
+  62:../../Secure/Core/Src/secure_nsc.c ****         break;
+  96              		.loc 1 62 30 is_stmt 0 view .LVU11
+  97 0076 024A     		ldr	r2, .L5+4
+  98 0078 1160     		str	r1, [r2]
+  63:../../Secure/Core/Src/secure_nsc.c ****       default:
+ARM GAS  /tmp/ccPte7gl.s 			page 4
+
+
+  99              		.loc 1 63 9 is_stmt 1 view .LVU12
+ 100              		.loc 1 69 1 is_stmt 0 view .LVU13
+ 101 007a C5E7     		b	.L1
+ 102              	.L6:
+ 103              		.align	2
+ 104              	.L5:
+ 105 007c 00000000 		.word	pSecureFaultCallback
+ 106 0080 00000000 		.word	pSecureErrorCallback
+ 107              		.cfi_endproc
+ 108              	.LFE202:
+ 110              		.section	.text.NSC_print,"ax",%progbits
+ 111              		.align	1
+ 112              		.global	NSC_print
+ 113              		.global	__acle_se_NSC_print
+ 114              		.syntax unified
+ 115              		.thumb
+ 116              		.thumb_func
+ 118              		.syntax unified
+ 119              		.thumb
+ 120              		.thumb_func
+ 122              	NSC_print:
+ 123              	__acle_se_NSC_print:
+ 124              	.LVL4:
+ 125              	.LFB203:
+  70:../../Secure/Core/Src/secure_nsc.c **** 
+  71:../../Secure/Core/Src/secure_nsc.c **** /**
+  72:../../Secure/Core/Src/secure_nsc.c ****   * @}
+  73:../../Secure/Core/Src/secure_nsc.c ****   */
+  74:../../Secure/Core/Src/secure_nsc.c **** 
+  75:../../Secure/Core/Src/secure_nsc.c **** CMSE_NS_ENTRY void NSC_print(int ch){
+ 126              		.loc 1 75 37 is_stmt 1 view -0
+ 127              		.cfi_startproc
+ 128              		@ Non-secure entry function: called from non-secure code.
+ 129              		@ args = 0, pretend = 0, frame = 8
+ 130              		@ frame_needed = 0, uses_anonymous_args = 0
+ 131              		.loc 1 75 37 is_stmt 0 view .LVU15
+ 132 0000 00B5     		push	{lr}
+ 133              	.LCFI0:
+ 134              		.cfi_def_cfa_offset 4
+ 135              		.cfi_offset 14, -4
+ 136 0002 83B0     		sub	sp, sp, #12
+ 137              	.LCFI1:
+ 138              		.cfi_def_cfa_offset 16
+ 139 0004 0190     		str	r0, [sp, #4]
+  76:../../Secure/Core/Src/secure_nsc.c ****   HAL_UART_Transmit(&huart1,(uint8_t*)&ch,1,HAL_MAX_DELAY);
+ 140              		.loc 1 76 3 is_stmt 1 view .LVU16
+ 141 0006 4FF0FF33 		mov	r3, #-1
+ 142 000a 0122     		movs	r2, #1
+ 143 000c 01A9     		add	r1, sp, #4
+ 144 000e 1D48     		ldr	r0, .L9
+ 145              	.LVL5:
+ 146              		.loc 1 76 3 is_stmt 0 view .LVU17
+ 147 0010 FFF7FEFF 		bl	HAL_UART_Transmit
+ 148              	.LVL6:
+  77:../../Secure/Core/Src/secure_nsc.c **** }
+ 149              		.loc 1 77 1 view .LVU18
+ 150 0014 03B0     		add	sp, sp, #12
+ARM GAS  /tmp/ccPte7gl.s 			page 5
+
+
+ 151              	.LCFI2:
+ 152              		.cfi_def_cfa_offset 4
+ 153              		@ sp needed
+ 154 0016 5DF804EB 		ldr	lr, [sp], #4
+ 155              	.LCFI3:
+ 156              		.cfi_restore 14
+ 157              		.cfi_def_cfa_offset 0
+ 158 001a 7046     		mov	r0, lr
+ 159 001c 7146     		mov	r1, lr
+ 160 001e 7246     		mov	r2, lr
+ 161 0020 7346     		mov	r3, lr
+ 162 0022 B7EE000A 		vmov.f32	s0, #1.0e+0
+ 163 0026 F7EE000A 		vmov.f32	s1, #1.0e+0
+ 164 002a B7EE001A 		vmov.f32	s2, #1.0e+0
+ 165 002e F7EE001A 		vmov.f32	s3, #1.0e+0
+ 166 0032 B7EE002A 		vmov.f32	s4, #1.0e+0
+ 167 0036 F7EE002A 		vmov.f32	s5, #1.0e+0
+ 168 003a B7EE003A 		vmov.f32	s6, #1.0e+0
+ 169 003e F7EE003A 		vmov.f32	s7, #1.0e+0
+ 170 0042 B7EE004A 		vmov.f32	s8, #1.0e+0
+ 171 0046 F7EE004A 		vmov.f32	s9, #1.0e+0
+ 172 004a B7EE005A 		vmov.f32	s10, #1.0e+0
+ 173 004e F7EE005A 		vmov.f32	s11, #1.0e+0
+ 174 0052 B7EE006A 		vmov.f32	s12, #1.0e+0
+ 175 0056 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 176 005a B7EE007A 		vmov.f32	s14, #1.0e+0
+ 177 005e F7EE007A 		vmov.f32	s15, #1.0e+0
+ 178 0062 8EF3008C 		msr	APSR_nzcvqg, lr
+ 179 0066 10B4     		push	{r4}
+ 180 0068 F1EE10CA 		vmrs	ip, fpscr
+ 181 006c 4FF66074 		movw	r4, #65376
+ 182 0070 C0F6FF74 		movt	r4, #4095
+ 183 0074 0CEA040C 		and	ip, r4
+ 184 0078 E1EE10CA 		vmsr	fpscr, ip
+ 185 007c 10BC     		pop	{r4}
+ 186 007e F446     		mov	ip, lr
+ 187 0080 7447     		bxns	lr
+ 188              	.L10:
+ 189 0082 00BF     		.align	2
+ 190              	.L9:
+ 191 0084 00000000 		.word	huart1
+ 192              		.cfi_endproc
+ 193              	.LFE203:
+ 195              		.section	.text.GreenLED_ON,"ax",%progbits
+ 196              		.align	1
+ 197              		.global	GreenLED_ON
+ 198              		.global	__acle_se_GreenLED_ON
+ 199              		.syntax unified
+ 200              		.thumb
+ 201              		.thumb_func
+ 203              		.syntax unified
+ 204              		.thumb
+ 205              		.thumb_func
+ 207              	GreenLED_ON:
+ 208              	__acle_se_GreenLED_ON:
+ 209              	.LFB204:
+  78:../../Secure/Core/Src/secure_nsc.c **** /**
+ARM GAS  /tmp/ccPte7gl.s 			page 6
+
+
+  79:../../Secure/Core/Src/secure_nsc.c ****   * @}
+  80:../../Secure/Core/Src/secure_nsc.c ****   */
+  81:../../Secure/Core/Src/secure_nsc.c **** 
+  82:../../Secure/Core/Src/secure_nsc.c **** 
+  83:../../Secure/Core/Src/secure_nsc.c **** 
+  84:../../Secure/Core/Src/secure_nsc.c **** CMSE_NS_ENTRY void GreenLED_ON(){
+ 210              		.loc 1 84 33 is_stmt 1 view -0
+ 211              		.cfi_startproc
+ 212              		@ Non-secure entry function: called from non-secure code.
+ 213              		@ args = 0, pretend = 0, frame = 0
+ 214              		@ frame_needed = 0, uses_anonymous_args = 0
+ 215 0000 08B5     		push	{r3, lr}
+ 216              	.LCFI4:
+ 217              		.cfi_def_cfa_offset 8
+ 218              		.cfi_offset 3, -8
+ 219              		.cfi_offset 14, -4
+  85:../../Secure/Core/Src/secure_nsc.c ****   HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_RESET);  
+ 220              		.loc 1 85 3 view .LVU20
+ 221 0002 0022     		movs	r2, #0
+ 222 0004 4FF48051 		mov	r1, #4096
+ 223 0008 1C48     		ldr	r0, .L13
+ 224 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 225              	.LVL7:
+  86:../../Secure/Core/Src/secure_nsc.c **** }
+ 226              		.loc 1 86 1 is_stmt 0 view .LVU21
+ 227 000e BDE80840 		pop	{r3, lr}
+ 228              	.LCFI5:
+ 229              		.cfi_restore 14
+ 230              		.cfi_restore 3
+ 231              		.cfi_def_cfa_offset 0
+ 232 0012 7046     		mov	r0, lr
+ 233 0014 7146     		mov	r1, lr
+ 234 0016 7246     		mov	r2, lr
+ 235 0018 7346     		mov	r3, lr
+ 236 001a B7EE000A 		vmov.f32	s0, #1.0e+0
+ 237 001e F7EE000A 		vmov.f32	s1, #1.0e+0
+ 238 0022 B7EE001A 		vmov.f32	s2, #1.0e+0
+ 239 0026 F7EE001A 		vmov.f32	s3, #1.0e+0
+ 240 002a B7EE002A 		vmov.f32	s4, #1.0e+0
+ 241 002e F7EE002A 		vmov.f32	s5, #1.0e+0
+ 242 0032 B7EE003A 		vmov.f32	s6, #1.0e+0
+ 243 0036 F7EE003A 		vmov.f32	s7, #1.0e+0
+ 244 003a B7EE004A 		vmov.f32	s8, #1.0e+0
+ 245 003e F7EE004A 		vmov.f32	s9, #1.0e+0
+ 246 0042 B7EE005A 		vmov.f32	s10, #1.0e+0
+ 247 0046 F7EE005A 		vmov.f32	s11, #1.0e+0
+ 248 004a B7EE006A 		vmov.f32	s12, #1.0e+0
+ 249 004e F7EE006A 		vmov.f32	s13, #1.0e+0
+ 250 0052 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 251 0056 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 252 005a 8EF3008C 		msr	APSR_nzcvqg, lr
+ 253 005e 10B4     		push	{r4}
+ 254 0060 F1EE10CA 		vmrs	ip, fpscr
+ 255 0064 4FF66074 		movw	r4, #65376
+ 256 0068 C0F6FF74 		movt	r4, #4095
+ 257 006c 0CEA040C 		and	ip, r4
+ 258 0070 E1EE10CA 		vmsr	fpscr, ip
+ARM GAS  /tmp/ccPte7gl.s 			page 7
+
+
+ 259 0074 10BC     		pop	{r4}
+ 260 0076 F446     		mov	ip, lr
+ 261 0078 7447     		bxns	lr
+ 262              	.L14:
+ 263 007a 00BF     		.align	2
+ 264              	.L13:
+ 265 007c 00180252 		.word	1375868928
+ 266              		.cfi_endproc
+ 267              	.LFE204:
+ 269              		.section	.text.GreenLED_OFF,"ax",%progbits
+ 270              		.align	1
+ 271              		.global	GreenLED_OFF
+ 272              		.global	__acle_se_GreenLED_OFF
+ 273              		.syntax unified
+ 274              		.thumb
+ 275              		.thumb_func
+ 277              		.syntax unified
+ 278              		.thumb
+ 279              		.thumb_func
+ 281              	GreenLED_OFF:
+ 282              	__acle_se_GreenLED_OFF:
+ 283              	.LFB205:
+  87:../../Secure/Core/Src/secure_nsc.c **** 
+  88:../../Secure/Core/Src/secure_nsc.c **** 
+  89:../../Secure/Core/Src/secure_nsc.c **** CMSE_NS_ENTRY void GreenLED_OFF(){
+ 284              		.loc 1 89 34 is_stmt 1 view -0
+ 285              		.cfi_startproc
+ 286              		@ Non-secure entry function: called from non-secure code.
+ 287              		@ args = 0, pretend = 0, frame = 0
+ 288              		@ frame_needed = 0, uses_anonymous_args = 0
+ 289 0000 08B5     		push	{r3, lr}
+ 290              	.LCFI6:
+ 291              		.cfi_def_cfa_offset 8
+ 292              		.cfi_offset 3, -8
+ 293              		.cfi_offset 14, -4
+  90:../../Secure/Core/Src/secure_nsc.c ****   HAL_GPIO_WritePin(LED_GREEN_GPIO_Port,LED_GREEN_Pin,GPIO_PIN_SET);  
+ 294              		.loc 1 90 3 view .LVU23
+ 295 0002 0122     		movs	r2, #1
+ 296 0004 4FF48051 		mov	r1, #4096
+ 297 0008 1C48     		ldr	r0, .L17
+ 298 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 299              	.LVL8:
+  91:../../Secure/Core/Src/secure_nsc.c **** }
+ 300              		.loc 1 91 1 is_stmt 0 view .LVU24
+ 301 000e BDE80840 		pop	{r3, lr}
+ 302              	.LCFI7:
+ 303              		.cfi_restore 14
+ 304              		.cfi_restore 3
+ 305              		.cfi_def_cfa_offset 0
+ 306 0012 7046     		mov	r0, lr
+ 307 0014 7146     		mov	r1, lr
+ 308 0016 7246     		mov	r2, lr
+ 309 0018 7346     		mov	r3, lr
+ 310 001a B7EE000A 		vmov.f32	s0, #1.0e+0
+ 311 001e F7EE000A 		vmov.f32	s1, #1.0e+0
+ 312 0022 B7EE001A 		vmov.f32	s2, #1.0e+0
+ 313 0026 F7EE001A 		vmov.f32	s3, #1.0e+0
+ARM GAS  /tmp/ccPte7gl.s 			page 8
+
+
+ 314 002a B7EE002A 		vmov.f32	s4, #1.0e+0
+ 315 002e F7EE002A 		vmov.f32	s5, #1.0e+0
+ 316 0032 B7EE003A 		vmov.f32	s6, #1.0e+0
+ 317 0036 F7EE003A 		vmov.f32	s7, #1.0e+0
+ 318 003a B7EE004A 		vmov.f32	s8, #1.0e+0
+ 319 003e F7EE004A 		vmov.f32	s9, #1.0e+0
+ 320 0042 B7EE005A 		vmov.f32	s10, #1.0e+0
+ 321 0046 F7EE005A 		vmov.f32	s11, #1.0e+0
+ 322 004a B7EE006A 		vmov.f32	s12, #1.0e+0
+ 323 004e F7EE006A 		vmov.f32	s13, #1.0e+0
+ 324 0052 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 325 0056 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 326 005a 8EF3008C 		msr	APSR_nzcvqg, lr
+ 327 005e 10B4     		push	{r4}
+ 328 0060 F1EE10CA 		vmrs	ip, fpscr
+ 329 0064 4FF66074 		movw	r4, #65376
+ 330 0068 C0F6FF74 		movt	r4, #4095
+ 331 006c 0CEA040C 		and	ip, r4
+ 332 0070 E1EE10CA 		vmsr	fpscr, ip
+ 333 0074 10BC     		pop	{r4}
+ 334 0076 F446     		mov	ip, lr
+ 335 0078 7447     		bxns	lr
+ 336              	.L18:
+ 337 007a 00BF     		.align	2
+ 338              	.L17:
+ 339 007c 00180252 		.word	1375868928
+ 340              		.cfi_endproc
+ 341              	.LFE205:
+ 343              		.section	.text.RedLED_ON,"ax",%progbits
+ 344              		.align	1
+ 345              		.global	RedLED_ON
+ 346              		.global	__acle_se_RedLED_ON
+ 347              		.syntax unified
+ 348              		.thumb
+ 349              		.thumb_func
+ 351              		.syntax unified
+ 352              		.thumb
+ 353              		.thumb_func
+ 355              	RedLED_ON:
+ 356              	__acle_se_RedLED_ON:
+ 357              	.LFB206:
+  92:../../Secure/Core/Src/secure_nsc.c **** 
+  93:../../Secure/Core/Src/secure_nsc.c **** 
+  94:../../Secure/Core/Src/secure_nsc.c **** CMSE_NS_ENTRY void RedLED_ON(){
+ 358              		.loc 1 94 31 is_stmt 1 view -0
+ 359              		.cfi_startproc
+ 360              		@ Non-secure entry function: called from non-secure code.
+ 361              		@ args = 0, pretend = 0, frame = 0
+ 362              		@ frame_needed = 0, uses_anonymous_args = 0
+ 363 0000 08B5     		push	{r3, lr}
+ 364              	.LCFI8:
+ 365              		.cfi_def_cfa_offset 8
+ 366              		.cfi_offset 3, -8
+ 367              		.cfi_offset 14, -4
+  95:../../Secure/Core/Src/secure_nsc.c ****   HAL_GPIO_WritePin(LED_RED_GPIO_Port,LED_RED_Pin,GPIO_PIN_RESET);  
+ 368              		.loc 1 95 3 view .LVU26
+ 369 0002 0022     		movs	r2, #0
+ARM GAS  /tmp/ccPte7gl.s 			page 9
+
+
+ 370 0004 0821     		movs	r1, #8
+ 371 0006 1C48     		ldr	r0, .L21
+ 372 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 373              	.LVL9:
+  96:../../Secure/Core/Src/secure_nsc.c **** }
+ 374              		.loc 1 96 1 is_stmt 0 view .LVU27
+ 375 000c BDE80840 		pop	{r3, lr}
+ 376              	.LCFI9:
+ 377              		.cfi_restore 14
+ 378              		.cfi_restore 3
+ 379              		.cfi_def_cfa_offset 0
+ 380 0010 7046     		mov	r0, lr
+ 381 0012 7146     		mov	r1, lr
+ 382 0014 7246     		mov	r2, lr
+ 383 0016 7346     		mov	r3, lr
+ 384 0018 B7EE000A 		vmov.f32	s0, #1.0e+0
+ 385 001c F7EE000A 		vmov.f32	s1, #1.0e+0
+ 386 0020 B7EE001A 		vmov.f32	s2, #1.0e+0
+ 387 0024 F7EE001A 		vmov.f32	s3, #1.0e+0
+ 388 0028 B7EE002A 		vmov.f32	s4, #1.0e+0
+ 389 002c F7EE002A 		vmov.f32	s5, #1.0e+0
+ 390 0030 B7EE003A 		vmov.f32	s6, #1.0e+0
+ 391 0034 F7EE003A 		vmov.f32	s7, #1.0e+0
+ 392 0038 B7EE004A 		vmov.f32	s8, #1.0e+0
+ 393 003c F7EE004A 		vmov.f32	s9, #1.0e+0
+ 394 0040 B7EE005A 		vmov.f32	s10, #1.0e+0
+ 395 0044 F7EE005A 		vmov.f32	s11, #1.0e+0
+ 396 0048 B7EE006A 		vmov.f32	s12, #1.0e+0
+ 397 004c F7EE006A 		vmov.f32	s13, #1.0e+0
+ 398 0050 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 399 0054 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 400 0058 8EF3008C 		msr	APSR_nzcvqg, lr
+ 401 005c 10B4     		push	{r4}
+ 402 005e F1EE10CA 		vmrs	ip, fpscr
+ 403 0062 4FF66074 		movw	r4, #65376
+ 404 0066 C0F6FF74 		movt	r4, #4095
+ 405 006a 0CEA040C 		and	ip, r4
+ 406 006e E1EE10CA 		vmsr	fpscr, ip
+ 407 0072 10BC     		pop	{r4}
+ 408 0074 F446     		mov	ip, lr
+ 409 0076 7447     		bxns	lr
+ 410              	.L22:
+ 411              		.align	2
+ 412              	.L21:
+ 413 0078 000C0252 		.word	1375865856
+ 414              		.cfi_endproc
+ 415              	.LFE206:
+ 417              		.section	.text.RedLED_OFF,"ax",%progbits
+ 418              		.align	1
+ 419              		.global	RedLED_OFF
+ 420              		.global	__acle_se_RedLED_OFF
+ 421              		.syntax unified
+ 422              		.thumb
+ 423              		.thumb_func
+ 425              		.syntax unified
+ 426              		.thumb
+ 427              		.thumb_func
+ARM GAS  /tmp/ccPte7gl.s 			page 10
+
+
+ 429              	RedLED_OFF:
+ 430              	__acle_se_RedLED_OFF:
+ 431              	.LFB207:
+  97:../../Secure/Core/Src/secure_nsc.c **** 
+  98:../../Secure/Core/Src/secure_nsc.c **** CMSE_NS_ENTRY void RedLED_OFF(){
+ 432              		.loc 1 98 32 is_stmt 1 view -0
+ 433              		.cfi_startproc
+ 434              		@ Non-secure entry function: called from non-secure code.
+ 435              		@ args = 0, pretend = 0, frame = 0
+ 436              		@ frame_needed = 0, uses_anonymous_args = 0
+ 437 0000 08B5     		push	{r3, lr}
+ 438              	.LCFI10:
+ 439              		.cfi_def_cfa_offset 8
+ 440              		.cfi_offset 3, -8
+ 441              		.cfi_offset 14, -4
+  99:../../Secure/Core/Src/secure_nsc.c ****   HAL_GPIO_WritePin(LED_RED_GPIO_Port,LED_RED_Pin,GPIO_PIN_SET);  
+ 442              		.loc 1 99 3 view .LVU29
+ 443 0002 0122     		movs	r2, #1
+ 444 0004 0821     		movs	r1, #8
+ 445 0006 1C48     		ldr	r0, .L25
+ 446 0008 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 447              	.LVL10:
+ 100:../../Secure/Core/Src/secure_nsc.c **** }
+ 448              		.loc 1 100 1 is_stmt 0 view .LVU30
+ 449 000c BDE80840 		pop	{r3, lr}
+ 450              	.LCFI11:
+ 451              		.cfi_restore 14
+ 452              		.cfi_restore 3
+ 453              		.cfi_def_cfa_offset 0
+ 454 0010 7046     		mov	r0, lr
+ 455 0012 7146     		mov	r1, lr
+ 456 0014 7246     		mov	r2, lr
+ 457 0016 7346     		mov	r3, lr
+ 458 0018 B7EE000A 		vmov.f32	s0, #1.0e+0
+ 459 001c F7EE000A 		vmov.f32	s1, #1.0e+0
+ 460 0020 B7EE001A 		vmov.f32	s2, #1.0e+0
+ 461 0024 F7EE001A 		vmov.f32	s3, #1.0e+0
+ 462 0028 B7EE002A 		vmov.f32	s4, #1.0e+0
+ 463 002c F7EE002A 		vmov.f32	s5, #1.0e+0
+ 464 0030 B7EE003A 		vmov.f32	s6, #1.0e+0
+ 465 0034 F7EE003A 		vmov.f32	s7, #1.0e+0
+ 466 0038 B7EE004A 		vmov.f32	s8, #1.0e+0
+ 467 003c F7EE004A 		vmov.f32	s9, #1.0e+0
+ 468 0040 B7EE005A 		vmov.f32	s10, #1.0e+0
+ 469 0044 F7EE005A 		vmov.f32	s11, #1.0e+0
+ 470 0048 B7EE006A 		vmov.f32	s12, #1.0e+0
+ 471 004c F7EE006A 		vmov.f32	s13, #1.0e+0
+ 472 0050 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 473 0054 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 474 0058 8EF3008C 		msr	APSR_nzcvqg, lr
+ 475 005c 10B4     		push	{r4}
+ 476 005e F1EE10CA 		vmrs	ip, fpscr
+ 477 0062 4FF66074 		movw	r4, #65376
+ 478 0066 C0F6FF74 		movt	r4, #4095
+ 479 006a 0CEA040C 		and	ip, r4
+ 480 006e E1EE10CA 		vmsr	fpscr, ip
+ 481 0072 10BC     		pop	{r4}
+ARM GAS  /tmp/ccPte7gl.s 			page 11
+
+
+ 482 0074 F446     		mov	ip, lr
+ 483 0076 7447     		bxns	lr
+ 484              	.L26:
+ 485              		.align	2
+ 486              	.L25:
+ 487 0078 000C0252 		.word	1375865856
+ 488              		.cfi_endproc
+ 489              	.LFE207:
+ 491              		.global	pSecureErrorCallback
+ 492              		.section	.bss.pSecureErrorCallback,"aw",%nobits
+ 493              		.align	2
+ 496              	pSecureErrorCallback:
+ 497 0000 00000000 		.space	4
+ 498              		.global	pSecureFaultCallback
+ 499              		.section	.bss.pSecureFaultCallback,"aw",%nobits
+ 500              		.align	2
+ 503              	pSecureFaultCallback:
+ 504 0000 00000000 		.space	4
+ 505              		.text
+ 506              	.Letext0:
+ 507              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 508              		.file 3 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 509              		.file 4 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 510              		.file 5 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_gpio.h"
+ 511              		.file 6 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_dma.h"
+ 512              		.file 7 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_uart.h"
+ 513              		.file 8 "../../Secure_nsclib/secure_nsc.h"
+ARM GAS  /tmp/ccPte7gl.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secure_nsc.c
+     /tmp/ccPte7gl.s:22     .text.SECURE_RegisterCallback:00000000 $t
+     /tmp/ccPte7gl.s:33     .text.SECURE_RegisterCallback:00000000 SECURE_RegisterCallback
+     /tmp/ccPte7gl.s:34     .text.SECURE_RegisterCallback:00000000 __acle_se_SECURE_RegisterCallback
+     /tmp/ccPte7gl.s:105    .text.SECURE_RegisterCallback:0000007c $d
+     /tmp/ccPte7gl.s:503    .bss.pSecureFaultCallback:00000000 pSecureFaultCallback
+     /tmp/ccPte7gl.s:496    .bss.pSecureErrorCallback:00000000 pSecureErrorCallback
+     /tmp/ccPte7gl.s:111    .text.NSC_print:00000000 $t
+     /tmp/ccPte7gl.s:122    .text.NSC_print:00000000 NSC_print
+     /tmp/ccPte7gl.s:123    .text.NSC_print:00000000 __acle_se_NSC_print
+     /tmp/ccPte7gl.s:191    .text.NSC_print:00000084 $d
+     /tmp/ccPte7gl.s:196    .text.GreenLED_ON:00000000 $t
+     /tmp/ccPte7gl.s:207    .text.GreenLED_ON:00000000 GreenLED_ON
+     /tmp/ccPte7gl.s:208    .text.GreenLED_ON:00000000 __acle_se_GreenLED_ON
+     /tmp/ccPte7gl.s:265    .text.GreenLED_ON:0000007c $d
+     /tmp/ccPte7gl.s:270    .text.GreenLED_OFF:00000000 $t
+     /tmp/ccPte7gl.s:281    .text.GreenLED_OFF:00000000 GreenLED_OFF
+     /tmp/ccPte7gl.s:282    .text.GreenLED_OFF:00000000 __acle_se_GreenLED_OFF
+     /tmp/ccPte7gl.s:339    .text.GreenLED_OFF:0000007c $d
+     /tmp/ccPte7gl.s:344    .text.RedLED_ON:00000000 $t
+     /tmp/ccPte7gl.s:355    .text.RedLED_ON:00000000 RedLED_ON
+     /tmp/ccPte7gl.s:356    .text.RedLED_ON:00000000 __acle_se_RedLED_ON
+     /tmp/ccPte7gl.s:413    .text.RedLED_ON:00000078 $d
+     /tmp/ccPte7gl.s:418    .text.RedLED_OFF:00000000 $t
+     /tmp/ccPte7gl.s:429    .text.RedLED_OFF:00000000 RedLED_OFF
+     /tmp/ccPte7gl.s:430    .text.RedLED_OFF:00000000 __acle_se_RedLED_OFF
+     /tmp/ccPte7gl.s:487    .text.RedLED_OFF:00000078 $d
+     /tmp/ccPte7gl.s:493    .bss.pSecureErrorCallback:00000000 $d
+     /tmp/ccPte7gl.s:500    .bss.pSecureFaultCallback:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_UART_Transmit
+huart1
+HAL_GPIO_WritePin

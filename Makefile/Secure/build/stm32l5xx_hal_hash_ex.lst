@@ -1,0 +1,2487 @@
+ARM GAS  /tmp/cclM6LAB.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"stm32l5xx_hal_hash_ex.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c"
+  21              		.section	.text.HAL_HASHEx_SHA224_Start,"ax",%progbits
+  22              		.align	1
+  23              		.global	HAL_HASHEx_SHA224_Start
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	HAL_HASHEx_SHA224_Start:
+  29              	.LVL0:
+  30              	.LFB202:
+   1:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+   2:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   ******************************************************************************
+   3:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @file    stm32l5xx_hal_hash_ex.c
+   4:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @author  MCD Application Team
+   5:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief   Extended HASH HAL module driver.
+   6:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          This file provides firmware functions to manage the following
+   7:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          functionalities of the HASH peripheral for SHA-224 and SHA-256
+   8:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          algorithms:
+   9:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *           + HASH or HMAC processing in polling mode
+  10:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *           + HASH or HMAC processing in interrupt mode
+  11:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *           + HASH or HMAC processing in DMA mode
+  12:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         Additionally, this file provides functions to manage HMAC
+  13:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         multi-buffer DMA-based processing for MD-5, SHA-1, SHA-224
+  14:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         and SHA-256.
+  15:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+  16:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+  17:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   ******************************************************************************
+  18:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @attention
+  19:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+  20:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * Copyright (c) 2019 STMicroelectronics.
+  21:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * All rights reserved.
+  22:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+  23:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * This software is licensed under terms that can be found in the LICENSE file
+  24:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * in the root directory of this software component.
+  25:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * If no LICENSE file comes with this software, it is provided AS-IS.
+  26:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+  27:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   ******************************************************************************
+  28:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   @verbatim
+ARM GAS  /tmp/cclM6LAB.s 			page 2
+
+
+  29:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+  30:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                      ##### HASH peripheral extended features  #####
+  31:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+  32:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]
+  33:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     The SHA-224 and SHA-256 HASH and HMAC processing can be carried out exactly
+  34:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     the same way as for SHA-1 or MD-5 algorithms.
+  35:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     (#) Three modes are available.
+  36:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****         (##) Polling mode: processing APIs are blocking functions
+  37:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              i.e. they process the data and wait till the digest computation is finished,
+  38:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              e.g. HAL_HASHEx_xxx_Start()
+  39:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****         (##) Interrupt mode: processing APIs are not blocking functions
+  40:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                 i.e. they process the data under interrupt,
+  41:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                 e.g. HAL_HASHEx_xxx_Start_IT()
+  42:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****         (##) DMA mode: processing APIs are not blocking functions and the CPU is
+  43:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              not used for data transfer i.e. the data transfer is ensured by DMA,
+  44:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                 e.g. HAL_HASHEx_xxx_Start_DMA(). Note that in DMA mode, a call to
+  45:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                 HAL_HASHEx_xxx_Finish() is then required to retrieve the digest.
+  46:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  47:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****    (#)Multi-buffer processing is possible in polling, interrupt and DMA modes.
+  48:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****         (##) In polling mode, only multi-buffer HASH processing is possible.
+  49:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              API HAL_HASHEx_xxx_Accumulate() must be called for each input buffer, except for the l
+  50:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              User must resort to HAL_HASHEx_xxx_Accumulate_End() to enter the last one and retrieve
+  51:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              well the computed digest.
+  52:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  53:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****         (##) In interrupt mode, API HAL_HASHEx_xxx_Accumulate_IT() must be called for each input bu
+  54:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              except for the last one.
+  55:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              User must resort to HAL_HASHEx_xxx_Accumulate_End_IT() to enter the last one and retri
+  56:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              well the computed digest.
+  57:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  58:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****         (##) In DMA mode, multi-buffer HASH and HMAC processing are possible.
+  59:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  60:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****               (+++) HASH processing: once initialization is done, MDMAT bit must be set through
+  61:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                __HAL_HASH_SET_MDMAT() macro.
+  62:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              From that point, each buffer can be fed to the Peripheral through HAL_HASHEx_xxx_Start
+  63:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              Before entering the last buffer, reset the MDMAT bit with __HAL_HASH_RESET_MDMAT()
+  64:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              macro then wrap-up the HASH processing in feeding the last input buffer through the
+  65:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              same API HAL_HASHEx_xxx_Start_DMA(). The digest can then be retrieved with a call to
+  66:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              API HAL_HASHEx_xxx_Finish().
+  67:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  68:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              (+++) HMAC processing (MD-5, SHA-1, SHA-224 and SHA-256 must all resort to
+  69:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              extended functions): after initialization, the key and the first input buffer are ente
+  70:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              in the Peripheral with the API HAL_HMACEx_xxx_Step1_2_DMA(). This carries out HMAC ste
+  71:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              starts step 2.
+  72:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              The following buffers are next entered with the API  HAL_HMACEx_xxx_Step2_DMA(). At th
+  73:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              point, the HMAC processing is still carrying out step 2.
+  74:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              Then, step 2 for the last input buffer and step 3 are carried out by a single call
+  75:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              to HAL_HMACEx_xxx_Step2_3_DMA().
+  76:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  77:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              The digest can finally be retrieved with a call to API HAL_HASH_xxx_Finish() for
+  78:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              MD-5 and SHA-1, to HAL_HASHEx_xxx_Finish() for SHA-224 and SHA-256.
+  79:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  80:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  81:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   @endverbatim
+  82:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   ******************************************************************************
+  83:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+  84:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  85:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /* Includes ------------------------------------------------------------------*/
+ARM GAS  /tmp/cclM6LAB.s 			page 3
+
+
+  86:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** #include "stm32l5xx_hal.h"
+  87:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  88:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  89:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  90:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  91:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @addtogroup STM32L5xx_HAL_Driver
+  92:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+  93:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+  94:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  95:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+  96:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx HASHEx
+  97:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief HASH HAL extended module driver.
+  98:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+  99:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 100:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** #ifdef HAL_HASH_MODULE_ENABLED
+ 101:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /* Private typedef -----------------------------------------------------------*/
+ 102:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /* Private define ------------------------------------------------------------*/
+ 103:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /* Private functions ---------------------------------------------------------*/
+ 104:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 105:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 106:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions HASH Extended Exported Functions
+ 107:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 108:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 109:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 110:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group1 HASH extended processing functions in polling mode
+ 111:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HASH extended processing functions using polling mode.
+ 112:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 113:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 114:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 115:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                ##### Polling mode HASH extended processing functions #####
+ 116:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 117:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions allowing to calculate in polling mode
+ 118:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the hash value using one of the following algorithms:
+ 119:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA224
+ 120:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Start()
+ 121:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Accmlt()
+ 122:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Accmlt_End()
+ 123:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 124:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Start()
+ 125:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Accmlt()
+ 126:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Accmlt_End()
+ 127:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 128:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..] For a single buffer to be hashed, user can resort to HAL_HASH_xxx_Start().
+ 129:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 130:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  In case of multi-buffer HASH processing (a single digest is computed while
+ 131:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           several buffers are fed to the Peripheral), the user can resort to successive calls
+ 132:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           to HAL_HASHEx_xxx_Accumulate() and wrap-up the digest computation by a call
+ 133:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           to HAL_HASHEx_xxx_Accumulate_End().
+ 134:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 135:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 136:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 137:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 138:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 139:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 140:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 141:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in SHA224 mode, next process pInBuffer then
+ 142:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest.
+ARM GAS  /tmp/cclM6LAB.s 			page 4
+
+
+ 143:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 144:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 145:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 146:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 147:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 148:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value
+ 149:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 150:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 151:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Start(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t S
+ 152:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                           uint8_t *pOutBuffer, uint32_t Timeout)
+ 153:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+  31              		.loc 1 153 1 view -0
+  32              		.cfi_startproc
+  33              		@ args = 4, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		.loc 1 153 1 is_stmt 0 view .LVU1
+  36 0000 10B5     		push	{r4, lr}
+  37              	.LCFI0:
+  38              		.cfi_def_cfa_offset 8
+  39              		.cfi_offset 4, -8
+  40              		.cfi_offset 14, -4
+  41 0002 82B0     		sub	sp, sp, #8
+  42              	.LCFI1:
+  43              		.cfi_def_cfa_offset 16
+ 154:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start(hhash, pInBuffer, Size, pOutBuffer, Timeout, HASH_ALGOSELECTION_SHA224);
+  44              		.loc 1 154 3 is_stmt 1 view .LVU2
+  45              		.loc 1 154 10 is_stmt 0 view .LVU3
+  46 0004 4FF48024 		mov	r4, #262144
+  47 0008 0194     		str	r4, [sp, #4]
+  48 000a 049C     		ldr	r4, [sp, #16]
+  49 000c 0094     		str	r4, [sp]
+  50 000e FFF7FEFF 		bl	HASH_Start
+  51              	.LVL1:
+ 155:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+  52              		.loc 1 155 1 view .LVU4
+  53 0012 02B0     		add	sp, sp, #8
+  54              	.LCFI2:
+  55              		.cfi_def_cfa_offset 8
+  56              		@ sp needed
+  57 0014 10BD     		pop	{r4, pc}
+  58              		.loc 1 155 1 view .LVU5
+  59              		.cfi_endproc
+  60              	.LFE202:
+  62              		.section	.text.HAL_HASHEx_SHA224_Accmlt,"ax",%progbits
+  63              		.align	1
+  64              		.global	HAL_HASHEx_SHA224_Accmlt
+  65              		.syntax unified
+  66              		.thumb
+  67              		.thumb_func
+  69              	HAL_HASHEx_SHA224_Accmlt:
+  70              	.LVL2:
+  71              	.LFB203:
+ 156:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 157:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 158:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  If not already done, initialize the HASH peripheral in SHA224 mode then
+ 159:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         processes pInBuffer.
+ 160:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Consecutive calls to HAL_HASHEx_SHA224_Accmlt() can be used to feed
+ARM GAS  /tmp/cclM6LAB.s 			page 5
+
+
+ 161:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         several input buffers back-to-back to the Peripheral that will yield a single
+ 162:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH signature once all buffers have been entered. Wrap-up of input
+ 163:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         buffers feeding and retrieval of digest is done by a call to
+ 164:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HAL_HASHEx_SHA224_Accmlt_End().
+ 165:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Field hhash->Phase of HASH handle is tested to check whether or not
+ 166:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the Peripheral has already been initialized.
+ 167:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is not retrieved by this API, user must resort to HAL_HASHEx_SHA224_Accmlt_End()
+ 168:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to read it, feeding at the same time the last input buffer to the Peripheral.
+ 169:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 170:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted. Only HAL_HASHEx_SHA224_Accmlt_End() is able
+ 171:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to manage the ending buffer with a length in bytes not a multiple of 4.
+ 172:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 173:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 174:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes, must be a multiple of 4.
+ 175:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 176:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 177:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Accmlt(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t 
+ 178:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+  72              		.loc 1 178 1 is_stmt 1 view -0
+  73              		.cfi_startproc
+  74              		@ args = 0, pretend = 0, frame = 0
+  75              		@ frame_needed = 0, uses_anonymous_args = 0
+  76              		.loc 1 178 1 is_stmt 0 view .LVU7
+  77 0000 08B5     		push	{r3, lr}
+  78              	.LCFI3:
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 3, -8
+  81              		.cfi_offset 14, -4
+ 179:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HASH_Accumulate(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+  82              		.loc 1 179 3 is_stmt 1 view .LVU8
+  83              		.loc 1 179 11 is_stmt 0 view .LVU9
+  84 0002 4FF48023 		mov	r3, #262144
+  85 0006 FFF7FEFF 		bl	HASH_Accumulate
+  86              	.LVL3:
+ 180:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+  87              		.loc 1 180 1 view .LVU10
+  88 000a 08BD     		pop	{r3, pc}
+  89              		.cfi_endproc
+  90              	.LFE203:
+  92              		.section	.text.HAL_HASHEx_SHA224_Accmlt_End,"ax",%progbits
+  93              		.align	1
+  94              		.global	HAL_HASHEx_SHA224_Accmlt_End
+  95              		.syntax unified
+  96              		.thumb
+  97              		.thumb_func
+  99              	HAL_HASHEx_SHA224_Accmlt_End:
+ 100              	.LVL4:
+ 101              	.LFB204:
+ 181:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 182:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 183:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  End computation of a single HASH signature after several calls to HAL_HASHEx_SHA224_Acc
+ 184:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 185:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 186:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 187:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 188:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 189:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value
+ARM GAS  /tmp/cclM6LAB.s 			page 6
+
+
+ 190:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 191:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 192:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Accmlt_End(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint3
+ 193:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                                uint8_t *pOutBuffer, uint32_t Timeout)
+ 194:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 102              		.loc 1 194 1 is_stmt 1 view -0
+ 103              		.cfi_startproc
+ 104              		@ args = 4, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106              		.loc 1 194 1 is_stmt 0 view .LVU12
+ 107 0000 10B5     		push	{r4, lr}
+ 108              	.LCFI4:
+ 109              		.cfi_def_cfa_offset 8
+ 110              		.cfi_offset 4, -8
+ 111              		.cfi_offset 14, -4
+ 112 0002 82B0     		sub	sp, sp, #8
+ 113              	.LCFI5:
+ 114              		.cfi_def_cfa_offset 16
+ 195:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start(hhash, pInBuffer, Size, pOutBuffer, Timeout, HASH_ALGOSELECTION_SHA224);
+ 115              		.loc 1 195 3 is_stmt 1 view .LVU13
+ 116              		.loc 1 195 10 is_stmt 0 view .LVU14
+ 117 0004 4FF48024 		mov	r4, #262144
+ 118 0008 0194     		str	r4, [sp, #4]
+ 119 000a 049C     		ldr	r4, [sp, #16]
+ 120 000c 0094     		str	r4, [sp]
+ 121 000e FFF7FEFF 		bl	HASH_Start
+ 122              	.LVL5:
+ 196:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 123              		.loc 1 196 1 view .LVU15
+ 124 0012 02B0     		add	sp, sp, #8
+ 125              	.LCFI6:
+ 126              		.cfi_def_cfa_offset 8
+ 127              		@ sp needed
+ 128 0014 10BD     		pop	{r4, pc}
+ 129              		.loc 1 196 1 view .LVU16
+ 130              		.cfi_endproc
+ 131              	.LFE204:
+ 133              		.section	.text.HAL_HASHEx_SHA256_Start,"ax",%progbits
+ 134              		.align	1
+ 135              		.global	HAL_HASHEx_SHA256_Start
+ 136              		.syntax unified
+ 137              		.thumb
+ 138              		.thumb_func
+ 140              	HAL_HASHEx_SHA256_Start:
+ 141              	.LVL6:
+ 142              	.LFB205:
+ 197:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 198:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 199:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in SHA256 mode, next process pInBuffer then
+ 200:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest.
+ 201:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 202:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 203:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 204:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 205:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 206:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value
+ 207:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ARM GAS  /tmp/cclM6LAB.s 			page 7
+
+
+ 208:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 209:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Start(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t S
+ 210:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                           uint8_t *pOutBuffer, uint32_t Timeout)
+ 211:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 143              		.loc 1 211 1 is_stmt 1 view -0
+ 144              		.cfi_startproc
+ 145              		@ args = 4, pretend = 0, frame = 0
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147              		.loc 1 211 1 is_stmt 0 view .LVU18
+ 148 0000 10B5     		push	{r4, lr}
+ 149              	.LCFI7:
+ 150              		.cfi_def_cfa_offset 8
+ 151              		.cfi_offset 4, -8
+ 152              		.cfi_offset 14, -4
+ 153 0002 82B0     		sub	sp, sp, #8
+ 154              	.LCFI8:
+ 155              		.cfi_def_cfa_offset 16
+ 212:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start(hhash, pInBuffer, Size, pOutBuffer, Timeout, HASH_ALGOSELECTION_SHA256);
+ 156              		.loc 1 212 3 is_stmt 1 view .LVU19
+ 157              		.loc 1 212 10 is_stmt 0 view .LVU20
+ 158 0004 034C     		ldr	r4, .L9
+ 159 0006 0194     		str	r4, [sp, #4]
+ 160 0008 049C     		ldr	r4, [sp, #16]
+ 161 000a 0094     		str	r4, [sp]
+ 162 000c FFF7FEFF 		bl	HASH_Start
+ 163              	.LVL7:
+ 213:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 164              		.loc 1 213 1 view .LVU21
+ 165 0010 02B0     		add	sp, sp, #8
+ 166              	.LCFI9:
+ 167              		.cfi_def_cfa_offset 8
+ 168              		@ sp needed
+ 169 0012 10BD     		pop	{r4, pc}
+ 170              	.LVL8:
+ 171              	.L10:
+ 172              		.loc 1 213 1 view .LVU22
+ 173              		.align	2
+ 174              	.L9:
+ 175 0014 80000400 		.word	262272
+ 176              		.cfi_endproc
+ 177              	.LFE205:
+ 179              		.section	.text.HAL_HASHEx_SHA256_Accmlt,"ax",%progbits
+ 180              		.align	1
+ 181              		.global	HAL_HASHEx_SHA256_Accmlt
+ 182              		.syntax unified
+ 183              		.thumb
+ 184              		.thumb_func
+ 186              	HAL_HASHEx_SHA256_Accmlt:
+ 187              	.LVL9:
+ 188              	.LFB206:
+ 214:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 215:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 216:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  If not already done, initialize the HASH peripheral in SHA256 mode then
+ 217:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         processes pInBuffer.
+ 218:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Consecutive calls to HAL_HASHEx_SHA256_Accmlt() can be used to feed
+ 219:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         several input buffers back-to-back to the Peripheral that will yield a single
+ 220:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH signature once all buffers have been entered. Wrap-up of input
+ARM GAS  /tmp/cclM6LAB.s 			page 8
+
+
+ 221:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         buffers feeding and retrieval of digest is done by a call to
+ 222:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HAL_HASHEx_SHA256_Accmlt_End().
+ 223:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Field hhash->Phase of HASH handle is tested to check whether or not
+ 224:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the Peripheral has already been initialized.
+ 225:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is not retrieved by this API, user must resort to HAL_HASHEx_SHA256_Accmlt_End()
+ 226:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to read it, feeding at the same time the last input buffer to the Peripheral.
+ 227:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 228:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted. Only HAL_HASHEx_SHA256_Accmlt_End() is able
+ 229:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to manage the ending buffer with a length in bytes not a multiple of 4.
+ 230:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 231:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 232:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes, must be a multiple of 4.
+ 233:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 234:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 235:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Accmlt(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t 
+ 236:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 189              		.loc 1 236 1 is_stmt 1 view -0
+ 190              		.cfi_startproc
+ 191              		@ args = 0, pretend = 0, frame = 0
+ 192              		@ frame_needed = 0, uses_anonymous_args = 0
+ 193              		.loc 1 236 1 is_stmt 0 view .LVU24
+ 194 0000 08B5     		push	{r3, lr}
+ 195              	.LCFI10:
+ 196              		.cfi_def_cfa_offset 8
+ 197              		.cfi_offset 3, -8
+ 198              		.cfi_offset 14, -4
+ 237:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HASH_Accumulate(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 199              		.loc 1 237 3 is_stmt 1 view .LVU25
+ 200              		.loc 1 237 11 is_stmt 0 view .LVU26
+ 201 0002 024B     		ldr	r3, .L13
+ 202 0004 FFF7FEFF 		bl	HASH_Accumulate
+ 203              	.LVL10:
+ 238:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 204              		.loc 1 238 1 view .LVU27
+ 205 0008 08BD     		pop	{r3, pc}
+ 206              	.L14:
+ 207 000a 00BF     		.align	2
+ 208              	.L13:
+ 209 000c 80000400 		.word	262272
+ 210              		.cfi_endproc
+ 211              	.LFE206:
+ 213              		.section	.text.HAL_HASHEx_SHA256_Accmlt_End,"ax",%progbits
+ 214              		.align	1
+ 215              		.global	HAL_HASHEx_SHA256_Accmlt_End
+ 216              		.syntax unified
+ 217              		.thumb
+ 218              		.thumb_func
+ 220              	HAL_HASHEx_SHA256_Accmlt_End:
+ 221              	.LVL11:
+ 222              	.LFB207:
+ 239:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 240:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 241:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  End computation of a single HASH signature after several calls to HAL_HASHEx_SHA256_Acc
+ 242:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 243:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 244:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 245:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ARM GAS  /tmp/cclM6LAB.s 			page 9
+
+
+ 246:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 247:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value
+ 248:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 249:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 250:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Accmlt_End(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint3
+ 251:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                                uint8_t *pOutBuffer, uint32_t Timeout)
+ 252:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 223              		.loc 1 252 1 is_stmt 1 view -0
+ 224              		.cfi_startproc
+ 225              		@ args = 4, pretend = 0, frame = 0
+ 226              		@ frame_needed = 0, uses_anonymous_args = 0
+ 227              		.loc 1 252 1 is_stmt 0 view .LVU29
+ 228 0000 10B5     		push	{r4, lr}
+ 229              	.LCFI11:
+ 230              		.cfi_def_cfa_offset 8
+ 231              		.cfi_offset 4, -8
+ 232              		.cfi_offset 14, -4
+ 233 0002 82B0     		sub	sp, sp, #8
+ 234              	.LCFI12:
+ 235              		.cfi_def_cfa_offset 16
+ 253:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start(hhash, pInBuffer, Size, pOutBuffer, Timeout, HASH_ALGOSELECTION_SHA256);
+ 236              		.loc 1 253 3 is_stmt 1 view .LVU30
+ 237              		.loc 1 253 10 is_stmt 0 view .LVU31
+ 238 0004 034C     		ldr	r4, .L17
+ 239 0006 0194     		str	r4, [sp, #4]
+ 240 0008 049C     		ldr	r4, [sp, #16]
+ 241 000a 0094     		str	r4, [sp]
+ 242 000c FFF7FEFF 		bl	HASH_Start
+ 243              	.LVL12:
+ 254:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 244              		.loc 1 254 1 view .LVU32
+ 245 0010 02B0     		add	sp, sp, #8
+ 246              	.LCFI13:
+ 247              		.cfi_def_cfa_offset 8
+ 248              		@ sp needed
+ 249 0012 10BD     		pop	{r4, pc}
+ 250              	.LVL13:
+ 251              	.L18:
+ 252              		.loc 1 254 1 view .LVU33
+ 253              		.align	2
+ 254              	.L17:
+ 255 0014 80000400 		.word	262272
+ 256              		.cfi_endproc
+ 257              	.LFE207:
+ 259              		.section	.text.HAL_HASHEx_SHA224_Start_IT,"ax",%progbits
+ 260              		.align	1
+ 261              		.global	HAL_HASHEx_SHA224_Start_IT
+ 262              		.syntax unified
+ 263              		.thumb
+ 264              		.thumb_func
+ 266              	HAL_HASHEx_SHA224_Start_IT:
+ 267              	.LVL14:
+ 268              	.LFB208:
+ 255:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 256:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 257:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @}
+ 258:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ARM GAS  /tmp/cclM6LAB.s 			page 10
+
+
+ 259:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 260:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group2 HASH extended processing functions in interrupt mode
+ 261:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HASH extended processing functions using interrupt mode.
+ 262:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 263:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 264:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 265:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           ##### Interruption mode HASH extended processing functions #####
+ 266:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 267:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions allowing to calculate in interrupt mode
+ 268:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the hash value using one of the following algorithms:
+ 269:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA224
+ 270:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Start_IT()
+ 271:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Accmlt_IT()
+ 272:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Accmlt_End_IT()
+ 273:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 274:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Start_IT()
+ 275:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Accmlt_IT()
+ 276:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Accmlt_End_IT()
+ 277:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 278:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 279:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 280:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 281:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 282:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 283:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 284:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in SHA224 mode, next process pInBuffer then
+ 285:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest in interruption mode.
+ 286:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 287:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 288:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 289:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 290:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 291:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 292:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 293:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Start_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_
+ 294:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                              uint8_t *pOutBuffer)
+ 295:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 269              		.loc 1 295 1 is_stmt 1 view -0
+ 270              		.cfi_startproc
+ 271              		@ args = 0, pretend = 0, frame = 0
+ 272              		@ frame_needed = 0, uses_anonymous_args = 0
+ 273              		.loc 1 295 1 is_stmt 0 view .LVU35
+ 274 0000 10B5     		push	{r4, lr}
+ 275              	.LCFI14:
+ 276              		.cfi_def_cfa_offset 8
+ 277              		.cfi_offset 4, -8
+ 278              		.cfi_offset 14, -4
+ 279 0002 82B0     		sub	sp, sp, #8
+ 280              	.LCFI15:
+ 281              		.cfi_def_cfa_offset 16
+ 296:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start_IT(hhash, pInBuffer, Size, pOutBuffer, HASH_ALGOSELECTION_SHA224);
+ 282              		.loc 1 296 3 is_stmt 1 view .LVU36
+ 283              		.loc 1 296 10 is_stmt 0 view .LVU37
+ 284 0004 4FF48024 		mov	r4, #262144
+ 285 0008 0094     		str	r4, [sp]
+ 286 000a FFF7FEFF 		bl	HASH_Start_IT
+ 287              	.LVL15:
+ARM GAS  /tmp/cclM6LAB.s 			page 11
+
+
+ 297:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 288              		.loc 1 297 1 view .LVU38
+ 289 000e 02B0     		add	sp, sp, #8
+ 290              	.LCFI16:
+ 291              		.cfi_def_cfa_offset 8
+ 292              		@ sp needed
+ 293 0010 10BD     		pop	{r4, pc}
+ 294              		.cfi_endproc
+ 295              	.LFE208:
+ 297              		.section	.text.HAL_HASHEx_SHA224_Accmlt_IT,"ax",%progbits
+ 298              		.align	1
+ 299              		.global	HAL_HASHEx_SHA224_Accmlt_IT
+ 300              		.syntax unified
+ 301              		.thumb
+ 302              		.thumb_func
+ 304              	HAL_HASHEx_SHA224_Accmlt_IT:
+ 305              	.LVL16:
+ 306              	.LFB209:
+ 298:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 299:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 300:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  If not already done, initialize the HASH peripheral in SHA224 mode then
+ 301:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         processes pInBuffer in interruption mode.
+ 302:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Consecutive calls to HAL_HASHEx_SHA224_Accmlt_IT() can be used to feed
+ 303:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         several input buffers back-to-back to the Peripheral that will yield a single
+ 304:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH signature once all buffers have been entered. Wrap-up of input
+ 305:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         buffers feeding and retrieval of digest is done by a call to
+ 306:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HAL_HASHEx_SHA224_Accmlt_End_IT().
+ 307:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Field hhash->Phase of HASH handle is tested to check whether or not
+ 308:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the Peripheral has already been initialized.
+ 309:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 310:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted. Only HAL_HASHEx_SHA224_Accmlt_End_IT() is able
+ 311:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to manage the ending buffer with a length in bytes not a multiple of 4.
+ 312:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 313:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 314:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes, must be a multiple of 4.
+ 315:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 316:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 317:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Accmlt_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 318:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 307              		.loc 1 318 1 is_stmt 1 view -0
+ 308              		.cfi_startproc
+ 309              		@ args = 0, pretend = 0, frame = 0
+ 310              		@ frame_needed = 0, uses_anonymous_args = 0
+ 311              		.loc 1 318 1 is_stmt 0 view .LVU40
+ 312 0000 08B5     		push	{r3, lr}
+ 313              	.LCFI17:
+ 314              		.cfi_def_cfa_offset 8
+ 315              		.cfi_offset 3, -8
+ 316              		.cfi_offset 14, -4
+ 319:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HASH_Accumulate_IT(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+ 317              		.loc 1 319 3 is_stmt 1 view .LVU41
+ 318              		.loc 1 319 11 is_stmt 0 view .LVU42
+ 319 0002 4FF48023 		mov	r3, #262144
+ 320 0006 FFF7FEFF 		bl	HASH_Accumulate_IT
+ 321              	.LVL17:
+ 320:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 322              		.loc 1 320 1 view .LVU43
+ARM GAS  /tmp/cclM6LAB.s 			page 12
+
+
+ 323 000a 08BD     		pop	{r3, pc}
+ 324              		.cfi_endproc
+ 325              	.LFE209:
+ 327              		.section	.text.HAL_HASHEx_SHA224_Accmlt_End_IT,"ax",%progbits
+ 328              		.align	1
+ 329              		.global	HAL_HASHEx_SHA224_Accmlt_End_IT
+ 330              		.syntax unified
+ 331              		.thumb
+ 332              		.thumb_func
+ 334              	HAL_HASHEx_SHA224_Accmlt_End_IT:
+ 335              	.LVL18:
+ 336              	.LFB210:
+ 321:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 322:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 323:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  End computation of a single HASH signature after several calls to HAL_HASHEx_SHA224_Acc
+ 324:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 325:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 326:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 327:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 328:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 329:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 330:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 331:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Accmlt_End_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, ui
+ 332:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                                   uint8_t *pOutBuffer)
+ 333:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 337              		.loc 1 333 1 is_stmt 1 view -0
+ 338              		.cfi_startproc
+ 339              		@ args = 0, pretend = 0, frame = 0
+ 340              		@ frame_needed = 0, uses_anonymous_args = 0
+ 341              		.loc 1 333 1 is_stmt 0 view .LVU45
+ 342 0000 10B5     		push	{r4, lr}
+ 343              	.LCFI18:
+ 344              		.cfi_def_cfa_offset 8
+ 345              		.cfi_offset 4, -8
+ 346              		.cfi_offset 14, -4
+ 347 0002 82B0     		sub	sp, sp, #8
+ 348              	.LCFI19:
+ 349              		.cfi_def_cfa_offset 16
+ 334:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start_IT(hhash, pInBuffer, Size, pOutBuffer, HASH_ALGOSELECTION_SHA224);
+ 350              		.loc 1 334 3 is_stmt 1 view .LVU46
+ 351              		.loc 1 334 10 is_stmt 0 view .LVU47
+ 352 0004 4FF48024 		mov	r4, #262144
+ 353 0008 0094     		str	r4, [sp]
+ 354 000a FFF7FEFF 		bl	HASH_Start_IT
+ 355              	.LVL19:
+ 335:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 356              		.loc 1 335 1 view .LVU48
+ 357 000e 02B0     		add	sp, sp, #8
+ 358              	.LCFI20:
+ 359              		.cfi_def_cfa_offset 8
+ 360              		@ sp needed
+ 361 0010 10BD     		pop	{r4, pc}
+ 362              		.cfi_endproc
+ 363              	.LFE210:
+ 365              		.section	.text.HAL_HASHEx_SHA256_Start_IT,"ax",%progbits
+ 366              		.align	1
+ 367              		.global	HAL_HASHEx_SHA256_Start_IT
+ARM GAS  /tmp/cclM6LAB.s 			page 13
+
+
+ 368              		.syntax unified
+ 369              		.thumb
+ 370              		.thumb_func
+ 372              	HAL_HASHEx_SHA256_Start_IT:
+ 373              	.LVL20:
+ 374              	.LFB211:
+ 336:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 337:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 338:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in SHA256 mode, next process pInBuffer then
+ 339:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest in interruption mode.
+ 340:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 341:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 342:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 343:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 344:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 345:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 346:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 347:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Start_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_
+ 348:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                              uint8_t *pOutBuffer)
+ 349:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 375              		.loc 1 349 1 is_stmt 1 view -0
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379              		.loc 1 349 1 is_stmt 0 view .LVU50
+ 380 0000 10B5     		push	{r4, lr}
+ 381              	.LCFI21:
+ 382              		.cfi_def_cfa_offset 8
+ 383              		.cfi_offset 4, -8
+ 384              		.cfi_offset 14, -4
+ 385 0002 82B0     		sub	sp, sp, #8
+ 386              	.LCFI22:
+ 387              		.cfi_def_cfa_offset 16
+ 350:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start_IT(hhash, pInBuffer, Size, pOutBuffer, HASH_ALGOSELECTION_SHA256);
+ 388              		.loc 1 350 3 is_stmt 1 view .LVU51
+ 389              		.loc 1 350 10 is_stmt 0 view .LVU52
+ 390 0004 024C     		ldr	r4, .L27
+ 391 0006 0094     		str	r4, [sp]
+ 392 0008 FFF7FEFF 		bl	HASH_Start_IT
+ 393              	.LVL21:
+ 351:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 394              		.loc 1 351 1 view .LVU53
+ 395 000c 02B0     		add	sp, sp, #8
+ 396              	.LCFI23:
+ 397              		.cfi_def_cfa_offset 8
+ 398              		@ sp needed
+ 399 000e 10BD     		pop	{r4, pc}
+ 400              	.L28:
+ 401              		.align	2
+ 402              	.L27:
+ 403 0010 80000400 		.word	262272
+ 404              		.cfi_endproc
+ 405              	.LFE211:
+ 407              		.section	.text.HAL_HASHEx_SHA256_Accmlt_IT,"ax",%progbits
+ 408              		.align	1
+ 409              		.global	HAL_HASHEx_SHA256_Accmlt_IT
+ 410              		.syntax unified
+ARM GAS  /tmp/cclM6LAB.s 			page 14
+
+
+ 411              		.thumb
+ 412              		.thumb_func
+ 414              	HAL_HASHEx_SHA256_Accmlt_IT:
+ 415              	.LVL22:
+ 416              	.LFB212:
+ 352:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 353:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 354:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  If not already done, initialize the HASH peripheral in SHA256 mode then
+ 355:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         processes pInBuffer in interruption mode.
+ 356:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Consecutive calls to HAL_HASHEx_SHA256_Accmlt_IT() can be used to feed
+ 357:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         several input buffers back-to-back to the Peripheral that will yield a single
+ 358:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH signature once all buffers have been entered. Wrap-up of input
+ 359:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         buffers feeding and retrieval of digest is done by a call to
+ 360:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HAL_HASHEx_SHA256_Accmlt_End_IT().
+ 361:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Field hhash->Phase of HASH handle is tested to check whether or not
+ 362:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the Peripheral has already been initialized.
+ 363:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 364:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted. Only HAL_HASHEx_SHA256_Accmlt_End_IT() is able
+ 365:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to manage the ending buffer with a length in bytes not a multiple of 4.
+ 366:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 367:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 368:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes, must be a multiple of 4.
+ 369:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 370:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 371:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Accmlt_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 372:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 417              		.loc 1 372 1 is_stmt 1 view -0
+ 418              		.cfi_startproc
+ 419              		@ args = 0, pretend = 0, frame = 0
+ 420              		@ frame_needed = 0, uses_anonymous_args = 0
+ 421              		.loc 1 372 1 is_stmt 0 view .LVU55
+ 422 0000 08B5     		push	{r3, lr}
+ 423              	.LCFI24:
+ 424              		.cfi_def_cfa_offset 8
+ 425              		.cfi_offset 3, -8
+ 426              		.cfi_offset 14, -4
+ 373:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HASH_Accumulate_IT(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 427              		.loc 1 373 3 is_stmt 1 view .LVU56
+ 428              		.loc 1 373 11 is_stmt 0 view .LVU57
+ 429 0002 024B     		ldr	r3, .L31
+ 430 0004 FFF7FEFF 		bl	HASH_Accumulate_IT
+ 431              	.LVL23:
+ 374:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 432              		.loc 1 374 1 view .LVU58
+ 433 0008 08BD     		pop	{r3, pc}
+ 434              	.L32:
+ 435 000a 00BF     		.align	2
+ 436              	.L31:
+ 437 000c 80000400 		.word	262272
+ 438              		.cfi_endproc
+ 439              	.LFE212:
+ 441              		.section	.text.HAL_HASHEx_SHA256_Accmlt_End_IT,"ax",%progbits
+ 442              		.align	1
+ 443              		.global	HAL_HASHEx_SHA256_Accmlt_End_IT
+ 444              		.syntax unified
+ 445              		.thumb
+ 446              		.thumb_func
+ARM GAS  /tmp/cclM6LAB.s 			page 15
+
+
+ 448              	HAL_HASHEx_SHA256_Accmlt_End_IT:
+ 449              	.LVL24:
+ 450              	.LFB213:
+ 375:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 376:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 377:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  End computation of a single HASH signature after several calls to HAL_HASHEx_SHA256_Acc
+ 378:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 379:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 380:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 381:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 382:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 383:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 384:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 385:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Accmlt_End_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, ui
+ 386:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                                   uint8_t *pOutBuffer)
+ 387:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 451              		.loc 1 387 1 is_stmt 1 view -0
+ 452              		.cfi_startproc
+ 453              		@ args = 0, pretend = 0, frame = 0
+ 454              		@ frame_needed = 0, uses_anonymous_args = 0
+ 455              		.loc 1 387 1 is_stmt 0 view .LVU60
+ 456 0000 10B5     		push	{r4, lr}
+ 457              	.LCFI25:
+ 458              		.cfi_def_cfa_offset 8
+ 459              		.cfi_offset 4, -8
+ 460              		.cfi_offset 14, -4
+ 461 0002 82B0     		sub	sp, sp, #8
+ 462              	.LCFI26:
+ 463              		.cfi_def_cfa_offset 16
+ 388:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start_IT(hhash, pInBuffer, Size, pOutBuffer, HASH_ALGOSELECTION_SHA256);
+ 464              		.loc 1 388 3 is_stmt 1 view .LVU61
+ 465              		.loc 1 388 10 is_stmt 0 view .LVU62
+ 466 0004 024C     		ldr	r4, .L35
+ 467 0006 0094     		str	r4, [sp]
+ 468 0008 FFF7FEFF 		bl	HASH_Start_IT
+ 469              	.LVL25:
+ 389:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 470              		.loc 1 389 1 view .LVU63
+ 471 000c 02B0     		add	sp, sp, #8
+ 472              	.LCFI27:
+ 473              		.cfi_def_cfa_offset 8
+ 474              		@ sp needed
+ 475 000e 10BD     		pop	{r4, pc}
+ 476              	.L36:
+ 477              		.align	2
+ 478              	.L35:
+ 479 0010 80000400 		.word	262272
+ 480              		.cfi_endproc
+ 481              	.LFE213:
+ 483              		.section	.text.HAL_HASHEx_SHA224_Start_DMA,"ax",%progbits
+ 484              		.align	1
+ 485              		.global	HAL_HASHEx_SHA224_Start_DMA
+ 486              		.syntax unified
+ 487              		.thumb
+ 488              		.thumb_func
+ 490              	HAL_HASHEx_SHA224_Start_DMA:
+ 491              	.LVL26:
+ARM GAS  /tmp/cclM6LAB.s 			page 16
+
+
+ 492              	.LFB214:
+ 390:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 391:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 392:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @}
+ 393:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 394:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 395:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group3 HASH extended processing functions in DMA mode
+ 396:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HASH extended processing functions using DMA mode.
+ 397:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 398:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 399:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 400:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                 ##### DMA mode HASH extended  processing functions #####
+ 401:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 402:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions allowing to calculate in DMA mode
+ 403:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the hash value using one of the following algorithms:
+ 404:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA224
+ 405:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Start_DMA()
+ 406:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA224_Finish()
+ 407:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 408:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Start_DMA()
+ 409:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HASHEx_SHA256_Finish()
+ 410:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 411:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  When resorting to DMA mode to enter the data in the Peripheral, user must resort
+ 412:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           to  HAL_HASHEx_xxx_Start_DMA() then read the resulting digest with
+ 413:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           HAL_HASHEx_xxx_Finish().
+ 414:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 415:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  In case of multi-buffer HASH processing, MDMAT bit must first be set before
+ 416:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the successive calls to HAL_HASHEx_xxx_Start_DMA(). Then, MDMAT bit needs to be
+ 417:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           reset before the last call to HAL_HASHEx_xxx_Start_DMA(). Digest is finally
+ 418:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           retrieved thanks to HAL_HASHEx_xxx_Finish().
+ 419:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 420:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 421:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 422:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 423:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 424:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 425:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 426:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 427:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 428:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in SHA224 mode then initiate a DMA transfer
+ 429:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to feed the input buffer to the Peripheral.
+ 430:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfer is finished, HAL_HASHEx_SHA224_Finish() API must
+ 431:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         be called to retrieve the computed digest.
+ 432:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 433:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 434:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 435:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 436:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 437:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Start_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 438:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 493              		.loc 1 438 1 is_stmt 1 view -0
+ 494              		.cfi_startproc
+ 495              		@ args = 0, pretend = 0, frame = 0
+ 496              		@ frame_needed = 0, uses_anonymous_args = 0
+ 497              		.loc 1 438 1 is_stmt 0 view .LVU65
+ 498 0000 08B5     		push	{r3, lr}
+ 499              	.LCFI28:
+ARM GAS  /tmp/cclM6LAB.s 			page 17
+
+
+ 500              		.cfi_def_cfa_offset 8
+ 501              		.cfi_offset 3, -8
+ 502              		.cfi_offset 14, -4
+ 439:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+ 503              		.loc 1 439 3 is_stmt 1 view .LVU66
+ 504              		.loc 1 439 10 is_stmt 0 view .LVU67
+ 505 0002 4FF48023 		mov	r3, #262144
+ 506 0006 FFF7FEFF 		bl	HASH_Start_DMA
+ 507              	.LVL27:
+ 440:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 508              		.loc 1 440 1 view .LVU68
+ 509 000a 08BD     		pop	{r3, pc}
+ 510              		.cfi_endproc
+ 511              	.LFE214:
+ 513              		.section	.text.HAL_HASHEx_SHA224_Finish,"ax",%progbits
+ 514              		.align	1
+ 515              		.global	HAL_HASHEx_SHA224_Finish
+ 516              		.syntax unified
+ 517              		.thumb
+ 518              		.thumb_func
+ 520              	HAL_HASHEx_SHA224_Finish:
+ 521              	.LVL28:
+ 522              	.LFB215:
+ 441:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 442:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 443:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Return the computed digest in SHA224 mode.
+ 444:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API waits for DCIS to be set then reads the computed digest.
+ 445:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   HAL_HASHEx_SHA224_Finish() can be used as well to retrieve the digest in
+ 446:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HMAC SHA224 mode.
+ 447:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 448:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 449:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value.
+ 450:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 451:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 452:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA224_Finish(HASH_HandleTypeDef *hhash, uint8_t *pOutBuffer, uint32_t
+ 453:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 523              		.loc 1 453 1 is_stmt 1 view -0
+ 524              		.cfi_startproc
+ 525              		@ args = 0, pretend = 0, frame = 0
+ 526              		@ frame_needed = 0, uses_anonymous_args = 0
+ 527              		.loc 1 453 1 is_stmt 0 view .LVU70
+ 528 0000 08B5     		push	{r3, lr}
+ 529              	.LCFI29:
+ 530              		.cfi_def_cfa_offset 8
+ 531              		.cfi_offset 3, -8
+ 532              		.cfi_offset 14, -4
+ 454:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Finish(hhash, pOutBuffer, Timeout);
+ 533              		.loc 1 454 3 is_stmt 1 view .LVU71
+ 534              		.loc 1 454 10 is_stmt 0 view .LVU72
+ 535 0002 FFF7FEFF 		bl	HASH_Finish
+ 536              	.LVL29:
+ 455:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 537              		.loc 1 455 1 view .LVU73
+ 538 0006 08BD     		pop	{r3, pc}
+ 539              		.cfi_endproc
+ 540              	.LFE215:
+ 542              		.section	.text.HAL_HASHEx_SHA256_Start_DMA,"ax",%progbits
+ARM GAS  /tmp/cclM6LAB.s 			page 18
+
+
+ 543              		.align	1
+ 544              		.global	HAL_HASHEx_SHA256_Start_DMA
+ 545              		.syntax unified
+ 546              		.thumb
+ 547              		.thumb_func
+ 549              	HAL_HASHEx_SHA256_Start_DMA:
+ 550              	.LVL30:
+ 551              	.LFB216:
+ 456:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 457:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 458:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in SHA256 mode then initiate a DMA transfer
+ 459:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to feed the input buffer to the Peripheral.
+ 460:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfer is finished, HAL_HASHEx_SHA256_Finish() API must
+ 461:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         be called to retrieve the computed digest.
+ 462:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 463:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 464:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 465:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 466:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 467:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Start_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 468:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 552              		.loc 1 468 1 is_stmt 1 view -0
+ 553              		.cfi_startproc
+ 554              		@ args = 0, pretend = 0, frame = 0
+ 555              		@ frame_needed = 0, uses_anonymous_args = 0
+ 556              		.loc 1 468 1 is_stmt 0 view .LVU75
+ 557 0000 08B5     		push	{r3, lr}
+ 558              	.LCFI30:
+ 559              		.cfi_def_cfa_offset 8
+ 560              		.cfi_offset 3, -8
+ 561              		.cfi_offset 14, -4
+ 469:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 562              		.loc 1 469 3 is_stmt 1 view .LVU76
+ 563              		.loc 1 469 10 is_stmt 0 view .LVU77
+ 564 0002 024B     		ldr	r3, .L43
+ 565 0004 FFF7FEFF 		bl	HASH_Start_DMA
+ 566              	.LVL31:
+ 470:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 567              		.loc 1 470 1 view .LVU78
+ 568 0008 08BD     		pop	{r3, pc}
+ 569              	.L44:
+ 570 000a 00BF     		.align	2
+ 571              	.L43:
+ 572 000c 80000400 		.word	262272
+ 573              		.cfi_endproc
+ 574              	.LFE216:
+ 576              		.section	.text.HAL_HASHEx_SHA256_Finish,"ax",%progbits
+ 577              		.align	1
+ 578              		.global	HAL_HASHEx_SHA256_Finish
+ 579              		.syntax unified
+ 580              		.thumb
+ 581              		.thumb_func
+ 583              	HAL_HASHEx_SHA256_Finish:
+ 584              	.LVL32:
+ 585              	.LFB217:
+ 471:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 472:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ARM GAS  /tmp/cclM6LAB.s 			page 19
+
+
+ 473:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Return the computed digest in SHA256 mode.
+ 474:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API waits for DCIS to be set then reads the computed digest.
+ 475:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   HAL_HASHEx_SHA256_Finish() can be used as well to retrieve the digest in
+ 476:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HMAC SHA256 mode.
+ 477:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 478:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 479:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value.
+ 480:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 481:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 482:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HASHEx_SHA256_Finish(HASH_HandleTypeDef *hhash, uint8_t *pOutBuffer, uint32_t
+ 483:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 586              		.loc 1 483 1 is_stmt 1 view -0
+ 587              		.cfi_startproc
+ 588              		@ args = 0, pretend = 0, frame = 0
+ 589              		@ frame_needed = 0, uses_anonymous_args = 0
+ 590              		.loc 1 483 1 is_stmt 0 view .LVU80
+ 591 0000 08B5     		push	{r3, lr}
+ 592              	.LCFI31:
+ 593              		.cfi_def_cfa_offset 8
+ 594              		.cfi_offset 3, -8
+ 595              		.cfi_offset 14, -4
+ 484:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HASH_Finish(hhash, pOutBuffer, Timeout);
+ 596              		.loc 1 484 3 is_stmt 1 view .LVU81
+ 597              		.loc 1 484 10 is_stmt 0 view .LVU82
+ 598 0002 FFF7FEFF 		bl	HASH_Finish
+ 599              	.LVL33:
+ 485:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 600              		.loc 1 485 1 view .LVU83
+ 601 0006 08BD     		pop	{r3, pc}
+ 602              		.cfi_endproc
+ 603              	.LFE217:
+ 605              		.section	.text.HAL_HMACEx_SHA224_Start,"ax",%progbits
+ 606              		.align	1
+ 607              		.global	HAL_HMACEx_SHA224_Start
+ 608              		.syntax unified
+ 609              		.thumb
+ 610              		.thumb_func
+ 612              	HAL_HMACEx_SHA224_Start:
+ 613              	.LVL34:
+ 614              	.LFB218:
+ 486:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 487:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 488:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @}
+ 489:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 490:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 491:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group4 HMAC extended processing functions in polling mode
+ 492:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HMAC extended processing functions using polling mode.
+ 493:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 494:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 495:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 496:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              ##### Polling mode HMAC extended processing functions #####
+ 497:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 498:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions allowing to calculate in polling mode
+ 499:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the HMAC value using one of the following algorithms:
+ 500:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA224
+ 501:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA224_Start()
+ 502:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ARM GAS  /tmp/cclM6LAB.s 			page 20
+
+
+ 503:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA256_Start()
+ 504:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 505:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 506:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 507:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 508:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 509:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 510:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 511:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 512:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in HMAC SHA224 mode, next process pInBuffer then
+ 513:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest.
+ 514:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 515:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 516:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 517:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 518:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 519:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 520:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 521:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value.
+ 522:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 523:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 524:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA224_Start(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t S
+ 525:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                           uint8_t *pOutBuffer, uint32_t Timeout)
+ 526:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 615              		.loc 1 526 1 is_stmt 1 view -0
+ 616              		.cfi_startproc
+ 617              		@ args = 4, pretend = 0, frame = 0
+ 618              		@ frame_needed = 0, uses_anonymous_args = 0
+ 619              		.loc 1 526 1 is_stmt 0 view .LVU85
+ 620 0000 10B5     		push	{r4, lr}
+ 621              	.LCFI32:
+ 622              		.cfi_def_cfa_offset 8
+ 623              		.cfi_offset 4, -8
+ 624              		.cfi_offset 14, -4
+ 625 0002 82B0     		sub	sp, sp, #8
+ 626              	.LCFI33:
+ 627              		.cfi_def_cfa_offset 16
+ 527:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HMAC_Start(hhash, pInBuffer, Size, pOutBuffer, Timeout, HASH_ALGOSELECTION_SHA224);
+ 628              		.loc 1 527 3 is_stmt 1 view .LVU86
+ 629              		.loc 1 527 10 is_stmt 0 view .LVU87
+ 630 0004 4FF48024 		mov	r4, #262144
+ 631 0008 0194     		str	r4, [sp, #4]
+ 632 000a 049C     		ldr	r4, [sp, #16]
+ 633 000c 0094     		str	r4, [sp]
+ 634 000e FFF7FEFF 		bl	HMAC_Start
+ 635              	.LVL35:
+ 528:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 636              		.loc 1 528 1 view .LVU88
+ 637 0012 02B0     		add	sp, sp, #8
+ 638              	.LCFI34:
+ 639              		.cfi_def_cfa_offset 8
+ 640              		@ sp needed
+ 641 0014 10BD     		pop	{r4, pc}
+ 642              		.loc 1 528 1 view .LVU89
+ 643              		.cfi_endproc
+ 644              	.LFE218:
+ 646              		.section	.text.HAL_HMACEx_SHA256_Start,"ax",%progbits
+ARM GAS  /tmp/cclM6LAB.s 			page 21
+
+
+ 647              		.align	1
+ 648              		.global	HAL_HMACEx_SHA256_Start
+ 649              		.syntax unified
+ 650              		.thumb
+ 651              		.thumb_func
+ 653              	HAL_HMACEx_SHA256_Start:
+ 654              	.LVL36:
+ 655              	.LFB219:
+ 529:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 530:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 531:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in HMAC SHA256 mode, next process pInBuffer then
+ 532:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest.
+ 533:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 534:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 535:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 536:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 537:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 538:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 539:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 540:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Timeout Timeout value.
+ 541:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 542:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 543:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA256_Start(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t S
+ 544:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                           uint8_t *pOutBuffer, uint32_t Timeout)
+ 545:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 656              		.loc 1 545 1 is_stmt 1 view -0
+ 657              		.cfi_startproc
+ 658              		@ args = 4, pretend = 0, frame = 0
+ 659              		@ frame_needed = 0, uses_anonymous_args = 0
+ 660              		.loc 1 545 1 is_stmt 0 view .LVU91
+ 661 0000 10B5     		push	{r4, lr}
+ 662              	.LCFI35:
+ 663              		.cfi_def_cfa_offset 8
+ 664              		.cfi_offset 4, -8
+ 665              		.cfi_offset 14, -4
+ 666 0002 82B0     		sub	sp, sp, #8
+ 667              	.LCFI36:
+ 668              		.cfi_def_cfa_offset 16
+ 546:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return HMAC_Start(hhash, pInBuffer, Size, pOutBuffer, Timeout, HASH_ALGOSELECTION_SHA256);
+ 669              		.loc 1 546 3 is_stmt 1 view .LVU92
+ 670              		.loc 1 546 10 is_stmt 0 view .LVU93
+ 671 0004 034C     		ldr	r4, .L51
+ 672 0006 0194     		str	r4, [sp, #4]
+ 673 0008 049C     		ldr	r4, [sp, #16]
+ 674 000a 0094     		str	r4, [sp]
+ 675 000c FFF7FEFF 		bl	HMAC_Start
+ 676              	.LVL37:
+ 547:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 677              		.loc 1 547 1 view .LVU94
+ 678 0010 02B0     		add	sp, sp, #8
+ 679              	.LCFI37:
+ 680              		.cfi_def_cfa_offset 8
+ 681              		@ sp needed
+ 682 0012 10BD     		pop	{r4, pc}
+ 683              	.LVL38:
+ 684              	.L52:
+ 685              		.loc 1 547 1 view .LVU95
+ARM GAS  /tmp/cclM6LAB.s 			page 22
+
+
+ 686              		.align	2
+ 687              	.L51:
+ 688 0014 80000400 		.word	262272
+ 689              		.cfi_endproc
+ 690              	.LFE219:
+ 692              		.section	.text.HAL_HMACEx_SHA224_Start_IT,"ax",%progbits
+ 693              		.align	1
+ 694              		.global	HAL_HMACEx_SHA224_Start_IT
+ 695              		.syntax unified
+ 696              		.thumb
+ 697              		.thumb_func
+ 699              	HAL_HMACEx_SHA224_Start_IT:
+ 700              	.LVL39:
+ 701              	.LFB220:
+ 548:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 549:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 550:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @}
+ 551:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 552:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 553:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 554:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group5 HMAC extended processing functions in interrupt mode
+ 555:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HMAC extended processing functions using interruption mode.
+ 556:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 557:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 558:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 559:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****              ##### Interrupt mode HMAC extended processing functions #####
+ 560:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 561:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions allowing to calculate in interrupt mode
+ 562:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the HMAC value using one of the following algorithms:
+ 563:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA224
+ 564:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA224_Start_IT()
+ 565:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 566:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA256_Start_IT()
+ 567:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 568:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 569:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 570:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 571:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 572:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 573:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 574:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 575:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in HMAC SHA224 mode, next process pInBuffer then
+ 576:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest in interrupt mode.
+ 577:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 578:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 579:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 580:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 581:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 582:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 583:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 28 bytes.
+ 584:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 585:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 586:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA224_Start_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_
+ 587:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                              uint8_t *pOutBuffer)
+ 588:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 702              		.loc 1 588 1 is_stmt 1 view -0
+ 703              		.cfi_startproc
+ARM GAS  /tmp/cclM6LAB.s 			page 23
+
+
+ 704              		@ args = 0, pretend = 0, frame = 0
+ 705              		@ frame_needed = 0, uses_anonymous_args = 0
+ 706              		.loc 1 588 1 is_stmt 0 view .LVU97
+ 707 0000 10B5     		push	{r4, lr}
+ 708              	.LCFI38:
+ 709              		.cfi_def_cfa_offset 8
+ 710              		.cfi_offset 4, -8
+ 711              		.cfi_offset 14, -4
+ 712 0002 82B0     		sub	sp, sp, #8
+ 713              	.LCFI39:
+ 714              		.cfi_def_cfa_offset 16
+ 589:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_IT(hhash, pInBuffer, Size, pOutBuffer, HASH_ALGOSELECTION_SHA224);
+ 715              		.loc 1 589 3 is_stmt 1 view .LVU98
+ 716              		.loc 1 589 11 is_stmt 0 view .LVU99
+ 717 0004 4FF48024 		mov	r4, #262144
+ 718 0008 0094     		str	r4, [sp]
+ 719 000a FFF7FEFF 		bl	HMAC_Start_IT
+ 720              	.LVL40:
+ 590:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 721              		.loc 1 590 1 view .LVU100
+ 722 000e 02B0     		add	sp, sp, #8
+ 723              	.LCFI40:
+ 724              		.cfi_def_cfa_offset 8
+ 725              		@ sp needed
+ 726 0010 10BD     		pop	{r4, pc}
+ 727              		.cfi_endproc
+ 728              	.LFE220:
+ 730              		.section	.text.HAL_HMACEx_SHA256_Start_IT,"ax",%progbits
+ 731              		.align	1
+ 732              		.global	HAL_HMACEx_SHA256_Start_IT
+ 733              		.syntax unified
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	HAL_HMACEx_SHA256_Start_IT:
+ 738              	.LVL41:
+ 739              	.LFB221:
+ 591:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 592:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 593:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in HMAC SHA256 mode, next process pInBuffer then
+ 594:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         read the computed digest in interrupt mode.
+ 595:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Digest is available in pOutBuffer.
+ 596:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 597:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 598:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 599:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 600:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 601:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pOutBuffer pointer to the computed digest. Digest size is 32 bytes.
+ 602:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 603:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 604:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA256_Start_IT(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_
+ 605:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****                                              uint8_t *pOutBuffer)
+ 606:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 740              		.loc 1 606 1 is_stmt 1 view -0
+ 741              		.cfi_startproc
+ 742              		@ args = 0, pretend = 0, frame = 0
+ 743              		@ frame_needed = 0, uses_anonymous_args = 0
+ 744              		.loc 1 606 1 is_stmt 0 view .LVU102
+ARM GAS  /tmp/cclM6LAB.s 			page 24
+
+
+ 745 0000 10B5     		push	{r4, lr}
+ 746              	.LCFI41:
+ 747              		.cfi_def_cfa_offset 8
+ 748              		.cfi_offset 4, -8
+ 749              		.cfi_offset 14, -4
+ 750 0002 82B0     		sub	sp, sp, #8
+ 751              	.LCFI42:
+ 752              		.cfi_def_cfa_offset 16
+ 607:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_IT(hhash, pInBuffer, Size, pOutBuffer, HASH_ALGOSELECTION_SHA256);
+ 753              		.loc 1 607 3 is_stmt 1 view .LVU103
+ 754              		.loc 1 607 11 is_stmt 0 view .LVU104
+ 755 0004 024C     		ldr	r4, .L57
+ 756 0006 0094     		str	r4, [sp]
+ 757 0008 FFF7FEFF 		bl	HMAC_Start_IT
+ 758              	.LVL42:
+ 608:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 759              		.loc 1 608 1 view .LVU105
+ 760 000c 02B0     		add	sp, sp, #8
+ 761              	.LCFI43:
+ 762              		.cfi_def_cfa_offset 8
+ 763              		@ sp needed
+ 764 000e 10BD     		pop	{r4, pc}
+ 765              	.L58:
+ 766              		.align	2
+ 767              	.L57:
+ 768 0010 80000400 		.word	262272
+ 769              		.cfi_endproc
+ 770              	.LFE221:
+ 772              		.section	.text.HAL_HMACEx_SHA224_Start_DMA,"ax",%progbits
+ 773              		.align	1
+ 774              		.global	HAL_HMACEx_SHA224_Start_DMA
+ 775              		.syntax unified
+ 776              		.thumb
+ 777              		.thumb_func
+ 779              	HAL_HMACEx_SHA224_Start_DMA:
+ 780              	.LVL43:
+ 781              	.LFB222:
+ 609:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 610:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 611:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 612:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 613:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 614:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @}
+ 615:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 616:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 617:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 618:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group6 HMAC extended processing functions in DMA mode
+ 619:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HMAC extended processing functions using DMA mode.
+ 620:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 621:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 622:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 623:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****               ##### DMA mode HMAC extended processing functions #####
+ 624:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 625:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions allowing to calculate in DMA mode
+ 626:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           the HMAC value using one of the following algorithms:
+ 627:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA224
+ 628:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA224_Start_DMA()
+ARM GAS  /tmp/cclM6LAB.s 			page 25
+
+
+ 629:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 630:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA256_Start_DMA()
+ 631:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 632:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  When resorting to DMA mode to enter the data in the Peripheral for HMAC processing,
+ 633:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           user must resort to  HAL_HMACEx_xxx_Start_DMA() then read the resulting digest
+ 634:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           with HAL_HASHEx_xxx_Finish().
+ 635:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 636:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 637:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 638:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 639:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 640:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 641:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 642:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 643:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 644:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in HMAC SHA224 mode then initiate the required
+ 645:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         DMA transfers to feed the key and the input buffer to the Peripheral.
+ 646:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfers are finished (indicated by hhash->State set back
+ 647:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to HAL_HASH_STATE_READY), HAL_HASHEx_SHA224_Finish() API must be called to retrieve
+ 648:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the computed digest.
+ 649:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 650:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 651:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   If MDMAT bit is set before calling this function (multi-buffer
+ 652:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          HASH processing case), the input buffer size (in bytes) must be
+ 653:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          a multiple of 4 otherwise, the HASH digest computation is corrupted.
+ 654:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          For the processing of the last buffer of the thread, MDMAT bit must
+ 655:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          be reset and the buffer length (in bytes) doesn't have to be a
+ 656:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          multiple of 4.
+ 657:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 658:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 659:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 660:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 661:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 662:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA224_Start_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 663:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 782              		.loc 1 663 1 is_stmt 1 view -0
+ 783              		.cfi_startproc
+ 784              		@ args = 0, pretend = 0, frame = 0
+ 785              		@ frame_needed = 0, uses_anonymous_args = 0
+ 786              		.loc 1 663 1 is_stmt 0 view .LVU107
+ 787 0000 08B5     		push	{r3, lr}
+ 788              	.LCFI44:
+ 789              		.cfi_def_cfa_offset 8
+ 790              		.cfi_offset 3, -8
+ 791              		.cfi_offset 14, -4
+ 664:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+ 792              		.loc 1 664 3 is_stmt 1 view .LVU108
+ 793              		.loc 1 664 11 is_stmt 0 view .LVU109
+ 794 0002 4FF48023 		mov	r3, #262144
+ 795 0006 FFF7FEFF 		bl	HMAC_Start_DMA
+ 796              	.LVL44:
+ 665:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 797              		.loc 1 665 1 view .LVU110
+ 798 000a 08BD     		pop	{r3, pc}
+ 799              		.cfi_endproc
+ 800              	.LFE222:
+ 802              		.section	.text.HAL_HMACEx_SHA256_Start_DMA,"ax",%progbits
+ARM GAS  /tmp/cclM6LAB.s 			page 26
+
+
+ 803              		.align	1
+ 804              		.global	HAL_HMACEx_SHA256_Start_DMA
+ 805              		.syntax unified
+ 806              		.thumb
+ 807              		.thumb_func
+ 809              	HAL_HMACEx_SHA256_Start_DMA:
+ 810              	.LVL45:
+ 811              	.LFB223:
+ 666:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 667:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 668:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  Initialize the HASH peripheral in HMAC SHA224 mode then initiate the required
+ 669:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         DMA transfers to feed the key and the input buffer to the Peripheral.
+ 670:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfers are finished (indicated by hhash->State set back
+ 671:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to HAL_HASH_STATE_READY), HAL_HASHEx_SHA256_Finish() API must be called to retrieve
+ 672:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the computed digest.
+ 673:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 674:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 675:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   If MDMAT bit is set before calling this function (multi-buffer
+ 676:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          HASH processing case), the input buffer size (in bytes) must be
+ 677:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          a multiple of 4 otherwise, the HASH digest computation is corrupted.
+ 678:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          For the processing of the last buffer of the thread, MDMAT bit must
+ 679:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          be reset and the buffer length (in bytes) doesn't have to be a
+ 680:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *          multiple of 4.
+ 681:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 682:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (buffer to be hashed).
+ 683:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 684:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 685:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 686:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA256_Start_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 687:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 812              		.loc 1 687 1 is_stmt 1 view -0
+ 813              		.cfi_startproc
+ 814              		@ args = 0, pretend = 0, frame = 0
+ 815              		@ frame_needed = 0, uses_anonymous_args = 0
+ 816              		.loc 1 687 1 is_stmt 0 view .LVU112
+ 817 0000 08B5     		push	{r3, lr}
+ 818              	.LCFI45:
+ 819              		.cfi_def_cfa_offset 8
+ 820              		.cfi_offset 3, -8
+ 821              		.cfi_offset 14, -4
+ 688:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 822              		.loc 1 688 3 is_stmt 1 view .LVU113
+ 823              		.loc 1 688 11 is_stmt 0 view .LVU114
+ 824 0002 024B     		ldr	r3, .L63
+ 825 0004 FFF7FEFF 		bl	HMAC_Start_DMA
+ 826              	.LVL46:
+ 689:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 827              		.loc 1 689 1 view .LVU115
+ 828 0008 08BD     		pop	{r3, pc}
+ 829              	.L64:
+ 830 000a 00BF     		.align	2
+ 831              	.L63:
+ 832 000c 80000400 		.word	262272
+ 833              		.cfi_endproc
+ 834              	.LFE223:
+ 836              		.section	.text.HAL_HMACEx_MD5_Step1_2_DMA,"ax",%progbits
+ 837              		.align	1
+ARM GAS  /tmp/cclM6LAB.s 			page 27
+
+
+ 838              		.global	HAL_HMACEx_MD5_Step1_2_DMA
+ 839              		.syntax unified
+ 840              		.thumb
+ 841              		.thumb_func
+ 843              	HAL_HMACEx_MD5_Step1_2_DMA:
+ 844              	.LVL47:
+ 845              	.LFB224:
+ 690:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 691:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 692:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 693:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @}
+ 694:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 695:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 696:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /** @defgroup HASHEx_Exported_Functions_Group7 Multi-buffer HMAC extended processing functions in D
+ 697:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *  @brief   HMAC extended processing functions in multi-buffer DMA mode.
+ 698:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *
+ 699:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @verbatim
+ 700:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 701:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       ##### Multi-buffer DMA mode HMAC extended processing functions #####
+ 702:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****  ===============================================================================
+ 703:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  This section provides functions to manage HMAC multi-buffer
+ 704:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           DMA-based processing for MD5, SHA1, SHA224 and SHA256 algorithms.
+ 705:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) MD5
+ 706:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_MD5_Step1_2_DMA()
+ 707:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_MD5_Step2_DMA()
+ 708:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_MD5_Step2_3_DMA()
+ 709:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA1
+ 710:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA1_Step1_2_DMA()
+ 711:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA1_Step2_DMA()
+ 712:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA1_Step2_3_DMA()
+ 713:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 714:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 715:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA224_Step1_2_DMA()
+ 716:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA224_Step2_DMA()
+ 717:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA224_Step2_3_DMA()
+ 718:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****       (+) SHA256
+ 719:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA256_Step1_2_DMA()
+ 720:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA256_Step2_DMA()
+ 721:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****          (++) HAL_HMACEx_SHA256_Step2_3_DMA()
+ 722:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 723:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  User must first start-up the multi-buffer DMA-based HMAC computation in
+ 724:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           calling HAL_HMACEx_xxx_Step1_2_DMA(). This carries out HMAC step 1 and
+ 725:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           intiates step 2 with the first input buffer.
+ 726:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 727:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  The following buffers are next fed to the Peripheral with a call to the API
+ 728:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           HAL_HMACEx_xxx_Step2_DMA(). There may be several consecutive calls
+ 729:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           to this API.
+ 730:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 731:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  Multi-buffer DMA-based HMAC computation is wrapped up by a call to
+ 732:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           HAL_HMACEx_xxx_Step2_3_DMA(). This finishes step 2 in feeding the last input
+ 733:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           buffer to the Peripheral then carries out step 3.
+ 734:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 735:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  Digest is retrieved by a call to HAL_HASH_xxx_Finish() for MD-5 or
+ 736:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           SHA-1, to HAL_HASHEx_xxx_Finish() for SHA-224 or SHA-256.
+ 737:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 738:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     [..]  If only two buffers need to be consecutively processed, a call to
+ 739:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           HAL_HMACEx_xxx_Step1_2_DMA() followed by a call to HAL_HMACEx_xxx_Step2_3_DMA()
+ARM GAS  /tmp/cclM6LAB.s 			page 28
+
+
+ 740:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****           is sufficient.
+ 741:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 742:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** @endverbatim
+ 743:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @{
+ 744:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 745:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 746:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 747:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  MD5 HMAC step 1 completion and step 2 start in multi-buffer DMA mode.
+ 748:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 1 consists in writing the inner hash function key in the Peripheral,
+ 749:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 2 consists in writing the message text.
+ 750:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries out the HMAC step 1 then starts step 2 with
+ 751:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the first buffer entered to the Peripheral. DCAL bit is not automatically set after
+ 752:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the message buffer feeding, allowing other messages DMA transfers to occur.
+ 753:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 754:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 755:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 756:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 757:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 758:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 759:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 760:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 761:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 762:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_MD5_Step1_2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_
+ 763:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 846              		.loc 1 763 1 is_stmt 1 view -0
+ 847              		.cfi_startproc
+ 848              		@ args = 0, pretend = 0, frame = 0
+ 849              		@ frame_needed = 0, uses_anonymous_args = 0
+ 850              		.loc 1 763 1 is_stmt 0 view .LVU117
+ 851 0000 08B5     		push	{r3, lr}
+ 852              	.LCFI46:
+ 853              		.cfi_def_cfa_offset 8
+ 854              		.cfi_offset 3, -8
+ 855              		.cfi_offset 14, -4
+ 764:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = SET;
+ 856              		.loc 1 764 3 is_stmt 1 view .LVU118
+ 857              		.loc 1 764 35 is_stmt 0 view .LVU119
+ 858 0002 0123     		movs	r3, #1
+ 859 0004 80F83730 		strb	r3, [r0, #55]
+ 765:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_MD5);
+ 860              		.loc 1 765 3 is_stmt 1 view .LVU120
+ 861              		.loc 1 765 11 is_stmt 0 view .LVU121
+ 862 0008 8023     		movs	r3, #128
+ 863 000a FFF7FEFF 		bl	HMAC_Start_DMA
+ 864              	.LVL48:
+ 766:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 865              		.loc 1 766 1 view .LVU122
+ 866 000e 08BD     		pop	{r3, pc}
+ 867              		.cfi_endproc
+ 868              	.LFE224:
+ 870              		.section	.text.HAL_HMACEx_MD5_Step2_DMA,"ax",%progbits
+ 871              		.align	1
+ 872              		.global	HAL_HMACEx_MD5_Step2_DMA
+ 873              		.syntax unified
+ 874              		.thumb
+ 875              		.thumb_func
+ 877              	HAL_HMACEx_MD5_Step2_DMA:
+ARM GAS  /tmp/cclM6LAB.s 			page 29
+
+
+ 878              	.LVL49:
+ 879              	.LFB225:
+ 767:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 768:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 769:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  MD5 HMAC step 2 in multi-buffer DMA mode.
+ 770:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral.
+ 771:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries on the HMAC step 2, applied to the buffer entered as input
+ 772:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter. DCAL bit is not automatically set after the message buffer feeding,
+ 773:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         allowing other messages DMA transfers to occur.
+ 774:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 775:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 776:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 777:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 778:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 779:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 780:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 781:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 782:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 783:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_MD5_Step2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t 
+ 784:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 880              		.loc 1 784 1 is_stmt 1 view -0
+ 881              		.cfi_startproc
+ 882              		@ args = 0, pretend = 0, frame = 0
+ 883              		@ frame_needed = 0, uses_anonymous_args = 0
+ 884              		.loc 1 784 1 is_stmt 0 view .LVU124
+ 885 0000 08B5     		push	{r3, lr}
+ 886              	.LCFI47:
+ 887              		.cfi_def_cfa_offset 8
+ 888              		.cfi_offset 3, -8
+ 889              		.cfi_offset 14, -4
+ 785:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   if (hhash->DigestCalculationDisable != SET)
+ 890              		.loc 1 785 3 is_stmt 1 view .LVU125
+ 891              		.loc 1 785 12 is_stmt 0 view .LVU126
+ 892 0002 90F83730 		ldrb	r3, [r0, #55]	@ zero_extendqisi2
+ 893              		.loc 1 785 6 view .LVU127
+ 894 0006 012B     		cmp	r3, #1
+ 895 0008 01D0     		beq	.L71
+ 786:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   {
+ 787:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     return HAL_ERROR;
+ 896              		.loc 1 787 12 view .LVU128
+ 897 000a 0120     		movs	r0, #1
+ 898              	.LVL50:
+ 899              	.L68:
+ 788:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   }
+ 789:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_MD5);
+ 790:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 900              		.loc 1 790 1 view .LVU129
+ 901 000c 08BD     		pop	{r3, pc}
+ 902              	.LVL51:
+ 903              	.L71:
+ 789:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 904              		.loc 1 789 3 is_stmt 1 view .LVU130
+ 789:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 905              		.loc 1 789 11 is_stmt 0 view .LVU131
+ 906 000e 8023     		movs	r3, #128
+ 907 0010 FFF7FEFF 		bl	HMAC_Start_DMA
+ 908              	.LVL52:
+ARM GAS  /tmp/cclM6LAB.s 			page 30
+
+
+ 789:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 909              		.loc 1 789 11 view .LVU132
+ 910 0014 FAE7     		b	.L68
+ 911              		.cfi_endproc
+ 912              	.LFE225:
+ 914              		.section	.text.HAL_HMACEx_MD5_Step2_3_DMA,"ax",%progbits
+ 915              		.align	1
+ 916              		.global	HAL_HMACEx_MD5_Step2_3_DMA
+ 917              		.syntax unified
+ 918              		.thumb
+ 919              		.thumb_func
+ 921              	HAL_HMACEx_MD5_Step2_3_DMA:
+ 922              	.LVL53:
+ 923              	.LFB226:
+ 791:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 792:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 793:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  MD5 HMAC step 2 wrap-up and step 3 completion in multi-buffer DMA mode.
+ 794:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral,
+ 795:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 3 consists in writing the outer hash function key.
+ 796:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API wraps up the HMAC step 2 in processing the buffer entered as input
+ 797:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter (the input buffer must be the last one of the multi-buffer thread)
+ 798:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         then carries out HMAC step 3.
+ 799:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 800:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 801:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfers are finished (indicated by hhash->State set back
+ 802:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to HAL_HASH_STATE_READY), HAL_HASHEx_SHA256_Finish() API must be called to retrieve
+ 803:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the computed digest.
+ 804:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 805:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 806:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 807:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 808:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 809:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_MD5_Step2_3_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_
+ 810:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 924              		.loc 1 810 1 is_stmt 1 view -0
+ 925              		.cfi_startproc
+ 926              		@ args = 0, pretend = 0, frame = 0
+ 927              		@ frame_needed = 0, uses_anonymous_args = 0
+ 928              		.loc 1 810 1 is_stmt 0 view .LVU134
+ 929 0000 08B5     		push	{r3, lr}
+ 930              	.LCFI48:
+ 931              		.cfi_def_cfa_offset 8
+ 932              		.cfi_offset 3, -8
+ 933              		.cfi_offset 14, -4
+ 811:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = RESET;
+ 934              		.loc 1 811 3 is_stmt 1 view .LVU135
+ 935              		.loc 1 811 35 is_stmt 0 view .LVU136
+ 936 0002 4FF0000C 		mov	ip, #0
+ 937 0006 80F837C0 		strb	ip, [r0, #55]
+ 812:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_MD5);
+ 938              		.loc 1 812 3 is_stmt 1 view .LVU137
+ 939              		.loc 1 812 11 is_stmt 0 view .LVU138
+ 940 000a 8023     		movs	r3, #128
+ 941 000c FFF7FEFF 		bl	HMAC_Start_DMA
+ 942              	.LVL54:
+ 813:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 943              		.loc 1 813 1 view .LVU139
+ARM GAS  /tmp/cclM6LAB.s 			page 31
+
+
+ 944 0010 08BD     		pop	{r3, pc}
+ 945              		.cfi_endproc
+ 946              	.LFE226:
+ 948              		.section	.text.HAL_HMACEx_SHA1_Step1_2_DMA,"ax",%progbits
+ 949              		.align	1
+ 950              		.global	HAL_HMACEx_SHA1_Step1_2_DMA
+ 951              		.syntax unified
+ 952              		.thumb
+ 953              		.thumb_func
+ 955              	HAL_HMACEx_SHA1_Step1_2_DMA:
+ 956              	.LVL55:
+ 957              	.LFB227:
+ 814:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 815:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 816:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 817:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA1 HMAC step 1 completion and step 2 start in multi-buffer DMA mode.
+ 818:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 1 consists in writing the inner hash function key in the Peripheral,
+ 819:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 2 consists in writing the message text.
+ 820:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries out the HMAC step 1 then starts step 2 with
+ 821:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the first buffer entered to the Peripheral. DCAL bit is not automatically set after
+ 822:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the message buffer feeding, allowing other messages DMA transfers to occur.
+ 823:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 824:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 825:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 826:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 827:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 828:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 829:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 830:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 831:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 832:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA1_Step1_2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 833:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 958              		.loc 1 833 1 is_stmt 1 view -0
+ 959              		.cfi_startproc
+ 960              		@ args = 0, pretend = 0, frame = 0
+ 961              		@ frame_needed = 0, uses_anonymous_args = 0
+ 962              		.loc 1 833 1 is_stmt 0 view .LVU141
+ 963 0000 08B5     		push	{r3, lr}
+ 964              	.LCFI49:
+ 965              		.cfi_def_cfa_offset 8
+ 966              		.cfi_offset 3, -8
+ 967              		.cfi_offset 14, -4
+ 834:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = SET;
+ 968              		.loc 1 834 3 is_stmt 1 view .LVU142
+ 969              		.loc 1 834 35 is_stmt 0 view .LVU143
+ 970 0002 0123     		movs	r3, #1
+ 971 0004 80F83730 		strb	r3, [r0, #55]
+ 835:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA1);
+ 972              		.loc 1 835 3 is_stmt 1 view .LVU144
+ 973              		.loc 1 835 11 is_stmt 0 view .LVU145
+ 974 0008 0023     		movs	r3, #0
+ 975 000a FFF7FEFF 		bl	HMAC_Start_DMA
+ 976              	.LVL56:
+ 836:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 977              		.loc 1 836 1 view .LVU146
+ 978 000e 08BD     		pop	{r3, pc}
+ 979              		.cfi_endproc
+ARM GAS  /tmp/cclM6LAB.s 			page 32
+
+
+ 980              	.LFE227:
+ 982              		.section	.text.HAL_HMACEx_SHA1_Step2_DMA,"ax",%progbits
+ 983              		.align	1
+ 984              		.global	HAL_HMACEx_SHA1_Step2_DMA
+ 985              		.syntax unified
+ 986              		.thumb
+ 987              		.thumb_func
+ 989              	HAL_HMACEx_SHA1_Step2_DMA:
+ 990              	.LVL57:
+ 991              	.LFB228:
+ 837:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 838:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 839:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA1 HMAC step 2 in multi-buffer DMA mode.
+ 840:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral.
+ 841:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries on the HMAC step 2, applied to the buffer entered as input
+ 842:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter. DCAL bit is not automatically set after the message buffer feeding,
+ 843:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         allowing other messages DMA transfers to occur.
+ 844:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 845:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 846:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 847:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 848:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 849:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 850:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 851:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 852:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 853:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA1_Step2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32_t
+ 854:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 992              		.loc 1 854 1 is_stmt 1 view -0
+ 993              		.cfi_startproc
+ 994              		@ args = 0, pretend = 0, frame = 0
+ 995              		@ frame_needed = 0, uses_anonymous_args = 0
+ 996              		.loc 1 854 1 is_stmt 0 view .LVU148
+ 997 0000 08B5     		push	{r3, lr}
+ 998              	.LCFI50:
+ 999              		.cfi_def_cfa_offset 8
+ 1000              		.cfi_offset 3, -8
+ 1001              		.cfi_offset 14, -4
+ 855:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   if (hhash->DigestCalculationDisable != SET)
+ 1002              		.loc 1 855 3 is_stmt 1 view .LVU149
+ 1003              		.loc 1 855 12 is_stmt 0 view .LVU150
+ 1004 0002 90F83730 		ldrb	r3, [r0, #55]	@ zero_extendqisi2
+ 1005              		.loc 1 855 6 view .LVU151
+ 1006 0006 012B     		cmp	r3, #1
+ 1007 0008 01D0     		beq	.L80
+ 856:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   {
+ 857:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     return HAL_ERROR;
+ 1008              		.loc 1 857 12 view .LVU152
+ 1009 000a 0120     		movs	r0, #1
+ 1010              	.LVL58:
+ 1011              	.L77:
+ 858:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   }
+ 859:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA1);
+ 860:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1012              		.loc 1 860 1 view .LVU153
+ 1013 000c 08BD     		pop	{r3, pc}
+ 1014              	.LVL59:
+ARM GAS  /tmp/cclM6LAB.s 			page 33
+
+
+ 1015              	.L80:
+ 859:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1016              		.loc 1 859 3 is_stmt 1 view .LVU154
+ 859:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1017              		.loc 1 859 11 is_stmt 0 view .LVU155
+ 1018 000e 0023     		movs	r3, #0
+ 1019 0010 FFF7FEFF 		bl	HMAC_Start_DMA
+ 1020              	.LVL60:
+ 859:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1021              		.loc 1 859 11 view .LVU156
+ 1022 0014 FAE7     		b	.L77
+ 1023              		.cfi_endproc
+ 1024              	.LFE228:
+ 1026              		.section	.text.HAL_HMACEx_SHA1_Step2_3_DMA,"ax",%progbits
+ 1027              		.align	1
+ 1028              		.global	HAL_HMACEx_SHA1_Step2_3_DMA
+ 1029              		.syntax unified
+ 1030              		.thumb
+ 1031              		.thumb_func
+ 1033              	HAL_HMACEx_SHA1_Step2_3_DMA:
+ 1034              	.LVL61:
+ 1035              	.LFB229:
+ 861:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 862:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 863:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA1 HMAC step 2 wrap-up and step 3 completion in multi-buffer DMA mode.
+ 864:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral,
+ 865:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 3 consists in writing the outer hash function key.
+ 866:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API wraps up the HMAC step 2 in processing the buffer entered as input
+ 867:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter (the input buffer must be the last one of the multi-buffer thread)
+ 868:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         then carries out HMAC step 3.
+ 869:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 870:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 871:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfers are finished (indicated by hhash->State set back
+ 872:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to HAL_HASH_STATE_READY), HAL_HASHEx_SHA256_Finish() API must be called to retrieve
+ 873:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the computed digest.
+ 874:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 875:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 876:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 877:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 878:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 879:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA1_Step2_3_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 880:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1036              		.loc 1 880 1 is_stmt 1 view -0
+ 1037              		.cfi_startproc
+ 1038              		@ args = 0, pretend = 0, frame = 0
+ 1039              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1040              		.loc 1 880 1 is_stmt 0 view .LVU158
+ 1041 0000 08B5     		push	{r3, lr}
+ 1042              	.LCFI51:
+ 1043              		.cfi_def_cfa_offset 8
+ 1044              		.cfi_offset 3, -8
+ 1045              		.cfi_offset 14, -4
+ 881:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = RESET;
+ 1046              		.loc 1 881 3 is_stmt 1 view .LVU159
+ 1047              		.loc 1 881 35 is_stmt 0 view .LVU160
+ 1048 0002 0023     		movs	r3, #0
+ 1049 0004 80F83730 		strb	r3, [r0, #55]
+ARM GAS  /tmp/cclM6LAB.s 			page 34
+
+
+ 882:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA1);
+ 1050              		.loc 1 882 3 is_stmt 1 view .LVU161
+ 1051              		.loc 1 882 11 is_stmt 0 view .LVU162
+ 1052 0008 FFF7FEFF 		bl	HMAC_Start_DMA
+ 1053              	.LVL62:
+ 883:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1054              		.loc 1 883 1 view .LVU163
+ 1055 000c 08BD     		pop	{r3, pc}
+ 1056              		.cfi_endproc
+ 1057              	.LFE229:
+ 1059              		.section	.text.HAL_HMACEx_SHA224_Step1_2_DMA,"ax",%progbits
+ 1060              		.align	1
+ 1061              		.global	HAL_HMACEx_SHA224_Step1_2_DMA
+ 1062              		.syntax unified
+ 1063              		.thumb
+ 1064              		.thumb_func
+ 1066              	HAL_HMACEx_SHA224_Step1_2_DMA:
+ 1067              	.LVL63:
+ 1068              	.LFB230:
+ 884:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 885:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 886:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA224 HMAC step 1 completion and step 2 start in multi-buffer DMA mode.
+ 887:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 1 consists in writing the inner hash function key in the Peripheral,
+ 888:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 2 consists in writing the message text.
+ 889:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries out the HMAC step 1 then starts step 2 with
+ 890:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the first buffer entered to the Peripheral. DCAL bit is not automatically set after
+ 891:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the message buffer feeding, allowing other messages DMA transfers to occur.
+ 892:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 893:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 894:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 895:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 896:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 897:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 898:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 899:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 900:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 901:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA224_Step1_2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint
+ 902:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1069              		.loc 1 902 1 is_stmt 1 view -0
+ 1070              		.cfi_startproc
+ 1071              		@ args = 0, pretend = 0, frame = 0
+ 1072              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1073              		.loc 1 902 1 is_stmt 0 view .LVU165
+ 1074 0000 08B5     		push	{r3, lr}
+ 1075              	.LCFI52:
+ 1076              		.cfi_def_cfa_offset 8
+ 1077              		.cfi_offset 3, -8
+ 1078              		.cfi_offset 14, -4
+ 903:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = SET;
+ 1079              		.loc 1 903 3 is_stmt 1 view .LVU166
+ 1080              		.loc 1 903 35 is_stmt 0 view .LVU167
+ 1081 0002 0123     		movs	r3, #1
+ 1082 0004 80F83730 		strb	r3, [r0, #55]
+ 904:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+ 1083              		.loc 1 904 3 is_stmt 1 view .LVU168
+ 1084              		.loc 1 904 11 is_stmt 0 view .LVU169
+ 1085 0008 4FF48023 		mov	r3, #262144
+ARM GAS  /tmp/cclM6LAB.s 			page 35
+
+
+ 1086 000c FFF7FEFF 		bl	HMAC_Start_DMA
+ 1087              	.LVL64:
+ 905:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1088              		.loc 1 905 1 view .LVU170
+ 1089 0010 08BD     		pop	{r3, pc}
+ 1090              		.cfi_endproc
+ 1091              	.LFE230:
+ 1093              		.section	.text.HAL_HMACEx_SHA224_Step2_DMA,"ax",%progbits
+ 1094              		.align	1
+ 1095              		.global	HAL_HMACEx_SHA224_Step2_DMA
+ 1096              		.syntax unified
+ 1097              		.thumb
+ 1098              		.thumb_func
+ 1100              	HAL_HMACEx_SHA224_Step2_DMA:
+ 1101              	.LVL65:
+ 1102              	.LFB231:
+ 906:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 907:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 908:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA224 HMAC step 2 in multi-buffer DMA mode.
+ 909:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral.
+ 910:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries on the HMAC step 2, applied to the buffer entered as input
+ 911:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter. DCAL bit is not automatically set after the message buffer feeding,
+ 912:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         allowing other messages DMA transfers to occur.
+ 913:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 914:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 915:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 916:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 917:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 918:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 919:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 920:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 921:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 922:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA224_Step2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 923:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1103              		.loc 1 923 1 is_stmt 1 view -0
+ 1104              		.cfi_startproc
+ 1105              		@ args = 0, pretend = 0, frame = 0
+ 1106              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1107              		.loc 1 923 1 is_stmt 0 view .LVU172
+ 1108 0000 08B5     		push	{r3, lr}
+ 1109              	.LCFI53:
+ 1110              		.cfi_def_cfa_offset 8
+ 1111              		.cfi_offset 3, -8
+ 1112              		.cfi_offset 14, -4
+ 924:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   if (hhash->DigestCalculationDisable != SET)
+ 1113              		.loc 1 924 3 is_stmt 1 view .LVU173
+ 1114              		.loc 1 924 12 is_stmt 0 view .LVU174
+ 1115 0002 90F83730 		ldrb	r3, [r0, #55]	@ zero_extendqisi2
+ 1116              		.loc 1 924 6 view .LVU175
+ 1117 0006 012B     		cmp	r3, #1
+ 1118 0008 01D0     		beq	.L89
+ 925:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   {
+ 926:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     return HAL_ERROR;
+ 1119              		.loc 1 926 12 view .LVU176
+ 1120 000a 0120     		movs	r0, #1
+ 1121              	.LVL66:
+ 1122              	.L86:
+ARM GAS  /tmp/cclM6LAB.s 			page 36
+
+
+ 927:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   }
+ 928:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+ 929:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1123              		.loc 1 929 1 view .LVU177
+ 1124 000c 08BD     		pop	{r3, pc}
+ 1125              	.LVL67:
+ 1126              	.L89:
+ 928:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1127              		.loc 1 928 3 is_stmt 1 view .LVU178
+ 928:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1128              		.loc 1 928 11 is_stmt 0 view .LVU179
+ 1129 000e 4FF48023 		mov	r3, #262144
+ 1130 0012 FFF7FEFF 		bl	HMAC_Start_DMA
+ 1131              	.LVL68:
+ 928:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1132              		.loc 1 928 11 view .LVU180
+ 1133 0016 F9E7     		b	.L86
+ 1134              		.cfi_endproc
+ 1135              	.LFE231:
+ 1137              		.section	.text.HAL_HMACEx_SHA224_Step2_3_DMA,"ax",%progbits
+ 1138              		.align	1
+ 1139              		.global	HAL_HMACEx_SHA224_Step2_3_DMA
+ 1140              		.syntax unified
+ 1141              		.thumb
+ 1142              		.thumb_func
+ 1144              	HAL_HMACEx_SHA224_Step2_3_DMA:
+ 1145              	.LVL69:
+ 1146              	.LFB232:
+ 930:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 931:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 932:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA224 HMAC step 2 wrap-up and step 3 completion in multi-buffer DMA mode.
+ 933:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral,
+ 934:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 3 consists in writing the outer hash function key.
+ 935:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API wraps up the HMAC step 2 in processing the buffer entered as input
+ 936:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter (the input buffer must be the last one of the multi-buffer thread)
+ 937:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         then carries out HMAC step 3.
+ 938:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 939:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 940:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfers are finished (indicated by hhash->State set back
+ 941:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to HAL_HASH_STATE_READY), HAL_HASHEx_SHA256_Finish() API must be called to retrieve
+ 942:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the computed digest.
+ 943:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 944:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 945:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 946:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 947:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 948:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA224_Step2_3_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint
+ 949:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1147              		.loc 1 949 1 is_stmt 1 view -0
+ 1148              		.cfi_startproc
+ 1149              		@ args = 0, pretend = 0, frame = 0
+ 1150              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1151              		.loc 1 949 1 is_stmt 0 view .LVU182
+ 1152 0000 08B5     		push	{r3, lr}
+ 1153              	.LCFI54:
+ 1154              		.cfi_def_cfa_offset 8
+ 1155              		.cfi_offset 3, -8
+ARM GAS  /tmp/cclM6LAB.s 			page 37
+
+
+ 1156              		.cfi_offset 14, -4
+ 950:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = RESET;
+ 1157              		.loc 1 950 3 is_stmt 1 view .LVU183
+ 1158              		.loc 1 950 35 is_stmt 0 view .LVU184
+ 1159 0002 4FF0000C 		mov	ip, #0
+ 1160 0006 80F837C0 		strb	ip, [r0, #55]
+ 951:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA224);
+ 1161              		.loc 1 951 3 is_stmt 1 view .LVU185
+ 1162              		.loc 1 951 11 is_stmt 0 view .LVU186
+ 1163 000a 4FF48023 		mov	r3, #262144
+ 1164 000e FFF7FEFF 		bl	HMAC_Start_DMA
+ 1165              	.LVL70:
+ 952:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1166              		.loc 1 952 1 view .LVU187
+ 1167 0012 08BD     		pop	{r3, pc}
+ 1168              		.cfi_endproc
+ 1169              	.LFE232:
+ 1171              		.section	.text.HAL_HMACEx_SHA256_Step1_2_DMA,"ax",%progbits
+ 1172              		.align	1
+ 1173              		.global	HAL_HMACEx_SHA256_Step1_2_DMA
+ 1174              		.syntax unified
+ 1175              		.thumb
+ 1176              		.thumb_func
+ 1178              	HAL_HMACEx_SHA256_Step1_2_DMA:
+ 1179              	.LVL71:
+ 1180              	.LFB233:
+ 953:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 954:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 955:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA256 HMAC step 1 completion and step 2 start in multi-buffer DMA mode.
+ 956:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 1 consists in writing the inner hash function key in the Peripheral,
+ 957:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 2 consists in writing the message text.
+ 958:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries out the HMAC step 1 then starts step 2 with
+ 959:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the first buffer entered to the Peripheral. DCAL bit is not automatically set after
+ 960:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the message buffer feeding, allowing other messages DMA transfers to occur.
+ 961:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 962:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 963:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 964:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 965:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 966:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 967:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 968:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 969:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 970:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA256_Step1_2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint
+ 971:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1181              		.loc 1 971 1 is_stmt 1 view -0
+ 1182              		.cfi_startproc
+ 1183              		@ args = 0, pretend = 0, frame = 0
+ 1184              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1185              		.loc 1 971 1 is_stmt 0 view .LVU189
+ 1186 0000 08B5     		push	{r3, lr}
+ 1187              	.LCFI55:
+ 1188              		.cfi_def_cfa_offset 8
+ 1189              		.cfi_offset 3, -8
+ 1190              		.cfi_offset 14, -4
+ 972:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = SET;
+ 1191              		.loc 1 972 3 is_stmt 1 view .LVU190
+ARM GAS  /tmp/cclM6LAB.s 			page 38
+
+
+ 1192              		.loc 1 972 35 is_stmt 0 view .LVU191
+ 1193 0002 0123     		movs	r3, #1
+ 1194 0004 80F83730 		strb	r3, [r0, #55]
+ 973:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 1195              		.loc 1 973 3 is_stmt 1 view .LVU192
+ 1196              		.loc 1 973 11 is_stmt 0 view .LVU193
+ 1197 0008 014B     		ldr	r3, .L94
+ 1198 000a FFF7FEFF 		bl	HMAC_Start_DMA
+ 1199              	.LVL72:
+ 974:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1200              		.loc 1 974 1 view .LVU194
+ 1201 000e 08BD     		pop	{r3, pc}
+ 1202              	.L95:
+ 1203              		.align	2
+ 1204              	.L94:
+ 1205 0010 80000400 		.word	262272
+ 1206              		.cfi_endproc
+ 1207              	.LFE233:
+ 1209              		.section	.text.HAL_HMACEx_SHA256_Step2_DMA,"ax",%progbits
+ 1210              		.align	1
+ 1211              		.global	HAL_HMACEx_SHA256_Step2_DMA
+ 1212              		.syntax unified
+ 1213              		.thumb
+ 1214              		.thumb_func
+ 1216              	HAL_HMACEx_SHA256_Step2_DMA:
+ 1217              	.LVL73:
+ 1218              	.LFB234:
+ 975:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+ 976:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+ 977:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA256 HMAC step 2 in multi-buffer DMA mode.
+ 978:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral.
+ 979:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API carries on the HMAC step 2, applied to the buffer entered as input
+ 980:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter. DCAL bit is not automatically set after the message buffer feeding,
+ 981:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         allowing other messages DMA transfers to occur.
+ 982:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+ 983:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+ 984:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The input buffer size (in bytes) must be a multiple of 4 otherwise, the
+ 985:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         HASH digest computation is corrupted.
+ 986:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ 987:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+ 988:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+ 989:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+ 990:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+ 991:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA256_Step2_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint32
+ 992:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1219              		.loc 1 992 1 is_stmt 1 view -0
+ 1220              		.cfi_startproc
+ 1221              		@ args = 0, pretend = 0, frame = 0
+ 1222              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1223              		.loc 1 992 1 is_stmt 0 view .LVU196
+ 1224 0000 08B5     		push	{r3, lr}
+ 1225              	.LCFI56:
+ 1226              		.cfi_def_cfa_offset 8
+ 1227              		.cfi_offset 3, -8
+ 1228              		.cfi_offset 14, -4
+ 993:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   if (hhash->DigestCalculationDisable != SET)
+ 1229              		.loc 1 993 3 is_stmt 1 view .LVU197
+ARM GAS  /tmp/cclM6LAB.s 			page 39
+
+
+ 1230              		.loc 1 993 12 is_stmt 0 view .LVU198
+ 1231 0002 90F83730 		ldrb	r3, [r0, #55]	@ zero_extendqisi2
+ 1232              		.loc 1 993 6 view .LVU199
+ 1233 0006 012B     		cmp	r3, #1
+ 1234 0008 01D0     		beq	.L100
+ 994:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   {
+ 995:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****     return HAL_ERROR;
+ 1235              		.loc 1 995 12 view .LVU200
+ 1236 000a 0120     		movs	r0, #1
+ 1237              	.LVL74:
+ 1238              	.L97:
+ 996:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   }
+ 997:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 998:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1239              		.loc 1 998 1 view .LVU201
+ 1240 000c 08BD     		pop	{r3, pc}
+ 1241              	.LVL75:
+ 1242              	.L100:
+ 997:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1243              		.loc 1 997 3 is_stmt 1 view .LVU202
+ 997:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1244              		.loc 1 997 11 is_stmt 0 view .LVU203
+ 1245 000e 024B     		ldr	r3, .L101
+ 1246 0010 FFF7FEFF 		bl	HMAC_Start_DMA
+ 1247              	.LVL76:
+ 997:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1248              		.loc 1 997 11 view .LVU204
+ 1249 0014 FAE7     		b	.L97
+ 1250              	.L102:
+ 1251 0016 00BF     		.align	2
+ 1252              	.L101:
+ 1253 0018 80000400 		.word	262272
+ 1254              		.cfi_endproc
+ 1255              	.LFE234:
+ 1257              		.section	.text.HAL_HMACEx_SHA256_Step2_3_DMA,"ax",%progbits
+ 1258              		.align	1
+ 1259              		.global	HAL_HMACEx_SHA256_Step2_3_DMA
+ 1260              		.syntax unified
+ 1261              		.thumb
+ 1262              		.thumb_func
+ 1264              	HAL_HMACEx_SHA256_Step2_3_DMA:
+ 1265              	.LVL77:
+ 1266              	.LFB235:
+ 999:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** 
+1000:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** /**
+1001:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @brief  SHA256 HMAC step 2 wrap-up and step 3 completion in multi-buffer DMA mode.
+1002:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Step 2 consists in writing the message text in the Peripheral,
+1003:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         step 3 consists in writing the outer hash function key.
+1004:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   The API wraps up the HMAC step 2 in processing the buffer entered as input
+1005:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         parameter (the input buffer must be the last one of the multi-buffer thread)
+1006:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         then carries out HMAC step 3.
+1007:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Same key is used for the inner and the outer hash functions; pointer to key and
+1008:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         key size are respectively stored in hhash->Init.pKey and hhash->Init.KeySize.
+1009:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @note   Once the DMA transfers are finished (indicated by hhash->State set back
+1010:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         to HAL_HASH_STATE_READY), HAL_HASHEx_SHA256_Finish() API must be called to retrieve
+1011:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   *         the computed digest.
+1012:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  hhash HASH handle.
+ARM GAS  /tmp/cclM6LAB.s 			page 40
+
+
+1013:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  pInBuffer pointer to the input buffer (message buffer).
+1014:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @param  Size length of the input buffer in bytes.
+1015:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   * @retval HAL status
+1016:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   */
+1017:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** HAL_StatusTypeDef HAL_HMACEx_SHA256_Step2_3_DMA(HASH_HandleTypeDef *hhash, uint8_t *pInBuffer, uint
+1018:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** {
+ 1267              		.loc 1 1018 1 is_stmt 1 view -0
+ 1268              		.cfi_startproc
+ 1269              		@ args = 0, pretend = 0, frame = 0
+ 1270              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1271              		.loc 1 1018 1 is_stmt 0 view .LVU206
+ 1272 0000 08B5     		push	{r3, lr}
+ 1273              	.LCFI57:
+ 1274              		.cfi_def_cfa_offset 8
+ 1275              		.cfi_offset 3, -8
+ 1276              		.cfi_offset 14, -4
+1019:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   hhash->DigestCalculationDisable = RESET;
+ 1277              		.loc 1 1019 3 is_stmt 1 view .LVU207
+ 1278              		.loc 1 1019 35 is_stmt 0 view .LVU208
+ 1279 0002 4FF0000C 		mov	ip, #0
+ 1280 0006 80F837C0 		strb	ip, [r0, #55]
+1020:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c ****   return  HMAC_Start_DMA(hhash, pInBuffer, Size, HASH_ALGOSELECTION_SHA256);
+ 1281              		.loc 1 1020 3 is_stmt 1 view .LVU209
+ 1282              		.loc 1 1020 11 is_stmt 0 view .LVU210
+ 1283 000a 024B     		ldr	r3, .L105
+ 1284 000c FFF7FEFF 		bl	HMAC_Start_DMA
+ 1285              	.LVL78:
+1021:../../Drivers/STM32L5xx_HAL_Driver/Src/stm32l5xx_hal_hash_ex.c **** }
+ 1286              		.loc 1 1021 1 view .LVU211
+ 1287 0010 08BD     		pop	{r3, pc}
+ 1288              	.L106:
+ 1289 0012 00BF     		.align	2
+ 1290              	.L105:
+ 1291 0014 80000400 		.word	262272
+ 1292              		.cfi_endproc
+ 1293              	.LFE235:
+ 1295              		.text
+ 1296              	.Letext0:
+ 1297              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 1298              		.file 3 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 1299              		.file 4 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l5xx.h"
+ 1300              		.file 5 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 1301              		.file 6 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_dma.h"
+ 1302              		.file 7 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_hash.h"
+ARM GAS  /tmp/cclM6LAB.s 			page 41
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32l5xx_hal_hash_ex.c
+     /tmp/cclM6LAB.s:22     .text.HAL_HASHEx_SHA224_Start:00000000 $t
+     /tmp/cclM6LAB.s:28     .text.HAL_HASHEx_SHA224_Start:00000000 HAL_HASHEx_SHA224_Start
+     /tmp/cclM6LAB.s:63     .text.HAL_HASHEx_SHA224_Accmlt:00000000 $t
+     /tmp/cclM6LAB.s:69     .text.HAL_HASHEx_SHA224_Accmlt:00000000 HAL_HASHEx_SHA224_Accmlt
+     /tmp/cclM6LAB.s:93     .text.HAL_HASHEx_SHA224_Accmlt_End:00000000 $t
+     /tmp/cclM6LAB.s:99     .text.HAL_HASHEx_SHA224_Accmlt_End:00000000 HAL_HASHEx_SHA224_Accmlt_End
+     /tmp/cclM6LAB.s:134    .text.HAL_HASHEx_SHA256_Start:00000000 $t
+     /tmp/cclM6LAB.s:140    .text.HAL_HASHEx_SHA256_Start:00000000 HAL_HASHEx_SHA256_Start
+     /tmp/cclM6LAB.s:175    .text.HAL_HASHEx_SHA256_Start:00000014 $d
+     /tmp/cclM6LAB.s:180    .text.HAL_HASHEx_SHA256_Accmlt:00000000 $t
+     /tmp/cclM6LAB.s:186    .text.HAL_HASHEx_SHA256_Accmlt:00000000 HAL_HASHEx_SHA256_Accmlt
+     /tmp/cclM6LAB.s:209    .text.HAL_HASHEx_SHA256_Accmlt:0000000c $d
+     /tmp/cclM6LAB.s:214    .text.HAL_HASHEx_SHA256_Accmlt_End:00000000 $t
+     /tmp/cclM6LAB.s:220    .text.HAL_HASHEx_SHA256_Accmlt_End:00000000 HAL_HASHEx_SHA256_Accmlt_End
+     /tmp/cclM6LAB.s:255    .text.HAL_HASHEx_SHA256_Accmlt_End:00000014 $d
+     /tmp/cclM6LAB.s:260    .text.HAL_HASHEx_SHA224_Start_IT:00000000 $t
+     /tmp/cclM6LAB.s:266    .text.HAL_HASHEx_SHA224_Start_IT:00000000 HAL_HASHEx_SHA224_Start_IT
+     /tmp/cclM6LAB.s:298    .text.HAL_HASHEx_SHA224_Accmlt_IT:00000000 $t
+     /tmp/cclM6LAB.s:304    .text.HAL_HASHEx_SHA224_Accmlt_IT:00000000 HAL_HASHEx_SHA224_Accmlt_IT
+     /tmp/cclM6LAB.s:328    .text.HAL_HASHEx_SHA224_Accmlt_End_IT:00000000 $t
+     /tmp/cclM6LAB.s:334    .text.HAL_HASHEx_SHA224_Accmlt_End_IT:00000000 HAL_HASHEx_SHA224_Accmlt_End_IT
+     /tmp/cclM6LAB.s:366    .text.HAL_HASHEx_SHA256_Start_IT:00000000 $t
+     /tmp/cclM6LAB.s:372    .text.HAL_HASHEx_SHA256_Start_IT:00000000 HAL_HASHEx_SHA256_Start_IT
+     /tmp/cclM6LAB.s:403    .text.HAL_HASHEx_SHA256_Start_IT:00000010 $d
+     /tmp/cclM6LAB.s:408    .text.HAL_HASHEx_SHA256_Accmlt_IT:00000000 $t
+     /tmp/cclM6LAB.s:414    .text.HAL_HASHEx_SHA256_Accmlt_IT:00000000 HAL_HASHEx_SHA256_Accmlt_IT
+     /tmp/cclM6LAB.s:437    .text.HAL_HASHEx_SHA256_Accmlt_IT:0000000c $d
+     /tmp/cclM6LAB.s:442    .text.HAL_HASHEx_SHA256_Accmlt_End_IT:00000000 $t
+     /tmp/cclM6LAB.s:448    .text.HAL_HASHEx_SHA256_Accmlt_End_IT:00000000 HAL_HASHEx_SHA256_Accmlt_End_IT
+     /tmp/cclM6LAB.s:479    .text.HAL_HASHEx_SHA256_Accmlt_End_IT:00000010 $d
+     /tmp/cclM6LAB.s:484    .text.HAL_HASHEx_SHA224_Start_DMA:00000000 $t
+     /tmp/cclM6LAB.s:490    .text.HAL_HASHEx_SHA224_Start_DMA:00000000 HAL_HASHEx_SHA224_Start_DMA
+     /tmp/cclM6LAB.s:514    .text.HAL_HASHEx_SHA224_Finish:00000000 $t
+     /tmp/cclM6LAB.s:520    .text.HAL_HASHEx_SHA224_Finish:00000000 HAL_HASHEx_SHA224_Finish
+     /tmp/cclM6LAB.s:543    .text.HAL_HASHEx_SHA256_Start_DMA:00000000 $t
+     /tmp/cclM6LAB.s:549    .text.HAL_HASHEx_SHA256_Start_DMA:00000000 HAL_HASHEx_SHA256_Start_DMA
+     /tmp/cclM6LAB.s:572    .text.HAL_HASHEx_SHA256_Start_DMA:0000000c $d
+     /tmp/cclM6LAB.s:577    .text.HAL_HASHEx_SHA256_Finish:00000000 $t
+     /tmp/cclM6LAB.s:583    .text.HAL_HASHEx_SHA256_Finish:00000000 HAL_HASHEx_SHA256_Finish
+     /tmp/cclM6LAB.s:606    .text.HAL_HMACEx_SHA224_Start:00000000 $t
+     /tmp/cclM6LAB.s:612    .text.HAL_HMACEx_SHA224_Start:00000000 HAL_HMACEx_SHA224_Start
+     /tmp/cclM6LAB.s:647    .text.HAL_HMACEx_SHA256_Start:00000000 $t
+     /tmp/cclM6LAB.s:653    .text.HAL_HMACEx_SHA256_Start:00000000 HAL_HMACEx_SHA256_Start
+     /tmp/cclM6LAB.s:688    .text.HAL_HMACEx_SHA256_Start:00000014 $d
+     /tmp/cclM6LAB.s:693    .text.HAL_HMACEx_SHA224_Start_IT:00000000 $t
+     /tmp/cclM6LAB.s:699    .text.HAL_HMACEx_SHA224_Start_IT:00000000 HAL_HMACEx_SHA224_Start_IT
+     /tmp/cclM6LAB.s:731    .text.HAL_HMACEx_SHA256_Start_IT:00000000 $t
+     /tmp/cclM6LAB.s:737    .text.HAL_HMACEx_SHA256_Start_IT:00000000 HAL_HMACEx_SHA256_Start_IT
+     /tmp/cclM6LAB.s:768    .text.HAL_HMACEx_SHA256_Start_IT:00000010 $d
+     /tmp/cclM6LAB.s:773    .text.HAL_HMACEx_SHA224_Start_DMA:00000000 $t
+     /tmp/cclM6LAB.s:779    .text.HAL_HMACEx_SHA224_Start_DMA:00000000 HAL_HMACEx_SHA224_Start_DMA
+     /tmp/cclM6LAB.s:803    .text.HAL_HMACEx_SHA256_Start_DMA:00000000 $t
+     /tmp/cclM6LAB.s:809    .text.HAL_HMACEx_SHA256_Start_DMA:00000000 HAL_HMACEx_SHA256_Start_DMA
+     /tmp/cclM6LAB.s:832    .text.HAL_HMACEx_SHA256_Start_DMA:0000000c $d
+     /tmp/cclM6LAB.s:837    .text.HAL_HMACEx_MD5_Step1_2_DMA:00000000 $t
+ARM GAS  /tmp/cclM6LAB.s 			page 42
+
+
+     /tmp/cclM6LAB.s:843    .text.HAL_HMACEx_MD5_Step1_2_DMA:00000000 HAL_HMACEx_MD5_Step1_2_DMA
+     /tmp/cclM6LAB.s:871    .text.HAL_HMACEx_MD5_Step2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:877    .text.HAL_HMACEx_MD5_Step2_DMA:00000000 HAL_HMACEx_MD5_Step2_DMA
+     /tmp/cclM6LAB.s:915    .text.HAL_HMACEx_MD5_Step2_3_DMA:00000000 $t
+     /tmp/cclM6LAB.s:921    .text.HAL_HMACEx_MD5_Step2_3_DMA:00000000 HAL_HMACEx_MD5_Step2_3_DMA
+     /tmp/cclM6LAB.s:949    .text.HAL_HMACEx_SHA1_Step1_2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:955    .text.HAL_HMACEx_SHA1_Step1_2_DMA:00000000 HAL_HMACEx_SHA1_Step1_2_DMA
+     /tmp/cclM6LAB.s:983    .text.HAL_HMACEx_SHA1_Step2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:989    .text.HAL_HMACEx_SHA1_Step2_DMA:00000000 HAL_HMACEx_SHA1_Step2_DMA
+     /tmp/cclM6LAB.s:1027   .text.HAL_HMACEx_SHA1_Step2_3_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1033   .text.HAL_HMACEx_SHA1_Step2_3_DMA:00000000 HAL_HMACEx_SHA1_Step2_3_DMA
+     /tmp/cclM6LAB.s:1060   .text.HAL_HMACEx_SHA224_Step1_2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1066   .text.HAL_HMACEx_SHA224_Step1_2_DMA:00000000 HAL_HMACEx_SHA224_Step1_2_DMA
+     /tmp/cclM6LAB.s:1094   .text.HAL_HMACEx_SHA224_Step2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1100   .text.HAL_HMACEx_SHA224_Step2_DMA:00000000 HAL_HMACEx_SHA224_Step2_DMA
+     /tmp/cclM6LAB.s:1138   .text.HAL_HMACEx_SHA224_Step2_3_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1144   .text.HAL_HMACEx_SHA224_Step2_3_DMA:00000000 HAL_HMACEx_SHA224_Step2_3_DMA
+     /tmp/cclM6LAB.s:1172   .text.HAL_HMACEx_SHA256_Step1_2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1178   .text.HAL_HMACEx_SHA256_Step1_2_DMA:00000000 HAL_HMACEx_SHA256_Step1_2_DMA
+     /tmp/cclM6LAB.s:1205   .text.HAL_HMACEx_SHA256_Step1_2_DMA:00000010 $d
+     /tmp/cclM6LAB.s:1210   .text.HAL_HMACEx_SHA256_Step2_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1216   .text.HAL_HMACEx_SHA256_Step2_DMA:00000000 HAL_HMACEx_SHA256_Step2_DMA
+     /tmp/cclM6LAB.s:1253   .text.HAL_HMACEx_SHA256_Step2_DMA:00000018 $d
+     /tmp/cclM6LAB.s:1258   .text.HAL_HMACEx_SHA256_Step2_3_DMA:00000000 $t
+     /tmp/cclM6LAB.s:1264   .text.HAL_HMACEx_SHA256_Step2_3_DMA:00000000 HAL_HMACEx_SHA256_Step2_3_DMA
+     /tmp/cclM6LAB.s:1291   .text.HAL_HMACEx_SHA256_Step2_3_DMA:00000014 $d
+
+UNDEFINED SYMBOLS
+HASH_Start
+HASH_Accumulate
+HASH_Start_IT
+HASH_Accumulate_IT
+HASH_Start_DMA
+HASH_Finish
+HMAC_Start
+HMAC_Start_IT
+HMAC_Start_DMA

@@ -1,0 +1,1432 @@
+ARM GAS  /tmp/ccXPNYpA.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secboot_bootmanager.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secboot_bootmanager.c"
+  21              		.section	.text.SECBOOT_BootManager_Init,"ax",%progbits
+  22              		.align	1
+  23              		.global	SECBOOT_BootManager_Init
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	SECBOOT_BootManager_Init:
+  29              	.LFB207:
+   1:../../Secure/Core/Src/secboot_bootmanager.c **** #include "secboot_bootmanager.h"
+   2:../../Secure/Core/Src/secboot_bootmanager.c **** 
+   3:../../Secure/Core/Src/secboot_bootmanager.c **** 
+   4:../../Secure/Core/Src/secboot_bootmanager.c **** 
+   5:../../Secure/Core/Src/secboot_bootmanager.c **** static void bytes_to_uint32_be(uint8_t *input, size_t input_len, uint32_t *output);
+   6:../../Secure/Core/Src/secboot_bootmanager.c **** /**
+   7:../../Secure/Core/Src/secboot_bootmanager.c ****   * @brief  Securely retrieves and decrypts the AES key from protected storage
+   8:../../Secure/Core/Src/secboot_bootmanager.c ****   * @retval SECBOOT_AES_StatusTypeDef Operation status
+   9:../../Secure/Core/Src/secboot_bootmanager.c ****   */
+  10:../../Secure/Core/Src/secboot_bootmanager.c **** static SECBOOT_AES_StatusTypeDef get_AES_key(AES_Secrets_TypeDef *AES_secret);
+  11:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  12:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  13:../../Secure/Core/Src/secboot_bootmanager.c **** /**
+  14:../../Secure/Core/Src/secboot_bootmanager.c ****   * @brief  Convert byte array to big-endian 32-bit words
+  15:../../Secure/Core/Src/secboot_bootmanager.c ****   * @param  input      Input byte array (little-endian)
+  16:../../Secure/Core/Src/secboot_bootmanager.c ****   * @param  input_len  Length of input in bytes (must be multiple of 4)
+  17:../../Secure/Core/Src/secboot_bootmanager.c ****   * @param  output     Output word array (big-endian)
+  18:../../Secure/Core/Src/secboot_bootmanager.c ****   */
+  19:../../Secure/Core/Src/secboot_bootmanager.c **** static void bytes_to_uint32_be(uint8_t *input, size_t input_len, uint32_t *output) {
+  20:../../Secure/Core/Src/secboot_bootmanager.c ****     for (size_t i = 0; i < input_len / 4; i++) {
+  21:../../Secure/Core/Src/secboot_bootmanager.c ****         output[i] = ((uint32_t)input[4*i + 0] << 24) |
+  22:../../Secure/Core/Src/secboot_bootmanager.c ****                     ((uint32_t)input[4*i + 1] << 16) |
+  23:../../Secure/Core/Src/secboot_bootmanager.c ****                     ((uint32_t)input[4*i + 2] << 8)  |
+  24:../../Secure/Core/Src/secboot_bootmanager.c ****                     ((uint32_t)input[4*i + 3]);
+  25:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+  26:../../Secure/Core/Src/secboot_bootmanager.c **** }
+  27:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  28:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  29:../../Secure/Core/Src/secboot_bootmanager.c **** SECBOOT_AES_StatusTypeDef get_AES_key(AES_Secrets_TypeDef *AES_secret){
+ARM GAS  /tmp/ccXPNYpA.s 			page 2
+
+
+  30:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  31:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  32:../../Secure/Core/Src/secboot_bootmanager.c ****     /* All sensitive variables declared volatile to prevent optimization */
+  33:../../Secure/Core/Src/secboot_bootmanager.c ****     SECBOOT_AES_Context AES_ctx = {0};
+  34:../../Secure/Core/Src/secboot_bootmanager.c ****     uint32_t Aes_key[KEY_WORD_SIZE] = {0};
+  35:../../Secure/Core/Src/secboot_bootmanager.c ****     uint32_t Aes_iv[AES_IV_SIZE] = {0};
+  36:../../Secure/Core/Src/secboot_bootmanager.c ****     volatile uint32_t temp_key[4] = {0};
+  37:../../Secure/Core/Src/secboot_bootmanager.c ****     volatile uint32_t temp_iv[AES_IV_SIZE/sizeof(uint32_t)] = {0};
+  38:../../Secure/Core/Src/secboot_bootmanager.c ****     volatile uint8_t decrypted_key[AES_KEY_SIZE] = {0};
+  39:../../Secure/Core/Src/secboot_bootmanager.c ****     SECBOOT_AES_StatusTypeDef status = SECBOOT_AES_ERROR;
+  40:../../Secure/Core/Src/secboot_bootmanager.c ****     bool aes_initialized = false;
+  41:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  42:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 1. Create temporary key from device UID - volatile ensures no optimization */
+  43:../../Secure/Core/Src/secboot_bootmanager.c ****     temp_key[0] = HAL_GetUIDw0();
+  44:../../Secure/Core/Src/secboot_bootmanager.c ****     temp_key[1] = HAL_GetUIDw1();
+  45:../../Secure/Core/Src/secboot_bootmanager.c ****     temp_key[2] = HAL_GetUIDw2();
+  46:../../Secure/Core/Src/secboot_bootmanager.c ****     temp_key[3] = FW_MAGIC_NUMBER;
+  47:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  48:../../Secure/Core/Src/secboot_bootmanager.c ****   
+  49:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  50:../../Secure/Core/Src/secboot_bootmanager.c ****     memcpy((uint32_t*)temp_iv, (uint32_t*)AES_IV_OFFSET, AES_IV_SIZE);
+  51:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  52:../../Secure/Core/Src/secboot_bootmanager.c ****     memcpy((uint32_t*)Aes_iv, (uint32_t*)AES_IV_OFFSET, AES_IV_SIZE);
+  53:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  54:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  55:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  56:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 3. Initialize AES context with temporary key */
+  57:../../Secure/Core/Src/secboot_bootmanager.c ****         if (SECBOOT_AES_Init(&AES_ctx, (uint32_t*)temp_key, (uint32_t*)temp_iv) == SECBOOT_AES_OK) 
+  58:../../Secure/Core/Src/secboot_bootmanager.c ****             aes_initialized = true;
+  59:../../Secure/Core/Src/secboot_bootmanager.c ****             
+  60:../../Secure/Core/Src/secboot_bootmanager.c ****             /* 4. Decrypt the master key with size validation */
+  61:../../Secure/Core/Src/secboot_bootmanager.c ****             size_t decrypted_key_len = 0;
+  62:../../Secure/Core/Src/secboot_bootmanager.c ****             if (SECBOOT_AES_Decrypt(&AES_ctx,
+  63:../../Secure/Core/Src/secboot_bootmanager.c ****                                   (uint32_t)AES_KEY_OFFSET,
+  64:../../Secure/Core/Src/secboot_bootmanager.c ****                                   AES_KEY_SIZE/sizeof(uint32_t),
+  65:../../Secure/Core/Src/secboot_bootmanager.c ****                                   (uint8_t*)decrypted_key,
+  66:../../Secure/Core/Src/secboot_bootmanager.c ****                                   &decrypted_key_len) == SECBOOT_AES_OK) {
+  67:../../Secure/Core/Src/secboot_bootmanager.c ****                 
+  68:../../Secure/Core/Src/secboot_bootmanager.c ****                 /* 5. Convert and validate decrypted key */
+  69:../../Secure/Core/Src/secboot_bootmanager.c ****                 bytes_to_uint32_be((uint8_t*)decrypted_key, decrypted_key_len, Aes_key);
+  70:../../Secure/Core/Src/secboot_bootmanager.c ****                 
+  71:../../Secure/Core/Src/secboot_bootmanager.c ****                 /* Key validation - check for all zeros and FFFF patterns */
+  72:../../Secure/Core/Src/secboot_bootmanager.c ****                 bool valid_key = false;
+  73:../../Secure/Core/Src/secboot_bootmanager.c ****                 for (size_t i = 0; i < (AES_KEY_SIZE/sizeof(uint32_t)); i++) {
+  74:../../Secure/Core/Src/secboot_bootmanager.c ****                     if (Aes_key[i] != 0x00000000 && Aes_key[i] != 0xFFFFFFFF) {
+  75:../../Secure/Core/Src/secboot_bootmanager.c ****                         valid_key = true;
+  76:../../Secure/Core/Src/secboot_bootmanager.c ****                         break;
+  77:../../Secure/Core/Src/secboot_bootmanager.c ****                     }
+  78:../../Secure/Core/Src/secboot_bootmanager.c ****                 }
+  79:../../Secure/Core/Src/secboot_bootmanager.c ****                 
+  80:../../Secure/Core/Src/secboot_bootmanager.c ****                 if (valid_key) {
+  81:../../Secure/Core/Src/secboot_bootmanager.c ****                     status = SECBOOT_AES_OK;
+  82:../../Secure/Core/Src/secboot_bootmanager.c ****                 } else {
+  83:../../Secure/Core/Src/secboot_bootmanager.c ****                     status = SECBOOT_AES_ERROR;
+  84:../../Secure/Core/Src/secboot_bootmanager.c ****                 }
+  85:../../Secure/Core/Src/secboot_bootmanager.c ****             }
+  86:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ARM GAS  /tmp/ccXPNYpA.s 			page 3
+
+
+  87:../../Secure/Core/Src/secboot_bootmanager.c ****     
+  88:../../Secure/Core/Src/secboot_bootmanager.c **** 
+  89:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 6. Secure memory cleanup - volatile ensures this won't be optimized out */
+  90:../../Secure/Core/Src/secboot_bootmanager.c ****     for (size_t i = 0; i < sizeof(temp_key)/sizeof(temp_key[0]); i++) {
+  91:../../Secure/Core/Src/secboot_bootmanager.c ****         temp_key[i] = 0x00000000;
+  92:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+  93:../../Secure/Core/Src/secboot_bootmanager.c ****     
+  94:../../Secure/Core/Src/secboot_bootmanager.c ****     for (size_t i = 0; i < sizeof(temp_iv)/sizeof(temp_iv[0]); i++) {
+  95:../../Secure/Core/Src/secboot_bootmanager.c ****         temp_iv[i] = 0x00000000;
+  96:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+  97:../../Secure/Core/Src/secboot_bootmanager.c ****     
+  98:../../Secure/Core/Src/secboot_bootmanager.c ****     for (size_t i = 0; i < sizeof(decrypted_key); i++) {
+  99:../../Secure/Core/Src/secboot_bootmanager.c ****         decrypted_key[i] = 0x00;
+ 100:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 101:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 102:../../Secure/Core/Src/secboot_bootmanager.c ****     memcpy((uint32_t*)AES_secret->AES_iv,(uint32_t*)Aes_iv,AES_IV_SIZE);
+ 103:../../Secure/Core/Src/secboot_bootmanager.c ****     memcpy((uint32_t*)AES_secret->AES_key,Aes_key,(uint32_t*)AES_IV_SIZE);
+ 104:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 105:../../Secure/Core/Src/secboot_bootmanager.c ****     if(SECBOOT_AES_DeInit(&AES_ctx) != SECBOOT_AES_OK){
+ 106:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_AES_ERROR;
+ 107:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 108:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 109:../../Secure/Core/Src/secboot_bootmanager.c ****     return status;
+ 110:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 111:../../Secure/Core/Src/secboot_bootmanager.c **** }
+ 112:../../Secure/Core/Src/secboot_bootmanager.c **** /**
+ 113:../../Secure/Core/Src/secboot_bootmanager.c ****   * @brief  Initialize the secure bootloader environment
+ 114:../../Secure/Core/Src/secboot_bootmanager.c ****   * @note   This critical function:
+ 115:../../Secure/Core/Src/secboot_bootmanager.c ****   *         - Configures hardware security features
+ 116:../../Secure/Core/Src/secboot_bootmanager.c ****   *         - Initializes cryptographic accelerators
+ 117:../../Secure/Core/Src/secboot_bootmanager.c ****   *         - Sets up TrustZone security boundaries
+ 118:../../Secure/Core/Src/secboot_bootmanager.c ****   *         - Must be called before any other bootloader operation
+ 119:../../Secure/Core/Src/secboot_bootmanager.c ****   * @retval SECBOOT_BOOTMANAGER_StatusTypeDef Initialization status
+ 120:../../Secure/Core/Src/secboot_bootmanager.c ****   */
+ 121:../../Secure/Core/Src/secboot_bootmanager.c **** SECBOOT_BOOTMANAGER_StatusTypeDef SECBOOT_BootManager_Init(void)
+ 122:../../Secure/Core/Src/secboot_bootmanager.c **** {
+  30              		.loc 1 122 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 136
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34 0000 30B5     		push	{r4, r5, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 12
+  37              		.cfi_offset 4, -12
+  38              		.cfi_offset 5, -8
+  39              		.cfi_offset 14, -4
+  40 0002 A3B0     		sub	sp, sp, #140
+  41              	.LCFI1:
+  42              		.cfi_def_cfa_offset 152
+ 123:../../Secure/Core/Src/secboot_bootmanager.c ****     SECBOOT_BOOTMANAGER_StatusTypeDef status = SECBOOT_BOOTMANAGER_OK;
+  43              		.loc 1 123 5 view .LVU1
+  44              	.LVL0:
+ 124:../../Secure/Core/Src/secboot_bootmanager.c ****     MPCBB_ConfigTypeDef MPCBB_Config = {0};
+  45              		.loc 1 124 5 view .LVU2
+  46              		.loc 1 124 25 is_stmt 0 view .LVU3
+  47 0004 6C22     		movs	r2, #108
+  48 0006 0021     		movs	r1, #0
+ARM GAS  /tmp/ccXPNYpA.s 			page 4
+
+
+  49 0008 07A8     		add	r0, sp, #28
+  50 000a FFF7FEFF 		bl	memset
+  51              	.LVL1:
+ 125:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 126:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 1. Configure Peripheral Security Attributes */
+ 127:../../Secure/Core/Src/secboot_bootmanager.c ****     const uint32_t secure_peripherals[] = {
+  52              		.loc 1 127 5 is_stmt 1 view .LVU4
+  53              		.loc 1 127 20 is_stmt 0 view .LVU5
+  54 000e 6C46     		mov	r4, sp
+  55 0010 284D     		ldr	r5, .L21
+  56 0012 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+  57 0014 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+  58 0016 95E80700 		ldm	r5, {r0, r1, r2}
+  59 001a 84E80700 		stm	r4, {r0, r1, r2}
+ 128:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_USART1,    /* Secure debug channel */
+ 129:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_CRC,       /* Integrity checking */
+ 130:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_ICACHE_REG,/* Instruction cache */
+ 131:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_AES,       /* Crypto acceleration */
+ 132:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_HASH,      /* Cryptographic hashing */
+ 133:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_RNG,       /* True random number gen */
+ 134:../../Secure/Core/Src/secboot_bootmanager.c ****         GTZC_PERIPH_PKA        /* Public key acceleration */
+ 135:../../Secure/Core/Src/secboot_bootmanager.c ****     };
+ 136:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 137:../../Secure/Core/Src/secboot_bootmanager.c ****     for (size_t i = 0; i < sizeof(secure_peripherals)/sizeof(secure_peripherals[0]); i++) {
+  60              		.loc 1 137 5 is_stmt 1 view .LVU6
+  61              	.LBB4:
+  62              		.loc 1 137 10 view .LVU7
+  63              	.LVL2:
+  64              		.loc 1 137 17 is_stmt 0 view .LVU8
+  65 001e 0024     		movs	r4, #0
+  66              		.loc 1 137 5 view .LVU9
+  67 0020 00E0     		b	.L2
+  68              	.LVL3:
+  69              	.L15:
+  70              		.loc 1 137 87 is_stmt 1 discriminator 2 view .LVU10
+  71 0022 0134     		adds	r4, r4, #1
+  72              	.LVL4:
+  73              	.L2:
+  74              		.loc 1 137 26 discriminator 1 view .LVU11
+  75 0024 062C     		cmp	r4, #6
+  76 0026 0CD8     		bhi	.L14
+ 138:../../Secure/Core/Src/secboot_bootmanager.c ****         if (HAL_GTZC_TZSC_ConfigPeriphAttributes(secure_peripherals[i], 
+  77              		.loc 1 138 9 view .LVU12
+  78              		.loc 1 138 13 is_stmt 0 view .LVU13
+  79 0028 40F20131 		movw	r1, #769
+  80 002c 22AB     		add	r3, sp, #136
+  81 002e 03EB8403 		add	r3, r3, r4, lsl #2
+  82 0032 53F8880C 		ldr	r0, [r3, #-136]
+  83 0036 FFF7FEFF 		bl	HAL_GTZC_TZSC_ConfigPeriphAttributes
+  84              	.LVL5:
+  85              		.loc 1 138 12 view .LVU14
+  86 003a 0028     		cmp	r0, #0
+  87 003c F1D0     		beq	.L15
+ 139:../../Secure/Core/Src/secboot_bootmanager.c ****                 GTZC_TZSC_PERIPH_SEC|GTZC_TZSC_PERIPH_NPRIV) != HAL_OK) {
+ 140:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+  88              		.loc 1 140 20 view .LVU15
+  89 003e 0924     		movs	r4, #9
+ARM GAS  /tmp/ccXPNYpA.s 			page 5
+
+
+  90              	.LVL6:
+  91              		.loc 1 140 20 view .LVU16
+  92 0040 00E0     		b	.L3
+  93              	.LVL7:
+  94              	.L14:
+  95              		.loc 1 140 20 view .LVU17
+  96              	.LBE4:
+ 123:../../Secure/Core/Src/secboot_bootmanager.c ****     MPCBB_ConfigTypeDef MPCBB_Config = {0};
+  97              		.loc 1 123 39 view .LVU18
+  98 0042 0024     		movs	r4, #0
+  99              	.LVL8:
+ 100              	.L3:
+ 141:../../Secure/Core/Src/secboot_bootmanager.c ****             break;
+ 142:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 143:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 144:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 145:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 2. Configure SRAM Memory Protection */
+ 146:../../Secure/Core/Src/secboot_bootmanager.c ****     if (status == SECBOOT_BOOTMANAGER_OK) {
+ 101              		.loc 1 146 5 is_stmt 1 view .LVU19
+ 102              		.loc 1 146 8 is_stmt 0 view .LVU20
+ 103 0044 1CB1     		cbz	r4, .L16
+ 104              	.L5:
+ 147:../../Secure/Core/Src/secboot_bootmanager.c ****         /* SRAM1: First 12 blocks secure, remaining non-secure */
+ 148:../../Secure/Core/Src/secboot_bootmanager.c ****         MPCBB_Config.SecureRWIllegalMode = GTZC_MPCBB_SRWILADIS_ENABLE;
+ 149:../../Secure/Core/Src/secboot_bootmanager.c ****         MPCBB_Config.InvertSecureState = GTZC_MPCBB_INVSECSTATE_NOT_INVERTED;
+ 150:../../Secure/Core/Src/secboot_bootmanager.c ****         
+ 151:../../Secure/Core/Src/secboot_bootmanager.c ****         /* Set secure areas (0xFFFFFFFF) and non-secure (0x00000000) */
+ 152:../../Secure/Core/Src/secboot_bootmanager.c ****         memset(MPCBB_Config.AttributeConfig.MPCBB_SecConfig_array, 0xFF, 12*sizeof(uint32_t));
+ 153:../../Secure/Core/Src/secboot_bootmanager.c ****         memset(&MPCBB_Config.AttributeConfig.MPCBB_SecConfig_array[12], 0x00, 12*sizeof(uint32_t));
+ 154:../../Secure/Core/Src/secboot_bootmanager.c ****         MPCBB_Config.AttributeConfig.MPCBB_LockConfig_array[0] = 0x00000000;
+ 155:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 156:../../Secure/Core/Src/secboot_bootmanager.c ****         if (HAL_GTZC_MPCBB_ConfigMem(SRAM1_BASE, &MPCBB_Config) != HAL_OK) {
+ 157:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 158:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 159:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 160:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 161:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 3. Configure SRAM2 (Entirely non-secure) */
+ 162:../../Secure/Core/Src/secboot_bootmanager.c ****     if (status == SECBOOT_BOOTMANAGER_OK) {
+ 163:../../Secure/Core/Src/secboot_bootmanager.c ****         memset(MPCBB_Config.AttributeConfig.MPCBB_SecConfig_array, 0x00, 8*sizeof(uint32_t));
+ 164:../../Secure/Core/Src/secboot_bootmanager.c ****         if (HAL_GTZC_MPCBB_ConfigMem(SRAM2_BASE, &MPCBB_Config) != HAL_OK) {
+ 165:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 166:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 167:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 168:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 169:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 4. Initialize Cryptographic Modules */
+ 170:../../Secure/Core/Src/secboot_bootmanager.c ****     if (status == SECBOOT_BOOTMANAGER_OK) {
+ 105              		.loc 1 170 5 is_stmt 1 view .LVU21
+ 106              		.loc 1 170 8 is_stmt 0 view .LVU22
+ 107 0046 2CB3     		cbz	r4, .L17
+ 108              	.LVL9:
+ 109              	.L6:
+ 171:../../Secure/Core/Src/secboot_bootmanager.c ****         if (SECBOOT_ECDSA_Init() != SECBOOT_ECDSA_OK) {
+ 172:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 173:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 174:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 175:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 176:../../Secure/Core/Src/secboot_bootmanager.c ****     if (status == SECBOOT_BOOTMANAGER_OK) {
+ARM GAS  /tmp/ccXPNYpA.s 			page 6
+
+
+ 177:../../Secure/Core/Src/secboot_bootmanager.c ****         if (SECBOOT_CRC_Init() != SECBOOT_CRC_OK) {
+ 178:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 179:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 180:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 181:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 182:../../Secure/Core/Src/secboot_bootmanager.c ****     if (status == SECBOOT_BOOTMANAGER_OK) {
+ 183:../../Secure/Core/Src/secboot_bootmanager.c ****         if (SECBOOT_SHA256_Init() != SECBOOT_SHA256_OK) {
+ 184:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 185:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 186:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 187:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 188:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 189:../../Secure/Core/Src/secboot_bootmanager.c ****     return status;
+ 110              		.loc 1 189 5 is_stmt 1 view .LVU23
+ 190:../../Secure/Core/Src/secboot_bootmanager.c **** }
+ 111              		.loc 1 190 1 is_stmt 0 view .LVU24
+ 112 0048 2046     		mov	r0, r4
+ 113 004a 23B0     		add	sp, sp, #140
+ 114              	.LCFI2:
+ 115              		.cfi_remember_state
+ 116              		.cfi_def_cfa_offset 12
+ 117              		@ sp needed
+ 118 004c 30BD     		pop	{r4, r5, pc}
+ 119              	.LVL10:
+ 120              	.L16:
+ 121              	.LCFI3:
+ 122              		.cfi_restore_state
+ 148:../../Secure/Core/Src/secboot_bootmanager.c ****         MPCBB_Config.InvertSecureState = GTZC_MPCBB_INVSECSTATE_NOT_INVERTED;
+ 123              		.loc 1 148 9 is_stmt 1 view .LVU25
+ 148:../../Secure/Core/Src/secboot_bootmanager.c ****         MPCBB_Config.InvertSecureState = GTZC_MPCBB_INVSECSTATE_NOT_INVERTED;
+ 124              		.loc 1 148 42 is_stmt 0 view .LVU26
+ 125 004e 0025     		movs	r5, #0
+ 126 0050 0795     		str	r5, [sp, #28]
+ 149:../../Secure/Core/Src/secboot_bootmanager.c ****         
+ 127              		.loc 1 149 9 is_stmt 1 view .LVU27
+ 149:../../Secure/Core/Src/secboot_bootmanager.c ****         
+ 128              		.loc 1 149 40 is_stmt 0 view .LVU28
+ 129 0052 0895     		str	r5, [sp, #32]
+ 152:../../Secure/Core/Src/secboot_bootmanager.c ****         memset(&MPCBB_Config.AttributeConfig.MPCBB_SecConfig_array[12], 0x00, 12*sizeof(uint32_t));
+ 130              		.loc 1 152 9 is_stmt 1 view .LVU29
+ 131 0054 3022     		movs	r2, #48
+ 132 0056 FF21     		movs	r1, #255
+ 133 0058 09A8     		add	r0, sp, #36
+ 134 005a FFF7FEFF 		bl	memset
+ 135              	.LVL11:
+ 153:../../Secure/Core/Src/secboot_bootmanager.c ****         MPCBB_Config.AttributeConfig.MPCBB_LockConfig_array[0] = 0x00000000;
+ 136              		.loc 1 153 9 view .LVU30
+ 137 005e 3022     		movs	r2, #48
+ 138 0060 2946     		mov	r1, r5
+ 139 0062 15A8     		add	r0, sp, #84
+ 140 0064 FFF7FEFF 		bl	memset
+ 141              	.LVL12:
+ 154:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 142              		.loc 1 154 9 view .LVU31
+ 154:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 143              		.loc 1 154 64 is_stmt 0 view .LVU32
+ 144 0068 2195     		str	r5, [sp, #132]
+ARM GAS  /tmp/ccXPNYpA.s 			page 7
+
+
+ 156:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 145              		.loc 1 156 9 is_stmt 1 view .LVU33
+ 156:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 146              		.loc 1 156 13 is_stmt 0 view .LVU34
+ 147 006a 07A9     		add	r1, sp, #28
+ 148 006c 4FF04050 		mov	r0, #805306368
+ 149 0070 FFF7FEFF 		bl	HAL_GTZC_MPCBB_ConfigMem
+ 150              	.LVL13:
+ 156:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 151              		.loc 1 156 12 view .LVU35
+ 152 0074 08B1     		cbz	r0, .L18
+ 153 0076 0924     		movs	r4, #9
+ 154              	.LVL14:
+ 156:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 155              		.loc 1 156 12 view .LVU36
+ 156 0078 E6E7     		b	.L6
+ 157              	.LVL15:
+ 158              	.L18:
+ 162:../../Secure/Core/Src/secboot_bootmanager.c ****         memset(MPCBB_Config.AttributeConfig.MPCBB_SecConfig_array, 0x00, 8*sizeof(uint32_t));
+ 159              		.loc 1 162 5 is_stmt 1 view .LVU37
+ 163:../../Secure/Core/Src/secboot_bootmanager.c ****         if (HAL_GTZC_MPCBB_ConfigMem(SRAM2_BASE, &MPCBB_Config) != HAL_OK) {
+ 160              		.loc 1 163 9 view .LVU38
+ 161 007a 2022     		movs	r2, #32
+ 162 007c 2946     		mov	r1, r5
+ 163 007e 09A8     		add	r0, sp, #36
+ 164 0080 FFF7FEFF 		bl	memset
+ 165              	.LVL16:
+ 164:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 166              		.loc 1 164 9 view .LVU39
+ 164:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 167              		.loc 1 164 13 is_stmt 0 view .LVU40
+ 168 0084 07A9     		add	r1, sp, #28
+ 169 0086 0C48     		ldr	r0, .L21+4
+ 170 0088 FFF7FEFF 		bl	HAL_GTZC_MPCBB_ConfigMem
+ 171              	.LVL17:
+ 164:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_SECURE_VIOLATION;
+ 172              		.loc 1 164 12 view .LVU41
+ 173 008c 0028     		cmp	r0, #0
+ 174 008e DAD0     		beq	.L5
+ 165:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 175              		.loc 1 165 20 view .LVU42
+ 176 0090 0924     		movs	r4, #9
+ 177              	.LVL18:
+ 165:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 178              		.loc 1 165 20 view .LVU43
+ 179 0092 D9E7     		b	.L6
+ 180              	.LVL19:
+ 181              	.L17:
+ 171:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 182              		.loc 1 171 9 is_stmt 1 view .LVU44
+ 171:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 183              		.loc 1 171 13 is_stmt 0 view .LVU45
+ 184 0094 FFF7FEFF 		bl	SECBOOT_ECDSA_Init
+ 185              	.LVL20:
+ 171:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 186              		.loc 1 171 12 view .LVU46
+ 187 0098 08B1     		cbz	r0, .L19
+ARM GAS  /tmp/ccXPNYpA.s 			page 8
+
+
+ 172:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 188              		.loc 1 172 20 view .LVU47
+ 189 009a 0A24     		movs	r4, #10
+ 190              	.LVL21:
+ 172:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 191              		.loc 1 172 20 view .LVU48
+ 192 009c D4E7     		b	.L6
+ 193              	.LVL22:
+ 194              	.L19:
+ 176:../../Secure/Core/Src/secboot_bootmanager.c ****         if (SECBOOT_CRC_Init() != SECBOOT_CRC_OK) {
+ 195              		.loc 1 176 5 is_stmt 1 view .LVU49
+ 177:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 196              		.loc 1 177 9 view .LVU50
+ 177:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 197              		.loc 1 177 13 is_stmt 0 view .LVU51
+ 198 009e FFF7FEFF 		bl	SECBOOT_CRC_Init
+ 199              	.LVL23:
+ 177:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 200              		.loc 1 177 12 view .LVU52
+ 201 00a2 08B1     		cbz	r0, .L20
+ 178:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 202              		.loc 1 178 20 view .LVU53
+ 203 00a4 0A24     		movs	r4, #10
+ 204              	.LVL24:
+ 178:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 205              		.loc 1 178 20 view .LVU54
+ 206 00a6 CFE7     		b	.L6
+ 207              	.LVL25:
+ 208              	.L20:
+ 182:../../Secure/Core/Src/secboot_bootmanager.c ****         if (SECBOOT_SHA256_Init() != SECBOOT_SHA256_OK) {
+ 209              		.loc 1 182 5 is_stmt 1 view .LVU55
+ 183:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 210              		.loc 1 183 9 view .LVU56
+ 183:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 211              		.loc 1 183 13 is_stmt 0 view .LVU57
+ 212 00a8 FFF7FEFF 		bl	SECBOOT_SHA256_Init
+ 213              	.LVL26:
+ 183:../../Secure/Core/Src/secboot_bootmanager.c ****             status = SECBOOT_BOOTMANAGER_HW_SECURE_FAULT;
+ 214              		.loc 1 183 12 view .LVU58
+ 215 00ac 0028     		cmp	r0, #0
+ 216 00ae CBD0     		beq	.L6
+ 184:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 217              		.loc 1 184 20 view .LVU59
+ 218 00b0 0A24     		movs	r4, #10
+ 219              	.LVL27:
+ 184:../../Secure/Core/Src/secboot_bootmanager.c ****         }
+ 220              		.loc 1 184 20 view .LVU60
+ 221 00b2 C9E7     		b	.L6
+ 222              	.L22:
+ 223              		.align	2
+ 224              	.L21:
+ 225 00b4 00000000 		.word	.LANCHOR0
+ 226 00b8 00000330 		.word	805502976
+ 227              		.cfi_endproc
+ 228              	.LFE207:
+ 230              		.section	.text.SECBOOT_BootManager_VerifyBootloaderCRC,"ax",%progbits
+ 231              		.align	1
+ARM GAS  /tmp/ccXPNYpA.s 			page 9
+
+
+ 232              		.global	SECBOOT_BootManager_VerifyBootloaderCRC
+ 233              		.syntax unified
+ 234              		.thumb
+ 235              		.thumb_func
+ 237              	SECBOOT_BootManager_VerifyBootloaderCRC:
+ 238              	.LFB208:
+ 191:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 192:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 193:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 194:../../Secure/Core/Src/secboot_bootmanager.c **** SECBOOT_BOOTMANAGER_StatusTypeDef SECBOOT_BootManager_VerifyBootloaderCRC(){
+ 239              		.loc 1 194 76 is_stmt 1 view -0
+ 240              		.cfi_startproc
+ 241              		@ args = 0, pretend = 0, frame = 8
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243 0000 00B5     		push	{lr}
+ 244              	.LCFI4:
+ 245              		.cfi_def_cfa_offset 4
+ 246              		.cfi_offset 14, -4
+ 247 0002 83B0     		sub	sp, sp, #12
+ 248              	.LCFI5:
+ 249              		.cfi_def_cfa_offset 16
+ 195:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 196:../../Secure/Core/Src/secboot_bootmanager.c ****     /* Predefined addresses - adjust according to your memory map */
+ 197:../../Secure/Core/Src/secboot_bootmanager.c ****     const uint32_t Bootloader_start = BOOTLOADER_START_ADDR;  /* Start of bootloader */
+ 250              		.loc 1 197 5 view .LVU62
+ 251              	.LVL28:
+ 198:../../Secure/Core/Src/secboot_bootmanager.c ****     const uint32_t Bootloader_size  = BOOTLOADER_SIZE;  /* 48KB bootloader size */
+ 252              		.loc 1 198 5 view .LVU63
+ 199:../../Secure/Core/Src/secboot_bootmanager.c ****     const uint32_t stored_crc_addr  = BOOTLOADER_CRC_OFFSET;  /* Last 4 bytes of bootloader sector 
+ 253              		.loc 1 199 5 view .LVU64
+ 200:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 201:../../Secure/Core/Src/secboot_bootmanager.c ****     uint32_t stored_crc = 0;
+ 254              		.loc 1 201 5 view .LVU65
+ 202:../../Secure/Core/Src/secboot_bootmanager.c ****     uint32_t computed_crc = 0;
+ 255              		.loc 1 202 5 view .LVU66
+ 256              		.loc 1 202 14 is_stmt 0 view .LVU67
+ 257 0004 0023     		movs	r3, #0
+ 258 0006 0193     		str	r3, [sp, #4]
+ 203:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 204:../../Secure/Core/Src/secboot_bootmanager.c ****     if(SECBOOT_CRC_Calculate((uint32_t*)Bootloader_start,Bootloader_size,&computed_crc) != SECBOOT_
+ 259              		.loc 1 204 5 is_stmt 1 view .LVU68
+ 260              		.loc 1 204 8 is_stmt 0 view .LVU69
+ 261 0008 01AA     		add	r2, sp, #4
+ 262 000a 4FF40041 		mov	r1, #32768
+ 263 000e 4FF04060 		mov	r0, #201326592
+ 264 0012 FFF7FEFF 		bl	SECBOOT_CRC_Calculate
+ 265              	.LVL29:
+ 266              		.loc 1 204 7 view .LVU70
+ 267 0016 30B9     		cbnz	r0, .L25
+ 205:../../Secure/Core/Src/secboot_bootmanager.c ****         return SECBOOT_BOOTMANAGER_ERROR;
+ 206:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 207:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 208:../../Secure/Core/Src/secboot_bootmanager.c ****     stored_crc = *(uint32_t*)stored_crc_addr;
+ 268              		.loc 1 208 5 is_stmt 1 view .LVU71
+ 269              		.loc 1 208 16 is_stmt 0 view .LVU72
+ 270 0018 054B     		ldr	r3, .L28
+ 271 001a 1B6F     		ldr	r3, [r3, #112]
+ARM GAS  /tmp/ccXPNYpA.s 			page 10
+
+
+ 272              	.LVL30:
+ 209:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 210:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 211:../../Secure/Core/Src/secboot_bootmanager.c ****     if(stored_crc == computed_crc){
+ 273              		.loc 1 211 5 is_stmt 1 view .LVU73
+ 274              		.loc 1 211 19 is_stmt 0 view .LVU74
+ 275 001c 019A     		ldr	r2, [sp, #4]
+ 276              		.loc 1 211 7 view .LVU75
+ 277 001e 9A42     		cmp	r2, r3
+ 278 0020 02D0     		beq	.L24
+ 212:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 213:../../Secure/Core/Src/secboot_bootmanager.c ****         return SECBOOT_BOOTMANAGER_OK;
+ 214:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 215:../../Secure/Core/Src/secboot_bootmanager.c ****     }else{
+ 216:../../Secure/Core/Src/secboot_bootmanager.c ****         return SECBOOT_BOOTMANAGER_INVALID_CRC;
+ 279              		.loc 1 216 16 view .LVU76
+ 280 0022 0620     		movs	r0, #6
+ 281 0024 00E0     		b	.L24
+ 282              	.LVL31:
+ 283              	.L25:
+ 205:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 284              		.loc 1 205 16 view .LVU77
+ 285 0026 0120     		movs	r0, #1
+ 286              	.LVL32:
+ 287              	.L24:
+ 217:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 218:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 219:../../Secure/Core/Src/secboot_bootmanager.c **** }
+ 288              		.loc 1 219 1 view .LVU78
+ 289 0028 03B0     		add	sp, sp, #12
+ 290              	.LCFI6:
+ 291              		.cfi_def_cfa_offset 4
+ 292              		@ sp needed
+ 293 002a 5DF804FB 		ldr	pc, [sp], #4
+ 294              	.L29:
+ 295 002e 00BF     		.align	2
+ 296              	.L28:
+ 297 0030 0080000C 		.word	201359360
+ 298              		.cfi_endproc
+ 299              	.LFE208:
+ 301              		.section	.text.SECBOOT_BootManager_VerifyAppSignature,"ax",%progbits
+ 302              		.align	1
+ 303              		.global	SECBOOT_BootManager_VerifyAppSignature
+ 304              		.syntax unified
+ 305              		.thumb
+ 306              		.thumb_func
+ 308              	SECBOOT_BootManager_VerifyAppSignature:
+ 309              	.LVL33:
+ 310              	.LFB209:
+ 220:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 221:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 222:../../Secure/Core/Src/secboot_bootmanager.c **** SECBOOT_BOOTMANAGER_StatusTypeDef SECBOOT_BootManager_VerifyAppSignature(uint32_t image_address)
+ 223:../../Secure/Core/Src/secboot_bootmanager.c **** {
+ 311              		.loc 1 223 1 is_stmt 1 view -0
+ 312              		.cfi_startproc
+ 313              		@ args = 0, pretend = 0, frame = 32
+ 314              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /tmp/ccXPNYpA.s 			page 11
+
+
+ 315              		.loc 1 223 1 is_stmt 0 view .LVU80
+ 316 0000 70B5     		push	{r4, r5, r6, lr}
+ 317              	.LCFI7:
+ 318              		.cfi_def_cfa_offset 16
+ 319              		.cfi_offset 4, -16
+ 320              		.cfi_offset 5, -12
+ 321              		.cfi_offset 6, -8
+ 322              		.cfi_offset 14, -4
+ 323 0002 88B0     		sub	sp, sp, #32
+ 324              	.LCFI8:
+ 325              		.cfi_def_cfa_offset 48
+ 326 0004 0446     		mov	r4, r0
+ 224:../../Secure/Core/Src/secboot_bootmanager.c ****     // Initialize status to error as default (fail-safe)
+ 225:../../Secure/Core/Src/secboot_bootmanager.c ****     SECBOOT_BOOTMANAGER_StatusTypeDef status = SECBOOT_BOOTMANAGER_ERROR;
+ 327              		.loc 1 225 5 is_stmt 1 view .LVU81
+ 328              	.LVL34:
+ 226:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 227:../../Secure/Core/Src/secboot_bootmanager.c ****     // Buffer to store computed SHA-256 hash of application
+ 228:../../Secure/Core/Src/secboot_bootmanager.c ****     uint8_t pDigitApp[FW_HASH_SIZE] = {0};
+ 329              		.loc 1 228 5 view .LVU82
+ 330              		.loc 1 228 13 is_stmt 0 view .LVU83
+ 331 0006 0023     		movs	r3, #0
+ 332 0008 0093     		str	r3, [sp]
+ 333 000a 0193     		str	r3, [sp, #4]
+ 334 000c 0293     		str	r3, [sp, #8]
+ 335 000e 0393     		str	r3, [sp, #12]
+ 336 0010 0493     		str	r3, [sp, #16]
+ 337 0012 0593     		str	r3, [sp, #20]
+ 338 0014 0693     		str	r3, [sp, #24]
+ 339 0016 0793     		str	r3, [sp, #28]
+ 229:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 230:../../Secure/Core/Src/secboot_bootmanager.c ****     // Pointer to firmware header structure in flash memory
+ 231:../../Secure/Core/Src/secboot_bootmanager.c ****     const FirmwareHeader_TypeDef* pAppHeader = (const FirmwareHeader_TypeDef*)image_address;
+ 340              		.loc 1 231 5 is_stmt 1 view .LVU84
+ 341              	.LVL35:
+ 232:../../Secure/Core/Src/secboot_bootmanager.c ****     // Pointer to start of application binary in flash
+ 233:../../Secure/Core/Src/secboot_bootmanager.c ****     uint8_t* pAppBinary = (uint8_t*)(pAppHeader->entryPoint);
+ 342              		.loc 1 233 5 view .LVU85
+ 343              		.loc 1 233 48 is_stmt 0 view .LVU86
+ 344 0018 C068     		ldr	r0, [r0, #12]	@ unaligned
+ 345              	.LVL36:
+ 234:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 235:../../Secure/Core/Src/secboot_bootmanager.c ****     // 1. First check: Verify firmware header magic number
+ 236:../../Secure/Core/Src/secboot_bootmanager.c ****     if(pAppHeader->magicNumber != FW_MAGIC_NUMBER) {
+ 346              		.loc 1 236 5 is_stmt 1 view .LVU87
+ 347              		.loc 1 236 18 is_stmt 0 view .LVU88
+ 348 001a 2268     		ldr	r2, [r4]	@ unaligned
+ 349              		.loc 1 236 7 view .LVU89
+ 350 001c 194B     		ldr	r3, .L39
+ 351 001e 9A42     		cmp	r2, r3
+ 352 0020 03D0     		beq	.L37
+ 237:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_INVALID_HEADER;
+ 238:../../Secure/Core/Src/secboot_bootmanager.c ****         return status; // Early return if header is invalid
+ 353              		.loc 1 238 16 view .LVU90
+ 354 0022 0425     		movs	r5, #4
+ 355              	.LVL37:
+ 356              	.L31:
+ARM GAS  /tmp/ccXPNYpA.s 			page 12
+
+
+ 239:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 240:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 241:../../Secure/Core/Src/secboot_bootmanager.c ****     // 2. Second check: Compute and verify SHA-256 hash
+ 242:../../Secure/Core/Src/secboot_bootmanager.c ****     // Compute hash of application binary using hardware accelerator
+ 243:../../Secure/Core/Src/secboot_bootmanager.c ****     if(SECBOOT_SHA256_Compute(pAppBinary,pAppHeader->imageSize,pDigitApp) != SECBOOT_SHA256_OK){
+ 244:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_ERROR;
+ 245:../../Secure/Core/Src/secboot_bootmanager.c ****         return status; // Return if hash computation fails
+ 246:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 247:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 248:../../Secure/Core/Src/secboot_bootmanager.c ****     // Compare computed hash with hash stored in firmware header
+ 249:../../Secure/Core/Src/secboot_bootmanager.c ****     if(memcmp((uint8_t*)pDigitApp,(uint8_t*)pAppHeader->firmwareHash,FW_HASH_SIZE) != 0){
+ 250:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_INVALID_HASH;
+ 251:../../Secure/Core/Src/secboot_bootmanager.c ****         return status; // Return if hashes don't match
+ 252:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 253:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 254:../../Secure/Core/Src/secboot_bootmanager.c ****     // 3. Third check: Verify ECDSA signature
+ 255:../../Secure/Core/Src/secboot_bootmanager.c ****     // Get public key from predefined secure location
+ 256:../../Secure/Core/Src/secboot_bootmanager.c ****     SECBOOT_ECC_PublicKey *public_key = (SECBOOT_ECC_PublicKey*) ECC_PUBKEY_OFFSET;
+ 257:../../Secure/Core/Src/secboot_bootmanager.c ****     // Get signature from firmware header
+ 258:../../Secure/Core/Src/secboot_bootmanager.c ****     SECBOOT_ECC_Signature *signature = (SECBOOT_ECC_Signature*) pAppHeader->signature;
+ 259:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 260:../../Secure/Core/Src/secboot_bootmanager.c ****     // Verify signature using ECDSA
+ 261:../../Secure/Core/Src/secboot_bootmanager.c ****     if(SECBOOT_ECDSA_Verify_Signature(pDigitApp,FW_HASH_SIZE,signature,public_key) == SECBOOT_ECDSA
+ 262:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_OK; // All verifications passed
+ 263:../../Secure/Core/Src/secboot_bootmanager.c ****     }else{
+ 264:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_INVALID_SIGNATURE;
+ 265:../../Secure/Core/Src/secboot_bootmanager.c ****         return status; // Return if signature verification fails
+ 266:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 267:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 268:../../Secure/Core/Src/secboot_bootmanager.c ****     // Security cleanup: Wipe sensitive data from memory
+ 269:../../Secure/Core/Src/secboot_bootmanager.c ****     memset((uint8_t*)pDigitApp,0,FW_HASH_SIZE); // Clear computed hash
+ 270:../../Secure/Core/Src/secboot_bootmanager.c ****     memset((SECBOOT_ECC_PublicKey*)public_key,0,sizeof(SECBOOT_ECC_PublicKey)); // Clear public key
+ 271:../../Secure/Core/Src/secboot_bootmanager.c ****     memset((SECBOOT_ECC_Signature*)signature,0,sizeof(SECBOOT_ECC_Signature)); // Clear signature c
+ 272:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 273:../../Secure/Core/Src/secboot_bootmanager.c ****     return status; // Return final verification status
+ 274:../../Secure/Core/Src/secboot_bootmanager.c **** }
+ 357              		.loc 1 274 1 view .LVU91
+ 358 0024 2846     		mov	r0, r5
+ 359 0026 08B0     		add	sp, sp, #32
+ 360              	.LCFI9:
+ 361              		.cfi_remember_state
+ 362              		.cfi_def_cfa_offset 16
+ 363              		@ sp needed
+ 364 0028 70BD     		pop	{r4, r5, r6, pc}
+ 365              	.LVL38:
+ 366              	.L37:
+ 367              	.LCFI10:
+ 368              		.cfi_restore_state
+ 243:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_ERROR;
+ 369              		.loc 1 243 5 is_stmt 1 view .LVU92
+ 243:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_ERROR;
+ 370              		.loc 1 243 8 is_stmt 0 view .LVU93
+ 371 002a 6A46     		mov	r2, sp
+ 372 002c 6168     		ldr	r1, [r4, #4]	@ unaligned
+ 373 002e FFF7FEFF 		bl	SECBOOT_SHA256_Compute
+ 374              	.LVL39:
+ 243:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_ERROR;
+ARM GAS  /tmp/ccXPNYpA.s 			page 13
+
+
+ 375              		.loc 1 243 7 view .LVU94
+ 376 0032 0546     		mov	r5, r0
+ 377 0034 10BB     		cbnz	r0, .L33
+ 249:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_INVALID_HASH;
+ 378              		.loc 1 249 5 is_stmt 1 view .LVU95
+ 249:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_INVALID_HASH;
+ 379              		.loc 1 249 8 is_stmt 0 view .LVU96
+ 380 0036 2022     		movs	r2, #32
+ 381 0038 04F11001 		add	r1, r4, #16
+ 382 003c 6846     		mov	r0, sp
+ 383 003e FFF7FEFF 		bl	memcmp
+ 384              	.LVL40:
+ 249:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_INVALID_HASH;
+ 385              		.loc 1 249 7 view .LVU97
+ 386 0042 E8B9     		cbnz	r0, .L34
+ 256:../../Secure/Core/Src/secboot_bootmanager.c ****     // Get signature from firmware header
+ 387              		.loc 1 256 5 is_stmt 1 view .LVU98
+ 388              	.LVL41:
+ 258:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 389              		.loc 1 258 5 view .LVU99
+ 258:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 390              		.loc 1 258 28 is_stmt 0 view .LVU100
+ 391 0044 3034     		adds	r4, r4, #48
+ 392              	.LVL42:
+ 261:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_OK; // All verifications passed
+ 393              		.loc 1 261 5 is_stmt 1 view .LVU101
+ 261:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_OK; // All verifications passed
+ 394              		.loc 1 261 8 is_stmt 0 view .LVU102
+ 395 0046 104B     		ldr	r3, .L39+4
+ 396 0048 2246     		mov	r2, r4
+ 397 004a 2021     		movs	r1, #32
+ 398 004c 6846     		mov	r0, sp
+ 399 004e FFF7FEFF 		bl	SECBOOT_ECDSA_Verify_Signature
+ 400              	.LVL43:
+ 261:../../Secure/Core/Src/secboot_bootmanager.c ****         status = SECBOOT_BOOTMANAGER_OK; // All verifications passed
+ 401              		.loc 1 261 7 view .LVU103
+ 402 0052 0728     		cmp	r0, #7
+ 403 0054 01D0     		beq	.L38
+ 265:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 404              		.loc 1 265 16 view .LVU104
+ 405 0056 0225     		movs	r5, #2
+ 406 0058 E4E7     		b	.L31
+ 407              	.L38:
+ 262:../../Secure/Core/Src/secboot_bootmanager.c ****     }else{
+ 408              		.loc 1 262 9 is_stmt 1 view .LVU105
+ 409              	.LVL44:
+ 269:../../Secure/Core/Src/secboot_bootmanager.c ****     memset((SECBOOT_ECC_PublicKey*)public_key,0,sizeof(SECBOOT_ECC_PublicKey)); // Clear public key
+ 410              		.loc 1 269 5 view .LVU106
+ 411 005a 2022     		movs	r2, #32
+ 412 005c 0021     		movs	r1, #0
+ 413 005e 6846     		mov	r0, sp
+ 414 0060 FFF7FEFF 		bl	memset
+ 415              	.LVL45:
+ 270:../../Secure/Core/Src/secboot_bootmanager.c ****     memset((SECBOOT_ECC_Signature*)signature,0,sizeof(SECBOOT_ECC_Signature)); // Clear signature c
+ 416              		.loc 1 270 5 view .LVU107
+ 417 0064 4026     		movs	r6, #64
+ 418 0066 3246     		mov	r2, r6
+ARM GAS  /tmp/ccXPNYpA.s 			page 14
+
+
+ 419 0068 0021     		movs	r1, #0
+ 420 006a 0748     		ldr	r0, .L39+4
+ 421 006c FFF7FEFF 		bl	memset
+ 422              	.LVL46:
+ 271:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 423              		.loc 1 271 5 view .LVU108
+ 424 0070 3246     		mov	r2, r6
+ 425 0072 0021     		movs	r1, #0
+ 426 0074 2046     		mov	r0, r4
+ 427 0076 FFF7FEFF 		bl	memset
+ 428              	.LVL47:
+ 273:../../Secure/Core/Src/secboot_bootmanager.c **** }
+ 429              		.loc 1 273 5 view .LVU109
+ 273:../../Secure/Core/Src/secboot_bootmanager.c **** }
+ 430              		.loc 1 273 12 is_stmt 0 view .LVU110
+ 431 007a D3E7     		b	.L31
+ 432              	.LVL48:
+ 433              	.L33:
+ 245:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 434              		.loc 1 245 16 view .LVU111
+ 435 007c 0125     		movs	r5, #1
+ 436 007e D1E7     		b	.L31
+ 437              	.L34:
+ 251:../../Secure/Core/Src/secboot_bootmanager.c ****     }
+ 438              		.loc 1 251 16 view .LVU112
+ 439 0080 0325     		movs	r5, #3
+ 440 0082 CFE7     		b	.L31
+ 441              	.L40:
+ 442              		.align	2
+ 443              	.L39:
+ 444 0084 EFBEADDE 		.word	-559038737
+ 445 0088 3080000C 		.word	201359408
+ 446              		.cfi_endproc
+ 447              	.LFE209:
+ 449              		.section	.text.SECBOOT_BootManager_JumpTo,"ax",%progbits
+ 450              		.align	1
+ 451              		.global	SECBOOT_BootManager_JumpTo
+ 452              		.syntax unified
+ 453              		.thumb
+ 454              		.thumb_func
+ 456              	SECBOOT_BootManager_JumpTo:
+ 457              	.LVL49:
+ 458              	.LFB210:
+ 275:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 276:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 277:../../Secure/Core/Src/secboot_bootmanager.c **** SECBOOT_BOOTMANAGER_StatusTypeDef SECBOOT_BootManager_JumpTo(uint32_t jump_to_address)
+ 278:../../Secure/Core/Src/secboot_bootmanager.c **** {
+ 459              		.loc 1 278 1 is_stmt 1 view -0
+ 460              		.cfi_startproc
+ 461              		@ args = 0, pretend = 0, frame = 0
+ 462              		@ frame_needed = 0, uses_anonymous_args = 0
+ 463              		.loc 1 278 1 is_stmt 0 view .LVU114
+ 464 0000 10B5     		push	{r4, lr}
+ 465              	.LCFI11:
+ 466              		.cfi_def_cfa_offset 8
+ 467              		.cfi_offset 4, -8
+ 468              		.cfi_offset 14, -4
+ARM GAS  /tmp/ccXPNYpA.s 			page 15
+
+
+ 279:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 280:../../Secure/Core/Src/secboot_bootmanager.c ****     funcptr_NS NonSecureApp_ResetHandler;
+ 469              		.loc 1 280 5 is_stmt 1 view .LVU115
+ 281:../../Secure/Core/Src/secboot_bootmanager.c ****     
+ 282:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 2. Get pointer to application header in flash */
+ 283:../../Secure/Core/Src/secboot_bootmanager.c ****     const FirmwareHeader_TypeDef* pAppHeader = (const FirmwareHeader_TypeDef*)jump_to_address;
+ 470              		.loc 1 283 5 view .LVU116
+ 471              	.LVL50:
+ 284:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 285:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 4. Configure non-secure vector table */
+ 286:../../Secure/Core/Src/secboot_bootmanager.c ****     SCB_NS->VTOR = pAppHeader->entryPoint;
+ 472              		.loc 1 286 5 view .LVU117
+ 473              		.loc 1 286 30 is_stmt 0 view .LVU118
+ 474 0002 C268     		ldr	r2, [r0, #12]	@ unaligned
+ 475              		.loc 1 286 18 view .LVU119
+ 476 0004 184B     		ldr	r3, .L43
+ 477 0006 9A60     		str	r2, [r3, #8]
+ 287:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 288:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 5. Set non-secure main stack pointer (MSP_NS) */
+ 289:../../Secure/Core/Src/secboot_bootmanager.c ****     uint32_t ns_msp = *((uint32_t *)pAppHeader->entryPoint);
+ 478              		.loc 1 289 5 is_stmt 1 view .LVU120
+ 479              		.loc 1 289 47 is_stmt 0 view .LVU121
+ 480 0008 C368     		ldr	r3, [r0, #12]	@ unaligned
+ 481              		.loc 1 289 14 view .LVU122
+ 482 000a 1A68     		ldr	r2, [r3]
+ 483              	.LVL51:
+ 290:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 291:../../Secure/Core/Src/secboot_bootmanager.c ****     __TZ_set_MSP_NS(ns_msp);
+ 484              		.loc 1 291 5 is_stmt 1 view .LVU123
+ 485              	.LBB5:
+ 486              	.LBI5:
+ 487              		.file 2 "../../Drivers/CMSIS/Include/cmsis_gcc.h"
+   1:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**************************************************************************//**
+   2:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * @file     cmsis_gcc.h
+   3:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * @brief    CMSIS compiler GCC header file
+   4:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * @version  V5.2.0
+   5:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * @date     08. May 2019
+   6:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  ******************************************************************************/
+   7:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /*
+   8:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * Copyright (c) 2009-2019 Arm Limited. All rights reserved.
+   9:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  10:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * SPDX-License-Identifier: Apache-2.0
+  11:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  12:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+  13:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * not use this file except in compliance with the License.
+  14:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * You may obtain a copy of the License at
+  15:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  16:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * www.apache.org/licenses/LICENSE-2.0
+  17:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  *
+  18:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * Unless required by applicable law or agreed to in writing, software
+  19:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  20:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  21:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * See the License for the specific language governing permissions and
+  22:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  * limitations under the License.
+  23:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+  24:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  25:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __CMSIS_GCC_H
+ARM GAS  /tmp/ccXPNYpA.s 			page 16
+
+
+  26:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #define __CMSIS_GCC_H
+  27:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  28:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /* ignore some GCC warnings */
+  29:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic push
+  30:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wsign-conversion"
+  31:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wconversion"
+  32:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #pragma GCC diagnostic ignored "-Wunused-parameter"
+  33:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  34:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /* Fallback for __has_builtin */
+  35:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __has_builtin
+  36:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __has_builtin(x) (0)
+  37:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  38:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+  39:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /* CMSIS compiler specific defines */
+  40:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ASM
+  41:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ASM                                  __asm
+  42:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  43:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __INLINE
+  44:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __INLINE                               inline
+  45:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  46:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_INLINE
+  47:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_INLINE                        static inline
+  48:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  49:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __STATIC_FORCEINLINE                 
+  50:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __STATIC_FORCEINLINE                   __attribute__((always_inline)) static inline
+  51:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif                                           
+  52:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __NO_RETURN
+  53:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __NO_RETURN                            __attribute__((__noreturn__))
+  54:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  55:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __USED
+  56:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __USED                                 __attribute__((used))
+  57:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  58:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __WEAK
+  59:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __WEAK                                 __attribute__((weak))
+  60:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  61:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED
+  62:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED                               __attribute__((packed, aligned(1)))
+  63:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  64:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_STRUCT
+  65:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_STRUCT                        struct __attribute__((packed, aligned(1)))
+  66:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  67:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __PACKED_UNION
+  68:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __PACKED_UNION                         union __attribute__((packed, aligned(1)))
+  69:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  70:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32        /* deprecated */
+  71:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  72:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  73:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  74:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   struct __attribute__((packed)) T_UINT32 { uint32_t v; };
+  75:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  76:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32(x)                  (((struct T_UINT32 *)(x))->v)
+  77:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  78:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_WRITE
+  79:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  80:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  81:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  82:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_WRITE { uint16_t v; };
+ARM GAS  /tmp/ccXPNYpA.s 			page 17
+
+
+  83:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  84:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_WRITE(addr, val)    (void)((((struct T_UINT16_WRITE *)(void *)(addr))-
+  85:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  86:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT16_READ
+  87:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  88:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  89:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  90:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT16_READ { uint16_t v; };
+  91:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+  92:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT16_READ(addr)          (((const struct T_UINT16_READ *)(const void *)(add
+  93:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+  94:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_WRITE
+  95:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+  96:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+  97:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+  98:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_WRITE { uint32_t v; };
+  99:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 100:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_WRITE(addr, val)    (void)((((struct T_UINT32_WRITE *)(void *)(addr))-
+ 101:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 102:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __UNALIGNED_UINT32_READ
+ 103:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic push
+ 104:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wpacked"
+ 105:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic ignored "-Wattributes"
+ 106:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __PACKED_STRUCT T_UINT32_READ { uint32_t v; };
+ 107:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #pragma GCC diagnostic pop
+ 108:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __UNALIGNED_UINT32_READ(addr)          (((const struct T_UINT32_READ *)(const void *)(add
+ 109:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 110:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __ALIGNED
+ 111:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __ALIGNED(x)                           __attribute__((aligned(x)))
+ 112:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 113:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __RESTRICT
+ 114:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __RESTRICT                             __restrict
+ 115:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 116:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef   __COMPILER_BARRIER
+ 117:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   #define __COMPILER_BARRIER()                   __ASM volatile("":::"memory")
+ 118:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 119:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 120:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /* #########################  Startup and Lowlevel Init  ######################## */
+ 121:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 122:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __PROGRAM_START
+ 123:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 124:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 125:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Initializes data and bss sections
+ 126:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details This default implementations initialized all data and additional bss
+ 127:../../Drivers/CMSIS/Include/cmsis_gcc.h ****            sections relying on .copy.table and .zero.table specified properly
+ 128:../../Drivers/CMSIS/Include/cmsis_gcc.h ****            in the used linker script.
+ 129:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 130:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 131:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE __NO_RETURN void __cmsis_start(void)
+ 132:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 133:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   extern void _start(void) __NO_RETURN;
+ 134:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 135:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   typedef struct {
+ 136:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t const* src;
+ 137:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t* dest;
+ 138:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t  wlen;
+ 139:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   } __copy_table_t;
+ARM GAS  /tmp/ccXPNYpA.s 			page 18
+
+
+ 140:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 141:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   typedef struct {
+ 142:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t* dest;
+ 143:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     uint32_t  wlen;
+ 144:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   } __zero_table_t;
+ 145:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 146:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __copy_table_t __copy_table_start__;
+ 147:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __copy_table_t __copy_table_end__;
+ 148:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __zero_table_t __zero_table_start__;
+ 149:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   extern const __zero_table_t __zero_table_end__;
+ 150:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 151:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   for (__copy_table_t const* pTable = &__copy_table_start__; pTable < &__copy_table_end__; ++pTable
+ 152:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     for(uint32_t i=0u; i<pTable->wlen; ++i) {
+ 153:../../Drivers/CMSIS/Include/cmsis_gcc.h ****       pTable->dest[i] = pTable->src[i];
+ 154:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     }
+ 155:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   }
+ 156:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  
+ 157:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   for (__zero_table_t const* pTable = &__zero_table_start__; pTable < &__zero_table_end__; ++pTable
+ 158:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     for(uint32_t i=0u; i<pTable->wlen; ++i) {
+ 159:../../Drivers/CMSIS/Include/cmsis_gcc.h ****       pTable->dest[i] = 0u;
+ 160:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     }
+ 161:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   }
+ 162:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  
+ 163:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   _start();
+ 164:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 165:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   
+ 166:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #define __PROGRAM_START           __cmsis_start
+ 167:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 168:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 169:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __INITIAL_SP
+ 170:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #define __INITIAL_SP              __StackTop
+ 171:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 172:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 173:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __STACK_LIMIT
+ 174:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #define __STACK_LIMIT             __StackLimit
+ 175:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 176:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 177:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __VECTOR_TABLE
+ 178:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #define __VECTOR_TABLE            __Vectors
+ 179:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 180:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 181:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #ifndef __VECTOR_TABLE_ATTRIBUTE
+ 182:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #define __VECTOR_TABLE_ATTRIBUTE  __attribute((used, section(".vectors")))
+ 183:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 184:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 185:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /* ###########################  Core Function Access  ########################### */
+ 186:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /** \ingroup  CMSIS_Core_FunctionInterface
+ 187:../../Drivers/CMSIS/Include/cmsis_gcc.h ****     \defgroup CMSIS_Core_RegAccFunctions CMSIS Core Register Access Functions
+ 188:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   @{
+ 189:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 190:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 191:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 192:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Enable IRQ Interrupts
+ 193:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Enables IRQ interrupts by clearing the I-bit in the CPSR.
+ 194:../../Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 195:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 196:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __enable_irq(void)
+ARM GAS  /tmp/ccXPNYpA.s 			page 19
+
+
+ 197:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 198:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsie i" : : : "memory");
+ 199:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 200:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 201:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 202:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 203:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Disable IRQ Interrupts
+ 204:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Disables IRQ interrupts by setting the I-bit in the CPSR.
+ 205:../../Drivers/CMSIS/Include/cmsis_gcc.h ****            Can only be executed in Privileged modes.
+ 206:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 207:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __disable_irq(void)
+ 208:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 209:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("cpsid i" : : : "memory");
+ 210:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 211:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 212:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 213:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 214:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Control Register
+ 215:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the Control Register.
+ 216:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               Control Register value
+ 217:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 218:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_CONTROL(void)
+ 219:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 220:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 221:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 222:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, control" : "=r" (result) );
+ 223:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 224:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 225:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 226:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 227:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 228:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 229:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Control Register (non-secure)
+ 230:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the non-secure Control Register when in secure mode.
+ 231:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               non-secure Control Register value
+ 232:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 233:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_CONTROL_NS(void)
+ 234:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 235:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 236:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 237:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, control_ns" : "=r" (result) );
+ 238:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 239:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 240:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 241:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 242:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 243:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 244:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Control Register
+ 245:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Writes the given value to the Control Register.
+ 246:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    control  Control Register value to set
+ 247:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 248:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_CONTROL(uint32_t control)
+ 249:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 250:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR control, %0" : : "r" (control) : "memory");
+ 251:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 252:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 253:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ARM GAS  /tmp/ccXPNYpA.s 			page 20
+
+
+ 254:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 255:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 256:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Control Register (non-secure)
+ 257:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Writes the given value to the non-secure Control Register when in secure state.
+ 258:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    control  Control Register value to set
+ 259:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 260:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_CONTROL_NS(uint32_t control)
+ 261:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 262:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR control_ns, %0" : : "r" (control) : "memory");
+ 263:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 264:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 265:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 266:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 267:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 268:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get IPSR Register
+ 269:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the IPSR Register.
+ 270:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               IPSR Register value
+ 271:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 272:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_IPSR(void)
+ 273:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 274:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 275:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 276:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, ipsr" : "=r" (result) );
+ 277:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 278:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 279:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 280:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 281:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 282:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get APSR Register
+ 283:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the APSR Register.
+ 284:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               APSR Register value
+ 285:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 286:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_APSR(void)
+ 287:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 288:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 289:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 290:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, apsr" : "=r" (result) );
+ 291:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 292:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 293:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 294:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 295:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 296:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get xPSR Register
+ 297:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the content of the xPSR Register.
+ 298:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               xPSR Register value
+ 299:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 300:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_xPSR(void)
+ 301:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 302:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 303:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 304:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, xpsr" : "=r" (result) );
+ 305:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 306:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 307:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 308:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 309:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 310:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer
+ARM GAS  /tmp/ccXPNYpA.s 			page 21
+
+
+ 311:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Process Stack Pointer (PSP).
+ 312:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               PSP Register value
+ 313:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 314:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_PSP(void)
+ 315:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 316:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 317:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 318:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psp"  : "=r" (result) );
+ 319:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 320:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 321:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 322:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 323:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 324:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 325:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Process Stack Pointer (non-secure)
+ 326:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Process Stack Pointer (PSP) when in secure s
+ 327:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               PSP Register value
+ 328:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 329:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_PSP_NS(void)
+ 330:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 331:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 332:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 333:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, psp_ns"  : "=r" (result) );
+ 334:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 335:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 336:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 337:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 338:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 339:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 340:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Process Stack Pointer
+ 341:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Process Stack Pointer (PSP).
+ 342:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 343:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 344:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_PSP(uint32_t topOfProcStack)
+ 345:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 346:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR psp, %0" : : "r" (topOfProcStack) : );
+ 347:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 348:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 349:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 350:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 351:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 352:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Process Stack Pointer (non-secure)
+ 353:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Process Stack Pointer (PSP) when in secure sta
+ 354:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfProcStack  Process Stack Pointer value to set
+ 355:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 356:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_PSP_NS(uint32_t topOfProcStack)
+ 357:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 358:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR psp_ns, %0" : : "r" (topOfProcStack) : );
+ 359:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 360:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 361:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 362:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 363:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 364:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer
+ 365:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the Main Stack Pointer (MSP).
+ 366:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               MSP Register value
+ 367:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ARM GAS  /tmp/ccXPNYpA.s 			page 22
+
+
+ 368:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __get_MSP(void)
+ 369:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 370:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 371:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 372:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msp" : "=r" (result) );
+ 373:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 374:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 375:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 376:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 377:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 378:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 379:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Get Main Stack Pointer (non-secure)
+ 380:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Returns the current value of the non-secure Main Stack Pointer (MSP) when in secure stat
+ 381:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \return               MSP Register value
+ 382:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 383:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE uint32_t __TZ_get_MSP_NS(void)
+ 384:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 385:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   uint32_t result;
+ 386:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 387:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MRS %0, msp_ns" : "=r" (result) );
+ 388:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   return(result);
+ 389:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 390:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #endif
+ 391:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 392:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 393:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 394:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Main Stack Pointer
+ 395:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the Main Stack Pointer (MSP).
+ 396:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 397:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 398:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __set_MSP(uint32_t topOfMainStack)
+ 399:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 400:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR msp, %0" : : "r" (topOfMainStack) : );
+ 401:../../Drivers/CMSIS/Include/cmsis_gcc.h **** }
+ 402:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 403:../../Drivers/CMSIS/Include/cmsis_gcc.h **** 
+ 404:../../Drivers/CMSIS/Include/cmsis_gcc.h **** #if (defined (__ARM_FEATURE_CMSE ) && (__ARM_FEATURE_CMSE == 3))
+ 405:../../Drivers/CMSIS/Include/cmsis_gcc.h **** /**
+ 406:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \brief   Set Main Stack Pointer (non-secure)
+ 407:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \details Assigns the given value to the non-secure Main Stack Pointer (MSP) when in secure state.
+ 408:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   \param [in]    topOfMainStack  Main Stack Pointer value to set
+ 409:../../Drivers/CMSIS/Include/cmsis_gcc.h ****  */
+ 410:../../Drivers/CMSIS/Include/cmsis_gcc.h **** __STATIC_FORCEINLINE void __TZ_set_MSP_NS(uint32_t topOfMainStack)
+ 488              		.loc 2 410 27 view .LVU124
+ 489              	.LBB6:
+ 411:../../Drivers/CMSIS/Include/cmsis_gcc.h **** {
+ 412:../../Drivers/CMSIS/Include/cmsis_gcc.h ****   __ASM volatile ("MSR msp_ns, %0" : : "r" (topOfMainStack) : );
+ 490              		.loc 2 412 3 view .LVU125
+ 491              		.syntax unified
+ 492              	@ 412 "../../Drivers/CMSIS/Include/cmsis_gcc.h" 1
+ 493 000c 82F38888 		MSR msp_ns, r2
+ 494              	@ 0 "" 2
+ 495              	.LVL52:
+ 496              		.loc 2 412 3 is_stmt 0 view .LVU126
+ 497              		.thumb
+ 498              		.syntax unified
+ 499              	.LBE6:
+ARM GAS  /tmp/ccXPNYpA.s 			page 23
+
+
+ 500              	.LBE5:
+ 292:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 293:../../Secure/Core/Src/secboot_bootmanager.c ****     /* Get non-secure reset handler */
+ 294:../../Secure/Core/Src/secboot_bootmanager.c ****     NonSecureApp_ResetHandler = (funcptr_NS)(*((uint32_t *)((pAppHeader->entryPoint) + 4U)));
+ 501              		.loc 1 294 5 is_stmt 1 view .LVU127
+ 295:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 296:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 297:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 9. Jump to non-secure application */
+ 298:../../Secure/Core/Src/secboot_bootmanager.c ****     NonSecureApp_ResetHandler();
+ 502              		.loc 1 298 5 view .LVU128
+ 503 0010 5C68     		ldr	r4, [r3, #4]
+ 504 0012 6408     		lsrs	r4, r4, #1
+ 505 0014 6400     		lsls	r4, r4, #1
+ 506 0016 2046     		mov	r0, r4
+ 507 0018 2146     		mov	r1, r4
+ 508 001a 2246     		mov	r2, r4
+ 509 001c 2346     		mov	r3, r4
+ 510 001e B7EE000A 		vmov.f32	s0, #1.0e+0
+ 511 0022 F7EE000A 		vmov.f32	s1, #1.0e+0
+ 512 0026 B7EE001A 		vmov.f32	s2, #1.0e+0
+ 513 002a F7EE001A 		vmov.f32	s3, #1.0e+0
+ 514 002e B7EE002A 		vmov.f32	s4, #1.0e+0
+ 515 0032 F7EE002A 		vmov.f32	s5, #1.0e+0
+ 516 0036 B7EE003A 		vmov.f32	s6, #1.0e+0
+ 517 003a F7EE003A 		vmov.f32	s7, #1.0e+0
+ 518 003e B7EE004A 		vmov.f32	s8, #1.0e+0
+ 519 0042 F7EE004A 		vmov.f32	s9, #1.0e+0
+ 520 0046 B7EE005A 		vmov.f32	s10, #1.0e+0
+ 521 004a F7EE005A 		vmov.f32	s11, #1.0e+0
+ 522 004e B7EE006A 		vmov.f32	s12, #1.0e+0
+ 523 0052 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 524 0056 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 525 005a F7EE007A 		vmov.f32	s15, #1.0e+0
+ 526 005e FFF7FEFF 		bl	__gnu_cmse_nonsecure_call
+ 527              	.LVL53:
+ 299:../../Secure/Core/Src/secboot_bootmanager.c **** 
+ 300:../../Secure/Core/Src/secboot_bootmanager.c ****     /* 10. Should never reach here - return error if we do */
+ 301:../../Secure/Core/Src/secboot_bootmanager.c ****     return SECBOOT_BOOTMANAGER_JUMP_FAILED;
+ 528              		.loc 1 301 5 view .LVU129
+ 302:../../Secure/Core/Src/secboot_bootmanager.c **** }...
+ 529              		.loc 1 302 1 is_stmt 0 view .LVU130
+ 530 0062 0B20     		movs	r0, #11
+ 531 0064 10BD     		pop	{r4, pc}
+ 532              	.LVL54:
+ 533              	.L44:
+ 534              		.loc 1 302 1 view .LVU131
+ 535 0066 00BF     		.align	2
+ 536              	.L43:
+ 537 0068 00ED02E0 		.word	-536679168
+ 538              		.cfi_endproc
+ 539              	.LFE210:
+ 541              		.section	.rodata
+ 542              		.align	2
+ 543              		.set	.LANCHOR0,. + 0
+ 544              	.LC0:
+ 545 0000 01000010 		.word	268435457
+ 546 0004 08000010 		.word	268435464
+ARM GAS  /tmp/ccXPNYpA.s 			page 24
+
+
+ 547 0008 0A000010 		.word	268435466
+ 548 000c 0C000010 		.word	268435468
+ 549 0010 0D000010 		.word	268435469
+ 550 0014 0E000010 		.word	268435470
+ 551 0018 0F000010 		.word	268435471
+ 552              		.text
+ 553              	.Letext0:
+ 554              		.file 3 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 555              		.file 4 "../../Drivers/CMSIS/Include/core_cm33.h"
+ 556              		.file 5 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stddef.h"
+ 557              		.file 6 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 558              		.file 7 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_gtzc.h"
+ 559              		.file 8 "../../Secure/Core/Inc/secboot_sha256.h"
+ 560              		.file 9 "../../Secure/Core/Inc/secboot_ecdsa.h"
+ 561              		.file 10 "../../Secure/Core/Inc/secboot_crc.h"
+ 562              		.file 11 "../../Secure/Core/Inc/secboot_bootmanager.h"
+ 563              		.file 12 "/usr/include/newlib/string.h"
+ 564              		.file 13 "<built-in>"
+ARM GAS  /tmp/ccXPNYpA.s 			page 25
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secboot_bootmanager.c
+     /tmp/ccXPNYpA.s:22     .text.SECBOOT_BootManager_Init:00000000 $t
+     /tmp/ccXPNYpA.s:28     .text.SECBOOT_BootManager_Init:00000000 SECBOOT_BootManager_Init
+     /tmp/ccXPNYpA.s:225    .text.SECBOOT_BootManager_Init:000000b4 $d
+     /tmp/ccXPNYpA.s:231    .text.SECBOOT_BootManager_VerifyBootloaderCRC:00000000 $t
+     /tmp/ccXPNYpA.s:237    .text.SECBOOT_BootManager_VerifyBootloaderCRC:00000000 SECBOOT_BootManager_VerifyBootloaderCRC
+     /tmp/ccXPNYpA.s:297    .text.SECBOOT_BootManager_VerifyBootloaderCRC:00000030 $d
+     /tmp/ccXPNYpA.s:302    .text.SECBOOT_BootManager_VerifyAppSignature:00000000 $t
+     /tmp/ccXPNYpA.s:308    .text.SECBOOT_BootManager_VerifyAppSignature:00000000 SECBOOT_BootManager_VerifyAppSignature
+     /tmp/ccXPNYpA.s:444    .text.SECBOOT_BootManager_VerifyAppSignature:00000084 $d
+     /tmp/ccXPNYpA.s:450    .text.SECBOOT_BootManager_JumpTo:00000000 $t
+     /tmp/ccXPNYpA.s:456    .text.SECBOOT_BootManager_JumpTo:00000000 SECBOOT_BootManager_JumpTo
+     /tmp/ccXPNYpA.s:537    .text.SECBOOT_BootManager_JumpTo:00000068 $d
+     /tmp/ccXPNYpA.s:542    .rodata:00000000 $d
+
+UNDEFINED SYMBOLS
+memset
+HAL_GTZC_TZSC_ConfigPeriphAttributes
+HAL_GTZC_MPCBB_ConfigMem
+SECBOOT_ECDSA_Init
+SECBOOT_CRC_Init
+SECBOOT_SHA256_Init
+SECBOOT_CRC_Calculate
+SECBOOT_SHA256_Compute
+memcmp
+SECBOOT_ECDSA_Verify_Signature
+__gnu_cmse_nonsecure_call

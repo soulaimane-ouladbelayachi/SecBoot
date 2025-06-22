@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "STM32L562DK",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "./Secure/Core/Inc",
+                "./Secure_nsclib",
+                "./NonSecure/Core/Inc",
+                "./Drivers/STM32L5xx_HAL_Driver/Inc",
+                "./Drivers/CMSIS/Device/ST/STM32L5xx/Include",
+                "./Drivers/STM32L5xx_HAL_Driver/Inc/Legacy",
+                "./Drivers/CMSIS/Include"
+            ],
+            "defines": [  "STM32L562xx","USE_HAL_DRIVER","__ARM_FEATURE_CMSE=3","__ARM_FEATURE_CMSE_INVOKED"],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

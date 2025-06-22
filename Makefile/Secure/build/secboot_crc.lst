@@ -1,0 +1,494 @@
+ARM GAS  /tmp/ccmCqouC.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secboot_crc.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secboot_crc.c"
+  21              		.section	.text.SECBOOT_CRC_Init,"ax",%progbits
+  22              		.align	1
+  23              		.global	SECBOOT_CRC_Init
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	SECBOOT_CRC_Init:
+  29              	.LFB202:
+   1:../../Secure/Core/Src/secboot_crc.c **** /** 
+   2:../../Secure/Core/Src/secboot_crc.c ****   * @file    secboot_crc.c
+   3:../../Secure/Core/Src/secboot_crc.c ****   * @brief   Hardware-accelerated CRC32 implementation for STM32L5
+   4:../../Secure/Core/Src/secboot_crc.c ****   * @author  Soulaimane Oulad Belayachi
+   5:../../Secure/Core/Src/secboot_crc.c ****   * @date    2025-06-12
+   6:../../Secure/Core/Src/secboot_crc.c ****   * @version 1.0
+   7:../../Secure/Core/Src/secboot_crc.c ****   * @note    Uses STM32 hardware CRC peripheral for fast integrity checks
+   8:../../Secure/Core/Src/secboot_crc.c ****   */
+   9:../../Secure/Core/Src/secboot_crc.c **** 
+  10:../../Secure/Core/Src/secboot_crc.c **** #include "secboot_crc.h"
+  11:../../Secure/Core/Src/secboot_crc.c **** 
+  12:../../Secure/Core/Src/secboot_crc.c **** /* Private variables ---------------------------------------------------------*/
+  13:../../Secure/Core/Src/secboot_crc.c **** 
+  14:../../Secure/Core/Src/secboot_crc.c **** /**
+  15:../../Secure/Core/Src/secboot_crc.c ****   * @brief  CRC peripheral handle structure
+  16:../../Secure/Core/Src/secboot_crc.c ****   * @note   Configured for standard CRC-32 calculation
+  17:../../Secure/Core/Src/secboot_crc.c ****   */
+  18:../../Secure/Core/Src/secboot_crc.c **** static CRC_HandleTypeDef hcrc;
+  19:../../Secure/Core/Src/secboot_crc.c **** 
+  20:../../Secure/Core/Src/secboot_crc.c **** /* Function implementations --------------------------------------------------*/
+  21:../../Secure/Core/Src/secboot_crc.c **** 
+  22:../../Secure/Core/Src/secboot_crc.c **** /**
+  23:../../Secure/Core/Src/secboot_crc.c ****   * @brief  Initialize hardware CRC peripheral
+  24:../../Secure/Core/Src/secboot_crc.c ****   * @retval SECBOOT_CRC_StatusTypeDef Initialization status
+  25:../../Secure/Core/Src/secboot_crc.c ****   * @note   Configures CRC with these settings:
+  26:../../Secure/Core/Src/secboot_crc.c ****   *         - Default polynomial (0x04C11DB7)
+  27:../../Secure/Core/Src/secboot_crc.c ****   *         - Default initial value (0xFFFFFFFF)
+  28:../../Secure/Core/Src/secboot_crc.c ****   *         - No data inversion
+  29:../../Secure/Core/Src/secboot_crc.c ****   *         - Byte input format
+ARM GAS  /tmp/ccmCqouC.s 			page 2
+
+
+  30:../../Secure/Core/Src/secboot_crc.c ****   */
+  31:../../Secure/Core/Src/secboot_crc.c **** SECBOOT_CRC_StatusTypeDef SECBOOT_CRC_Init(void)
+  32:../../Secure/Core/Src/secboot_crc.c **** {
+  30              		.loc 1 32 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+  33:../../Secure/Core/Src/secboot_crc.c ****     /* Configure CRC peripheral settings */
+  34:../../Secure/Core/Src/secboot_crc.c ****     hcrc.Instance = CRC;
+  39              		.loc 1 34 5 view .LVU1
+  40              		.loc 1 34 19 is_stmt 0 view .LVU2
+  41 0002 0848     		ldr	r0, .L6
+  42 0004 084B     		ldr	r3, .L6+4
+  43 0006 0360     		str	r3, [r0]
+  35:../../Secure/Core/Src/secboot_crc.c ****     hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_ENABLE;
+  44              		.loc 1 35 5 is_stmt 1 view .LVU3
+  45              		.loc 1 35 36 is_stmt 0 view .LVU4
+  46 0008 0023     		movs	r3, #0
+  47 000a 0371     		strb	r3, [r0, #4]
+  36:../../Secure/Core/Src/secboot_crc.c ****     hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_ENABLE;
+  48              		.loc 1 36 5 is_stmt 1 view .LVU5
+  49              		.loc 1 36 35 is_stmt 0 view .LVU6
+  50 000c 4371     		strb	r3, [r0, #5]
+  37:../../Secure/Core/Src/secboot_crc.c ****     hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_NONE;
+  51              		.loc 1 37 5 is_stmt 1 view .LVU7
+  52              		.loc 1 37 38 is_stmt 0 view .LVU8
+  53 000e 4361     		str	r3, [r0, #20]
+  38:../../Secure/Core/Src/secboot_crc.c ****     hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_DISABLE;
+  54              		.loc 1 38 5 is_stmt 1 view .LVU9
+  55              		.loc 1 38 39 is_stmt 0 view .LVU10
+  56 0010 8361     		str	r3, [r0, #24]
+  39:../../Secure/Core/Src/secboot_crc.c ****     hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
+  57              		.loc 1 39 5 is_stmt 1 view .LVU11
+  58              		.loc 1 39 26 is_stmt 0 view .LVU12
+  59 0012 0123     		movs	r3, #1
+  60 0014 0362     		str	r3, [r0, #32]
+  40:../../Secure/Core/Src/secboot_crc.c **** 
+  41:../../Secure/Core/Src/secboot_crc.c ****     /* Initialize CRC peripheral */
+  42:../../Secure/Core/Src/secboot_crc.c ****     if (HAL_CRC_Init(&hcrc) != HAL_OK) {
+  61              		.loc 1 42 5 is_stmt 1 view .LVU13
+  62              		.loc 1 42 9 is_stmt 0 view .LVU14
+  63 0016 FFF7FEFF 		bl	HAL_CRC_Init
+  64              	.LVL0:
+  65              		.loc 1 42 8 view .LVU15
+  66 001a 00B9     		cbnz	r0, .L5
+  67              	.L2:
+  43:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INIT_FAILED;
+  44:../../Secure/Core/Src/secboot_crc.c ****     }
+  45:../../Secure/Core/Src/secboot_crc.c ****     
+  46:../../Secure/Core/Src/secboot_crc.c ****     return SECBOOT_CRC_OK;
+  47:../../Secure/Core/Src/secboot_crc.c **** }
+  68              		.loc 1 47 1 view .LVU16
+ARM GAS  /tmp/ccmCqouC.s 			page 3
+
+
+  69 001c 08BD     		pop	{r3, pc}
+  70              	.L5:
+  43:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INIT_FAILED;
+  71              		.loc 1 43 16 view .LVU17
+  72 001e 0320     		movs	r0, #3
+  73 0020 FCE7     		b	.L2
+  74              	.L7:
+  75 0022 00BF     		.align	2
+  76              	.L6:
+  77 0024 00000000 		.word	hcrc
+  78 0028 00300250 		.word	1342320640
+  79              		.cfi_endproc
+  80              	.LFE202:
+  82              		.section	.text.SECBOOT_CRC_Calculate,"ax",%progbits
+  83              		.align	1
+  84              		.global	SECBOOT_CRC_Calculate
+  85              		.syntax unified
+  86              		.thumb
+  87              		.thumb_func
+  89              	SECBOOT_CRC_Calculate:
+  90              	.LVL1:
+  91              	.LFB203:
+  48:../../Secure/Core/Src/secboot_crc.c **** 
+  49:../../Secure/Core/Src/secboot_crc.c **** /**
+  50:../../Secure/Core/Src/secboot_crc.c ****   * @brief  Compute CRC32 over a memory block
+  51:../../Secure/Core/Src/secboot_crc.c ****   * @param  pData       Pointer to data buffer
+  52:../../Secure/Core/Src/secboot_crc.c ****   * @param  dataLength  Length of data in bytes
+  53:../../Secure/Core/Src/secboot_crc.c ****   * @param  pCrcResult  Pointer to store computed CRC32
+  54:../../Secure/Core/Src/secboot_crc.c ****   * @retval SECBOOT_CRC_StatusTypeDef Operation status
+  55:../../Secure/Core/Src/secboot_crc.c ****   * @note   Uses STM32 hardware CRC accelerator
+  56:../../Secure/Core/Src/secboot_crc.c ****   * @warning Buffer must be accessible (no NULL pointers)
+  57:../../Secure/Core/Src/secboot_crc.c ****   */
+  58:../../Secure/Core/Src/secboot_crc.c **** SECBOOT_CRC_StatusTypeDef SECBOOT_CRC_Calculate(
+  59:../../Secure/Core/Src/secboot_crc.c ****     uint8_t *pData, 
+  60:../../Secure/Core/Src/secboot_crc.c ****     uint32_t dataLength, 
+  61:../../Secure/Core/Src/secboot_crc.c ****     uint32_t *pCrcResult
+  62:../../Secure/Core/Src/secboot_crc.c **** )
+  63:../../Secure/Core/Src/secboot_crc.c **** {
+  92              		.loc 1 63 1 is_stmt 1 view -0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  64:../../Secure/Core/Src/secboot_crc.c ****     /* Parameter validation */
+  65:../../Secure/Core/Src/secboot_crc.c ****     if (!pData || !pCrcResult) {
+  96              		.loc 1 65 5 view .LVU19
+  97              		.loc 1 65 8 is_stmt 0 view .LVU20
+  98 0000 58B1     		cbz	r0, .L10
+  63:../../Secure/Core/Src/secboot_crc.c ****     /* Parameter validation */
+  99              		.loc 1 63 1 discriminator 1 view .LVU21
+ 100 0002 10B5     		push	{r4, lr}
+ 101              	.LCFI1:
+ 102              		.cfi_def_cfa_offset 8
+ 103              		.cfi_offset 4, -8
+ 104              		.cfi_offset 14, -4
+ 105 0004 0B46     		mov	r3, r1
+ 106 0006 1446     		mov	r4, r2
+ 107 0008 0146     		mov	r1, r0
+ARM GAS  /tmp/ccmCqouC.s 			page 4
+
+
+ 108              	.LVL2:
+ 109              		.loc 1 65 16 discriminator 1 view .LVU22
+ 110 000a 42B1     		cbz	r2, .L11
+  66:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+  67:../../Secure/Core/Src/secboot_crc.c ****     }
+  68:../../Secure/Core/Src/secboot_crc.c **** 
+  69:../../Secure/Core/Src/secboot_crc.c ****     /* Compute CRC using hardware accelerator */
+  70:../../Secure/Core/Src/secboot_crc.c ****     *pCrcResult = HAL_CRC_Calculate(
+ 111              		.loc 1 70 5 is_stmt 1 view .LVU23
+ 112              		.loc 1 70 19 is_stmt 0 view .LVU24
+ 113 000c 1A46     		mov	r2, r3
+ 114              	.LVL3:
+ 115              		.loc 1 70 19 view .LVU25
+ 116 000e 0548     		ldr	r0, .L16
+ 117              	.LVL4:
+ 118              		.loc 1 70 19 view .LVU26
+ 119 0010 FFF7FEFF 		bl	HAL_CRC_Calculate
+ 120              	.LVL5:
+ 121              		.loc 1 70 17 view .LVU27
+ 122 0014 2060     		str	r0, [r4]
+  71:../../Secure/Core/Src/secboot_crc.c ****         &hcrc, 
+  72:../../Secure/Core/Src/secboot_crc.c ****         (uint32_t*)pData, 
+  73:../../Secure/Core/Src/secboot_crc.c ****         dataLength
+  74:../../Secure/Core/Src/secboot_crc.c ****     );
+  75:../../Secure/Core/Src/secboot_crc.c ****     
+  76:../../Secure/Core/Src/secboot_crc.c ****     return SECBOOT_CRC_OK;
+ 123              		.loc 1 76 5 is_stmt 1 view .LVU28
+ 124              		.loc 1 76 12 is_stmt 0 view .LVU29
+ 125 0016 0020     		movs	r0, #0
+ 126              	.L9:
+  77:../../Secure/Core/Src/secboot_crc.c **** }
+ 127              		.loc 1 77 1 view .LVU30
+ 128 0018 10BD     		pop	{r4, pc}
+ 129              	.LVL6:
+ 130              	.L10:
+ 131              	.LCFI2:
+ 132              		.cfi_def_cfa_offset 0
+ 133              		.cfi_restore 4
+ 134              		.cfi_restore 14
+  66:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 135              		.loc 1 66 16 view .LVU31
+ 136 001a 0220     		movs	r0, #2
+ 137              	.LVL7:
+ 138              		.loc 1 77 1 view .LVU32
+ 139 001c 7047     		bx	lr
+ 140              	.LVL8:
+ 141              	.L11:
+ 142              	.LCFI3:
+ 143              		.cfi_def_cfa_offset 8
+ 144              		.cfi_offset 4, -8
+ 145              		.cfi_offset 14, -4
+  66:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 146              		.loc 1 66 16 view .LVU33
+ 147 001e 0220     		movs	r0, #2
+ 148              	.LVL9:
+  66:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 149              		.loc 1 66 16 view .LVU34
+ARM GAS  /tmp/ccmCqouC.s 			page 5
+
+
+ 150 0020 FAE7     		b	.L9
+ 151              	.L17:
+ 152 0022 00BF     		.align	2
+ 153              	.L16:
+ 154 0024 00000000 		.word	hcrc
+ 155              		.cfi_endproc
+ 156              	.LFE203:
+ 158              		.section	.text.SECBOOT_CRC_Verify,"ax",%progbits
+ 159              		.align	1
+ 160              		.global	SECBOOT_CRC_Verify
+ 161              		.syntax unified
+ 162              		.thumb
+ 163              		.thumb_func
+ 165              	SECBOOT_CRC_Verify:
+ 166              	.LVL10:
+ 167              	.LFB204:
+  78:../../Secure/Core/Src/secboot_crc.c **** 
+  79:../../Secure/Core/Src/secboot_crc.c **** /**
+  80:../../Secure/Core/Src/secboot_crc.c ****   * @brief  Verify CRC32 of a memory block
+  81:../../Secure/Core/Src/secboot_crc.c ****   * @param  pData       Pointer to data buffer
+  82:../../Secure/Core/Src/secboot_crc.c ****   * @param  dataLength  Length of data in bytes
+  83:../../Secure/Core/Src/secboot_crc.c ****   * @param  expectedCrc Expected CRC32 value
+  84:../../Secure/Core/Src/secboot_crc.c ****   * @retval SECBOOT_CRC_StatusTypeDef Verification result
+  85:../../Secure/Core/Src/secboot_crc.c ****   * @note   Returns SECBOOT_CRC_MISMATCH if computed CRC doesn't match expected value
+  86:../../Secure/Core/Src/secboot_crc.c ****   */
+  87:../../Secure/Core/Src/secboot_crc.c **** SECBOOT_CRC_StatusTypeDef SECBOOT_CRC_Verify(
+  88:../../Secure/Core/Src/secboot_crc.c ****     const uint8_t *pData, 
+  89:../../Secure/Core/Src/secboot_crc.c ****     uint32_t dataLength, 
+  90:../../Secure/Core/Src/secboot_crc.c ****     uint32_t expectedCrc
+  91:../../Secure/Core/Src/secboot_crc.c **** )
+  92:../../Secure/Core/Src/secboot_crc.c **** {
+ 168              		.loc 1 92 1 is_stmt 1 view -0
+ 169              		.cfi_startproc
+ 170              		@ args = 0, pretend = 0, frame = 8
+ 171              		@ frame_needed = 0, uses_anonymous_args = 0
+ 172              		.loc 1 92 1 is_stmt 0 view .LVU36
+ 173 0000 10B5     		push	{r4, lr}
+ 174              	.LCFI4:
+ 175              		.cfi_def_cfa_offset 8
+ 176              		.cfi_offset 4, -8
+ 177              		.cfi_offset 14, -4
+ 178 0002 82B0     		sub	sp, sp, #8
+ 179              	.LCFI5:
+ 180              		.cfi_def_cfa_offset 16
+ 181 0004 1446     		mov	r4, r2
+  93:../../Secure/Core/Src/secboot_crc.c ****     uint32_t computedCrc;
+ 182              		.loc 1 93 5 is_stmt 1 view .LVU37
+  94:../../Secure/Core/Src/secboot_crc.c ****     SECBOOT_CRC_StatusTypeDef status;
+ 183              		.loc 1 94 5 view .LVU38
+  95:../../Secure/Core/Src/secboot_crc.c ****     
+  96:../../Secure/Core/Src/secboot_crc.c ****     /* Compute CRC of the data */
+  97:../../Secure/Core/Src/secboot_crc.c ****     status = SECBOOT_CRC_Calculate((uint8_t*)pData, dataLength, &computedCrc);
+ 184              		.loc 1 97 5 view .LVU39
+ 185              		.loc 1 97 14 is_stmt 0 view .LVU40
+ 186 0006 01AA     		add	r2, sp, #4
+ 187              	.LVL11:
+ 188              		.loc 1 97 14 view .LVU41
+ARM GAS  /tmp/ccmCqouC.s 			page 6
+
+
+ 189 0008 FFF7FEFF 		bl	SECBOOT_CRC_Calculate
+ 190              	.LVL12:
+  98:../../Secure/Core/Src/secboot_crc.c ****     if (status != SECBOOT_CRC_OK) {
+ 191              		.loc 1 98 5 is_stmt 1 view .LVU42
+ 192              		.loc 1 98 8 is_stmt 0 view .LVU43
+ 193 000c 10B9     		cbnz	r0, .L19
+  99:../../Secure/Core/Src/secboot_crc.c ****         return status;
+ 100:../../Secure/Core/Src/secboot_crc.c ****     }
+ 101:../../Secure/Core/Src/secboot_crc.c ****     
+ 102:../../Secure/Core/Src/secboot_crc.c ****     /* Compare with expected value */
+ 103:../../Secure/Core/Src/secboot_crc.c ****     if (computedCrc != expectedCrc) {
+ 194              		.loc 1 103 5 is_stmt 1 view .LVU44
+ 195              		.loc 1 103 21 is_stmt 0 view .LVU45
+ 196 000e 019B     		ldr	r3, [sp, #4]
+ 197              		.loc 1 103 8 view .LVU46
+ 198 0010 A342     		cmp	r3, r4
+ 199 0012 01D1     		bne	.L22
+ 200              	.L19:
+ 104:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_MISMATCH;
+ 105:../../Secure/Core/Src/secboot_crc.c ****     }
+ 106:../../Secure/Core/Src/secboot_crc.c ****     
+ 107:../../Secure/Core/Src/secboot_crc.c ****     return SECBOOT_CRC_OK;
+ 108:../../Secure/Core/Src/secboot_crc.c **** }
+ 201              		.loc 1 108 1 view .LVU47
+ 202 0014 02B0     		add	sp, sp, #8
+ 203              	.LCFI6:
+ 204              		.cfi_remember_state
+ 205              		.cfi_def_cfa_offset 8
+ 206              		@ sp needed
+ 207 0016 10BD     		pop	{r4, pc}
+ 208              	.LVL13:
+ 209              	.L22:
+ 210              	.LCFI7:
+ 211              		.cfi_restore_state
+ 104:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_MISMATCH;
+ 212              		.loc 1 104 16 view .LVU48
+ 213 0018 0420     		movs	r0, #4
+ 214 001a FBE7     		b	.L19
+ 215              		.cfi_endproc
+ 216              	.LFE204:
+ 218              		.section	.text.SECBOOT_CRC_Calculate_Chunk,"ax",%progbits
+ 219              		.align	1
+ 220              		.global	SECBOOT_CRC_Calculate_Chunk
+ 221              		.syntax unified
+ 222              		.thumb
+ 223              		.thumb_func
+ 225              	SECBOOT_CRC_Calculate_Chunk:
+ 226              	.LVL14:
+ 227              	.LFB205:
+ 109:../../Secure/Core/Src/secboot_crc.c **** 
+ 110:../../Secure/Core/Src/secboot_crc.c **** /**
+ 111:../../Secure/Core/Src/secboot_crc.c ****   * @brief  Compute CRC32 incrementally (for large blocks)
+ 112:../../Secure/Core/Src/secboot_crc.c ****   * @param  pData       Pointer to data chunk
+ 113:../../Secure/Core/Src/secboot_crc.c ****   * @param  dataLength  Length of current chunk
+ 114:../../Secure/Core/Src/secboot_crc.c ****   * @param  currentCrc  Current CRC value (updated in-place)
+ 115:../../Secure/Core/Src/secboot_crc.c ****   * @retval SECBOOT_CRC_StatusTypeDef Operation status
+ 116:../../Secure/Core/Src/secboot_crc.c ****   * @note   Initialize *currentCrc with SECBOOT_CRC32_INIT_VALUE
+ARM GAS  /tmp/ccmCqouC.s 			page 7
+
+
+ 117:../../Secure/Core/Src/secboot_crc.c ****   */
+ 118:../../Secure/Core/Src/secboot_crc.c **** SECBOOT_CRC_StatusTypeDef SECBOOT_CRC_Calculate_Chunk(
+ 119:../../Secure/Core/Src/secboot_crc.c ****     const uint8_t *pData, 
+ 120:../../Secure/Core/Src/secboot_crc.c ****     uint32_t dataLength, 
+ 121:../../Secure/Core/Src/secboot_crc.c ****     uint32_t *currentCrc
+ 122:../../Secure/Core/Src/secboot_crc.c **** )
+ 123:../../Secure/Core/Src/secboot_crc.c **** {
+ 228              		.loc 1 123 1 is_stmt 1 view -0
+ 229              		.cfi_startproc
+ 230              		@ args = 0, pretend = 0, frame = 0
+ 231              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124:../../Secure/Core/Src/secboot_crc.c ****     /* Parameter validation */
+ 125:../../Secure/Core/Src/secboot_crc.c ****     if (!pData || !currentCrc) {
+ 232              		.loc 1 125 5 view .LVU50
+ 233              		.loc 1 125 8 is_stmt 0 view .LVU51
+ 234 0000 58B1     		cbz	r0, .L25
+ 123:../../Secure/Core/Src/secboot_crc.c ****     /* Parameter validation */
+ 235              		.loc 1 123 1 discriminator 1 view .LVU52
+ 236 0002 10B5     		push	{r4, lr}
+ 237              	.LCFI8:
+ 238              		.cfi_def_cfa_offset 8
+ 239              		.cfi_offset 4, -8
+ 240              		.cfi_offset 14, -4
+ 241 0004 0B46     		mov	r3, r1
+ 242 0006 1446     		mov	r4, r2
+ 243 0008 0146     		mov	r1, r0
+ 244              	.LVL15:
+ 245              		.loc 1 125 16 discriminator 1 view .LVU53
+ 246 000a 42B1     		cbz	r2, .L26
+ 126:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 127:../../Secure/Core/Src/secboot_crc.c ****     }
+ 128:../../Secure/Core/Src/secboot_crc.c **** 
+ 129:../../Secure/Core/Src/secboot_crc.c ****     /* Compute CRC for this chunk */
+ 130:../../Secure/Core/Src/secboot_crc.c ****     *currentCrc = HAL_CRC_Accumulate(
+ 247              		.loc 1 130 5 is_stmt 1 view .LVU54
+ 248              		.loc 1 130 19 is_stmt 0 view .LVU55
+ 249 000c 1A46     		mov	r2, r3
+ 250              	.LVL16:
+ 251              		.loc 1 130 19 view .LVU56
+ 252 000e 0548     		ldr	r0, .L31
+ 253              	.LVL17:
+ 254              		.loc 1 130 19 view .LVU57
+ 255 0010 FFF7FEFF 		bl	HAL_CRC_Accumulate
+ 256              	.LVL18:
+ 257              		.loc 1 130 17 view .LVU58
+ 258 0014 2060     		str	r0, [r4]
+ 131:../../Secure/Core/Src/secboot_crc.c ****         &hcrc, 
+ 132:../../Secure/Core/Src/secboot_crc.c ****         (uint32_t*)pData, 
+ 133:../../Secure/Core/Src/secboot_crc.c ****         dataLength
+ 134:../../Secure/Core/Src/secboot_crc.c ****     );
+ 135:../../Secure/Core/Src/secboot_crc.c ****     
+ 136:../../Secure/Core/Src/secboot_crc.c ****     return SECBOOT_CRC_OK;
+ 259              		.loc 1 136 5 is_stmt 1 view .LVU59
+ 260              		.loc 1 136 12 is_stmt 0 view .LVU60
+ 261 0016 0020     		movs	r0, #0
+ 262              	.L24:
+ 137:../../Secure/Core/Src/secboot_crc.c **** }...
+ARM GAS  /tmp/ccmCqouC.s 			page 8
+
+
+ 263              		.loc 1 137 1 view .LVU61
+ 264 0018 10BD     		pop	{r4, pc}
+ 265              	.LVL19:
+ 266              	.L25:
+ 267              	.LCFI9:
+ 268              		.cfi_def_cfa_offset 0
+ 269              		.cfi_restore 4
+ 270              		.cfi_restore 14
+ 126:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 271              		.loc 1 126 16 view .LVU62
+ 272 001a 0220     		movs	r0, #2
+ 273              	.LVL20:
+ 274              		.loc 1 137 1 view .LVU63
+ 275 001c 7047     		bx	lr
+ 276              	.LVL21:
+ 277              	.L26:
+ 278              	.LCFI10:
+ 279              		.cfi_def_cfa_offset 8
+ 280              		.cfi_offset 4, -8
+ 281              		.cfi_offset 14, -4
+ 126:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 282              		.loc 1 126 16 view .LVU64
+ 283 001e 0220     		movs	r0, #2
+ 284              	.LVL22:
+ 126:../../Secure/Core/Src/secboot_crc.c ****         return SECBOOT_CRC_INVALID_PARAM;
+ 285              		.loc 1 126 16 view .LVU65
+ 286 0020 FAE7     		b	.L24
+ 287              	.L32:
+ 288 0022 00BF     		.align	2
+ 289              	.L31:
+ 290 0024 00000000 		.word	hcrc
+ 291              		.cfi_endproc
+ 292              	.LFE205:
+ 294              		.section	.bss.hcrc,"aw",%nobits
+ 295              		.align	2
+ 298              	hcrc:
+ 299 0000 00000000 		.space	36
+ 299      00000000 
+ 299      00000000 
+ 299      00000000 
+ 299      00000000 
+ 300              		.text
+ 301              	.Letext0:
+ 302              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 303              		.file 3 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 304              		.file 4 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 305              		.file 5 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_crc.h"
+ 306              		.file 6 "../../Secure/Core/Inc/secboot_crc.h"
+ARM GAS  /tmp/ccmCqouC.s 			page 9
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secboot_crc.c
+     /tmp/ccmCqouC.s:22     .text.SECBOOT_CRC_Init:00000000 $t
+     /tmp/ccmCqouC.s:28     .text.SECBOOT_CRC_Init:00000000 SECBOOT_CRC_Init
+     /tmp/ccmCqouC.s:77     .text.SECBOOT_CRC_Init:00000024 $d
+     /tmp/ccmCqouC.s:298    .bss.hcrc:00000000 hcrc
+     /tmp/ccmCqouC.s:83     .text.SECBOOT_CRC_Calculate:00000000 $t
+     /tmp/ccmCqouC.s:89     .text.SECBOOT_CRC_Calculate:00000000 SECBOOT_CRC_Calculate
+     /tmp/ccmCqouC.s:154    .text.SECBOOT_CRC_Calculate:00000024 $d
+     /tmp/ccmCqouC.s:159    .text.SECBOOT_CRC_Verify:00000000 $t
+     /tmp/ccmCqouC.s:165    .text.SECBOOT_CRC_Verify:00000000 SECBOOT_CRC_Verify
+     /tmp/ccmCqouC.s:219    .text.SECBOOT_CRC_Calculate_Chunk:00000000 $t
+     /tmp/ccmCqouC.s:225    .text.SECBOOT_CRC_Calculate_Chunk:00000000 SECBOOT_CRC_Calculate_Chunk
+     /tmp/ccmCqouC.s:290    .text.SECBOOT_CRC_Calculate_Chunk:00000024 $d
+     /tmp/ccmCqouC.s:295    .bss.hcrc:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_CRC_Init
+HAL_CRC_Calculate
+HAL_CRC_Accumulate

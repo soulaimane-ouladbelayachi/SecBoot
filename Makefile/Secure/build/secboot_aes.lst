@@ -1,0 +1,1436 @@
+ARM GAS  /tmp/ccy7zkyo.s 			page 1
+
+
+   1              		.cpu cortex-m33
+   2              		.arch armv8-m.main
+   3              		.fpu fpv4-sp-d16
+   4              		.arch_extension dsp
+   5              		.eabi_attribute 27, 1
+   6              		.eabi_attribute 28, 1
+   7              		.eabi_attribute 20, 1
+   8              		.eabi_attribute 21, 1
+   9              		.eabi_attribute 23, 3
+  10              		.eabi_attribute 24, 1
+  11              		.eabi_attribute 25, 1
+  12              		.eabi_attribute 26, 1
+  13              		.eabi_attribute 30, 1
+  14              		.eabi_attribute 34, 1
+  15              		.eabi_attribute 18, 4
+  16              		.file	"secboot_aes.c"
+  17              		.text
+  18              	.Ltext0:
+  19              		.cfi_sections	.debug_frame
+  20              		.file 1 "../../Secure/Core/Src/secboot_aes.c"
+  21              		.section	.text.bytes_to_uint32_be,"ax",%progbits
+  22              		.align	1
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	bytes_to_uint32_be:
+  28              	.LVL0:
+  29              	.LFB207:
+   1:../../Secure/Core/Src/secboot_aes.c **** /** 
+   2:../../Secure/Core/Src/secboot_aes.c ****   * @file    secboot_aes.c
+   3:../../Secure/Core/Src/secboot_aes.c ****   * @brief   Implementation of secure boot AES-CBC with PKCS7 padding
+   4:../../Secure/Core/Src/secboot_aes.c ****   * @author  Soulaimane Oulad Belayachi
+   5:../../Secure/Core/Src/secboot_aes.c ****   * @date    2025-06-05
+   6:../../Secure/Core/Src/secboot_aes.c ****   * @note    Uses STM32L5 hardware crypto accelerator (CRYP)
+   7:../../Secure/Core/Src/secboot_aes.c ****   * @details Handles endianness conversion and padding for STM32 HAL CRYP peripheral.
+   8:../../Secure/Core/Src/secboot_aes.c ****   */
+   9:../../Secure/Core/Src/secboot_aes.c **** 
+  10:../../Secure/Core/Src/secboot_aes.c **** #include "secboot_aes.h"
+  11:../../Secure/Core/Src/secboot_aes.c **** 
+  12:../../Secure/Core/Src/secboot_aes.c **** /** @brief PKCS7 padding status codes (internal use) */
+  13:../../Secure/Core/Src/secboot_aes.c **** typedef enum {
+  14:../../Secure/Core/Src/secboot_aes.c ****     PKCS7_PAD_OK = 0,      ///< Padding applied successfully
+  15:../../Secure/Core/Src/secboot_aes.c ****     PKCS7_PAD_NOK,         ///< Padding failed
+  16:../../Secure/Core/Src/secboot_aes.c ****     PKCS7_UNPAD_OK,        ///< Unpadding successful
+  17:../../Secure/Core/Src/secboot_aes.c ****     PKCS7_UNPAD_NOK        ///< Unpadding failed
+  18:../../Secure/Core/Src/secboot_aes.c **** } PKCS7_Status;
+  19:../../Secure/Core/Src/secboot_aes.c **** 
+  20:../../Secure/Core/Src/secboot_aes.c **** /* Private function prototypes */
+  21:../../Secure/Core/Src/secboot_aes.c **** static PKCS7_Status PKCS7_Pad(const uint8_t *input, size_t len, uint8_t *output, size_t *out_len);
+  22:../../Secure/Core/Src/secboot_aes.c **** static PKCS7_Status PKCS7_Unpad(uint8_t *input, size_t input_len, uint8_t *output, size_t *output_l
+  23:../../Secure/Core/Src/secboot_aes.c **** static void bytes_to_uint32_be(uint8_t *input, size_t input_len, uint32_t *output);
+  24:../../Secure/Core/Src/secboot_aes.c **** static void uint32_to_bytes_be(uint32_t *input, size_t word_count, uint8_t *output);
+  25:../../Secure/Core/Src/secboot_aes.c **** 
+  26:../../Secure/Core/Src/secboot_aes.c **** /**
+  27:../../Secure/Core/Src/secboot_aes.c ****   * @brief  Apply PKCS7 padding to input data
+  28:../../Secure/Core/Src/secboot_aes.c ****   * @param  input      Pointer to input data
+  29:../../Secure/Core/Src/secboot_aes.c ****   * @param  len        Length of input data in bytes
+ARM GAS  /tmp/ccy7zkyo.s 			page 2
+
+
+  30:../../Secure/Core/Src/secboot_aes.c ****   * @param  output     Output buffer (must have space for padding)
+  31:../../Secure/Core/Src/secboot_aes.c ****   * @param  out_len    Resulting length after padding
+  32:../../Secure/Core/Src/secboot_aes.c ****   * @retval PKCS7_Status
+  33:../../Secure/Core/Src/secboot_aes.c ****   * @note   Output buffer must be at least (len + (AES_BLOCK_SIZE - (len % AES_BLOCK_SIZE))) bytes
+  34:../../Secure/Core/Src/secboot_aes.c ****   */
+  35:../../Secure/Core/Src/secboot_aes.c **** static PKCS7_Status PKCS7_Pad(const uint8_t *input, size_t len, uint8_t *output, size_t *out_len) {
+  36:../../Secure/Core/Src/secboot_aes.c ****     uint8_t pad_len = AES_BLOCK_SIZE - (len % AES_BLOCK_SIZE);
+  37:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, len);
+  38:../../Secure/Core/Src/secboot_aes.c ****     
+  39:../../Secure/Core/Src/secboot_aes.c ****     for (uint8_t i = 0; i < pad_len; i++) {
+  40:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+  41:../../Secure/Core/Src/secboot_aes.c ****     }
+  42:../../Secure/Core/Src/secboot_aes.c ****     
+  43:../../Secure/Core/Src/secboot_aes.c ****     *out_len = len + pad_len;
+  44:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_PAD_OK;
+  45:../../Secure/Core/Src/secboot_aes.c **** }
+  46:../../Secure/Core/Src/secboot_aes.c **** 
+  47:../../Secure/Core/Src/secboot_aes.c **** /**
+  48:../../Secure/Core/Src/secboot_aes.c ****   * @brief  Remove PKCS7 padding from input data
+  49:../../Secure/Core/Src/secboot_aes.c ****   * @param  input       Pointer to padded input data
+  50:../../Secure/Core/Src/secboot_aes.c ****   * @param  input_len   Length of input data in bytes (must be AES_BLOCK_SIZE aligned)
+  51:../../Secure/Core/Src/secboot_aes.c ****   * @param  output      Output buffer for unpadded data
+  52:../../Secure/Core/Src/secboot_aes.c ****   * @param  output_len  Length of unpadded data
+  53:../../Secure/Core/Src/secboot_aes.c ****   * @retval PKCS7_Status
+  54:../../Secure/Core/Src/secboot_aes.c ****   * @warning Returns PKCS7_UNPAD_NOK if padding is invalid (potential attack)
+  55:../../Secure/Core/Src/secboot_aes.c ****   */
+  56:../../Secure/Core/Src/secboot_aes.c **** static PKCS7_Status PKCS7_Unpad(uint8_t *input, size_t input_len, uint8_t *output, size_t *output_l
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (!input || !output || !output_len) return PKCS7_UNPAD_NOK;
+  58:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+  59:../../Secure/Core/Src/secboot_aes.c **** 
+  60:../../Secure/Core/Src/secboot_aes.c ****     uint8_t pad = input[input_len - 1];
+  61:../../Secure/Core/Src/secboot_aes.c ****     if (pad == 0 || pad > AES_BLOCK_SIZE || pad > input_len) return PKCS7_UNPAD_NOK;
+  62:../../Secure/Core/Src/secboot_aes.c **** 
+  63:../../Secure/Core/Src/secboot_aes.c ****     /* Validate all padding bytes */
+  64:../../Secure/Core/Src/secboot_aes.c ****     for (size_t i = 0; i < pad; i++) {
+  65:../../Secure/Core/Src/secboot_aes.c ****         if (input[input_len - 1 - i] != pad) return PKCS7_UNPAD_NOK;
+  66:../../Secure/Core/Src/secboot_aes.c ****     }
+  67:../../Secure/Core/Src/secboot_aes.c **** 
+  68:../../Secure/Core/Src/secboot_aes.c ****     *output_len = input_len - pad;
+  69:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, *output_len);
+  70:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_UNPAD_OK;
+  71:../../Secure/Core/Src/secboot_aes.c **** }
+  72:../../Secure/Core/Src/secboot_aes.c **** 
+  73:../../Secure/Core/Src/secboot_aes.c **** /**
+  74:../../Secure/Core/Src/secboot_aes.c ****   * @brief  Convert byte array to big-endian 32-bit words
+  75:../../Secure/Core/Src/secboot_aes.c ****   * @param  input      Input byte array (little-endian)
+  76:../../Secure/Core/Src/secboot_aes.c ****   * @param  input_len  Length of input in bytes (must be multiple of 4)
+  77:../../Secure/Core/Src/secboot_aes.c ****   * @param  output     Output word array (big-endian)
+  78:../../Secure/Core/Src/secboot_aes.c ****   */
+  79:../../Secure/Core/Src/secboot_aes.c **** static void bytes_to_uint32_be(uint8_t *input, size_t input_len, uint32_t *output) {
+  30              		.loc 1 79 84 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  80:../../Secure/Core/Src/secboot_aes.c ****     for (size_t i = 0; i < input_len / 4; i++) {
+  34              		.loc 1 80 5 view .LVU1
+  35              	.LBB2:
+ARM GAS  /tmp/ccy7zkyo.s 			page 3
+
+
+  36              		.loc 1 80 10 view .LVU2
+  37              		.loc 1 80 17 is_stmt 0 view .LVU3
+  38 0000 4FF0000C 		mov	ip, #0
+  39              	.LVL1:
+  40              		.loc 1 80 26 is_stmt 1 view .LVU4
+  41 0004 BCEB910F 		cmp	ip, r1, lsr #2
+  42 0008 19D2     		bcs	.L7
+  43              	.LBE2:
+  79:../../Secure/Core/Src/secboot_aes.c ****     for (size_t i = 0; i < input_len / 4; i++) {
+  44              		.loc 1 79 84 is_stmt 0 view .LVU5
+  45 000a 10B5     		push	{r4, lr}
+  46              	.LCFI0:
+  47              		.cfi_def_cfa_offset 8
+  48              		.cfi_offset 4, -8
+  49              		.cfi_offset 14, -4
+  50              	.L3:
+  51              	.LBB3:
+  81:../../Secure/Core/Src/secboot_aes.c ****         output[i] = ((uint32_t)input[4*i + 0] << 24) |
+  52              		.loc 1 81 9 is_stmt 1 discriminator 3 view .LVU6
+  53              		.loc 1 81 37 is_stmt 0 discriminator 3 view .LVU7
+  54 000c 10F82C40 		ldrb	r4, [r0, ip, lsl #2]	@ zero_extendqisi2
+  82:../../Secure/Core/Src/secboot_aes.c ****                     ((uint32_t)input[4*i + 1] << 16) |
+  55              		.loc 1 82 37 discriminator 3 view .LVU8
+  56 0010 00EB8C0E 		add	lr, r0, ip, lsl #2
+  57 0014 9EF80130 		ldrb	r3, [lr, #1]	@ zero_extendqisi2
+  58              		.loc 1 82 47 discriminator 3 view .LVU9
+  59 0018 1B04     		lsls	r3, r3, #16
+  81:../../Secure/Core/Src/secboot_aes.c ****         output[i] = ((uint32_t)input[4*i + 0] << 24) |
+  60              		.loc 1 81 54 discriminator 3 view .LVU10
+  61 001a 43EA0463 		orr	r3, r3, r4, lsl #24
+  83:../../Secure/Core/Src/secboot_aes.c ****                     ((uint32_t)input[4*i + 2] << 8)  |
+  62              		.loc 1 83 37 discriminator 3 view .LVU11
+  63 001e 9EF80240 		ldrb	r4, [lr, #2]	@ zero_extendqisi2
+  82:../../Secure/Core/Src/secboot_aes.c ****                     ((uint32_t)input[4*i + 1] << 16) |
+  64              		.loc 1 82 54 discriminator 3 view .LVU12
+  65 0022 43EA0423 		orr	r3, r3, r4, lsl #8
+  84:../../Secure/Core/Src/secboot_aes.c ****                     ((uint32_t)input[4*i + 3]);
+  66              		.loc 1 84 37 discriminator 3 view .LVU13
+  67 0026 9EF803E0 		ldrb	lr, [lr, #3]	@ zero_extendqisi2
+  83:../../Secure/Core/Src/secboot_aes.c ****                     ((uint32_t)input[4*i + 2] << 8)  |
+  68              		.loc 1 83 54 discriminator 3 view .LVU14
+  69 002a 43EA0E03 		orr	r3, r3, lr
+  81:../../Secure/Core/Src/secboot_aes.c ****                     ((uint32_t)input[4*i + 1] << 16) |
+  70              		.loc 1 81 19 discriminator 3 view .LVU15
+  71 002e 42F82C30 		str	r3, [r2, ip, lsl #2]
+  80:../../Secure/Core/Src/secboot_aes.c ****         output[i] = ((uint32_t)input[4*i + 0] << 24) |
+  72              		.loc 1 80 44 is_stmt 1 discriminator 3 view .LVU16
+  73 0032 0CF1010C 		add	ip, ip, #1
+  74              	.LVL2:
+  80:../../Secure/Core/Src/secboot_aes.c ****         output[i] = ((uint32_t)input[4*i + 0] << 24) |
+  75              		.loc 1 80 26 discriminator 3 view .LVU17
+  76 0036 BCEB910F 		cmp	ip, r1, lsr #2
+  77 003a E7D3     		bcc	.L3
+  78              	.LBE3:
+  85:../../Secure/Core/Src/secboot_aes.c ****     }
+  86:../../Secure/Core/Src/secboot_aes.c **** }
+  79              		.loc 1 86 1 is_stmt 0 view .LVU18
+ARM GAS  /tmp/ccy7zkyo.s 			page 4
+
+
+  80 003c 10BD     		pop	{r4, pc}
+  81              	.L7:
+  82              	.LCFI1:
+  83              		.cfi_def_cfa_offset 0
+  84              		.cfi_restore 4
+  85              		.cfi_restore 14
+  86              		.loc 1 86 1 view .LVU19
+  87 003e 7047     		bx	lr
+  88              		.cfi_endproc
+  89              	.LFE207:
+  91              		.section	.text.uint32_to_bytes_be,"ax",%progbits
+  92              		.align	1
+  93              		.syntax unified
+  94              		.thumb
+  95              		.thumb_func
+  97              	uint32_to_bytes_be:
+  98              	.LVL3:
+  99              	.LFB208:
+  87:../../Secure/Core/Src/secboot_aes.c **** 
+  88:../../Secure/Core/Src/secboot_aes.c **** /**
+  89:../../Secure/Core/Src/secboot_aes.c ****   * @brief  Convert 32-bit words to big-endian byte array
+  90:../../Secure/Core/Src/secboot_aes.c ****   * @param  input       Input word array (big-endian)
+  91:../../Secure/Core/Src/secboot_aes.c ****   * @param  word_count  Number of 32-bit words
+  92:../../Secure/Core/Src/secboot_aes.c ****   * @param  output      Output byte array (little-endian)
+  93:../../Secure/Core/Src/secboot_aes.c ****   */
+  94:../../Secure/Core/Src/secboot_aes.c **** static void uint32_to_bytes_be(uint32_t *input, size_t word_count, uint8_t *output) {
+ 100              		.loc 1 94 85 is_stmt 1 view -0
+ 101              		.cfi_startproc
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+  95:../../Secure/Core/Src/secboot_aes.c ****     for (size_t i = 0; i < word_count; i++) {
+ 104              		.loc 1 95 5 view .LVU21
+ 105              	.LBB4:
+ 106              		.loc 1 95 10 view .LVU22
+ 107              		.loc 1 95 17 is_stmt 0 view .LVU23
+ 108 0000 0023     		movs	r3, #0
+ 109              	.LVL4:
+ 110              		.loc 1 95 26 is_stmt 1 view .LVU24
+ 111 0002 8B42     		cmp	r3, r1
+ 112 0004 22D2     		bcs	.L14
+ 113              	.LBE4:
+  94:../../Secure/Core/Src/secboot_aes.c ****     for (size_t i = 0; i < word_count; i++) {
+ 114              		.loc 1 94 85 is_stmt 0 view .LVU25
+ 115 0006 30B5     		push	{r4, r5, lr}
+ 116              	.LCFI2:
+ 117              		.cfi_def_cfa_offset 12
+ 118              		.cfi_offset 4, -12
+ 119              		.cfi_offset 5, -8
+ 120              		.cfi_offset 14, -4
+ 121              	.L10:
+ 122              	.LBB5:
+  96:../../Secure/Core/Src/secboot_aes.c ****         output[4*i + 0] = (uint8_t)(input[i] >> 24);
+ 123              		.loc 1 96 9 is_stmt 1 discriminator 3 view .LVU26
+ 124              		.loc 1 96 42 is_stmt 0 discriminator 3 view .LVU27
+ 125 0008 4FEA830C 		lsl	ip, r3, #2
+ 126              		.loc 1 96 27 discriminator 3 view .LVU28
+ 127 000c 50F82340 		ldr	r4, [r0, r3, lsl #2]
+ARM GAS  /tmp/ccy7zkyo.s 			page 5
+
+
+ 128 0010 4FEA146E 		lsr	lr, r4, #24
+ 129              		.loc 1 96 25 discriminator 3 view .LVU29
+ 130 0014 02F823E0 		strb	lr, [r2, r3, lsl #2]
+  97:../../Secure/Core/Src/secboot_aes.c ****         output[4*i + 1] = (uint8_t)(input[i] >> 16);
+ 131              		.loc 1 97 9 is_stmt 1 discriminator 3 view .LVU30
+ 132              		.loc 1 97 15 is_stmt 0 discriminator 3 view .LVU31
+ 133 0018 0CF10104 		add	r4, ip, #1
+ 134              		.loc 1 97 27 discriminator 3 view .LVU32
+ 135 001c 50F82350 		ldr	r5, [r0, r3, lsl #2]
+ 136 0020 C5F3074E 		ubfx	lr, r5, #16, #8
+ 137              		.loc 1 97 25 discriminator 3 view .LVU33
+ 138 0024 02F804E0 		strb	lr, [r2, r4]
+  98:../../Secure/Core/Src/secboot_aes.c ****         output[4*i + 2] = (uint8_t)(input[i] >> 8);
+ 139              		.loc 1 98 9 is_stmt 1 discriminator 3 view .LVU34
+ 140              		.loc 1 98 15 is_stmt 0 discriminator 3 view .LVU35
+ 141 0028 0CF10204 		add	r4, ip, #2
+ 142              		.loc 1 98 27 discriminator 3 view .LVU36
+ 143 002c 50F82350 		ldr	r5, [r0, r3, lsl #2]
+ 144 0030 C5F3072E 		ubfx	lr, r5, #8, #8
+ 145              		.loc 1 98 25 discriminator 3 view .LVU37
+ 146 0034 02F804E0 		strb	lr, [r2, r4]
+  99:../../Secure/Core/Src/secboot_aes.c ****         output[4*i + 3] = (uint8_t)(input[i]);
+ 147              		.loc 1 99 9 is_stmt 1 discriminator 3 view .LVU38
+ 148              		.loc 1 99 15 is_stmt 0 discriminator 3 view .LVU39
+ 149 0038 0CF1030C 		add	ip, ip, #3
+ 150              		.loc 1 99 27 discriminator 3 view .LVU40
+ 151 003c 10F823E0 		ldrb	lr, [r0, r3, lsl #2]	@ zero_extendqisi2
+ 152              		.loc 1 99 25 discriminator 3 view .LVU41
+ 153 0040 02F80CE0 		strb	lr, [r2, ip]
+  95:../../Secure/Core/Src/secboot_aes.c ****         output[4*i + 0] = (uint8_t)(input[i] >> 24);
+ 154              		.loc 1 95 41 is_stmt 1 discriminator 3 view .LVU42
+ 155 0044 0133     		adds	r3, r3, #1
+ 156              	.LVL5:
+  95:../../Secure/Core/Src/secboot_aes.c ****         output[4*i + 0] = (uint8_t)(input[i] >> 24);
+ 157              		.loc 1 95 26 discriminator 3 view .LVU43
+ 158 0046 8B42     		cmp	r3, r1
+ 159 0048 DED3     		bcc	.L10
+ 160              	.LBE5:
+ 100:../../Secure/Core/Src/secboot_aes.c ****     }
+ 101:../../Secure/Core/Src/secboot_aes.c **** }
+ 161              		.loc 1 101 1 is_stmt 0 view .LVU44
+ 162 004a 30BD     		pop	{r4, r5, pc}
+ 163              	.L14:
+ 164              	.LCFI3:
+ 165              		.cfi_def_cfa_offset 0
+ 166              		.cfi_restore 4
+ 167              		.cfi_restore 5
+ 168              		.cfi_restore 14
+ 169              		.loc 1 101 1 view .LVU45
+ 170 004c 7047     		bx	lr
+ 171              		.cfi_endproc
+ 172              	.LFE208:
+ 174              		.section	.text.PKCS7_Pad,"ax",%progbits
+ 175              		.align	1
+ 176              		.syntax unified
+ 177              		.thumb
+ 178              		.thumb_func
+ARM GAS  /tmp/ccy7zkyo.s 			page 6
+
+
+ 180              	PKCS7_Pad:
+ 181              	.LVL6:
+ 182              	.LFB205:
+  35:../../Secure/Core/Src/secboot_aes.c ****     uint8_t pad_len = AES_BLOCK_SIZE - (len % AES_BLOCK_SIZE);
+ 183              		.loc 1 35 99 is_stmt 1 view -0
+ 184              		.cfi_startproc
+ 185              		@ args = 0, pretend = 0, frame = 0
+ 186              		@ frame_needed = 0, uses_anonymous_args = 0
+  35:../../Secure/Core/Src/secboot_aes.c ****     uint8_t pad_len = AES_BLOCK_SIZE - (len % AES_BLOCK_SIZE);
+ 187              		.loc 1 35 99 is_stmt 0 view .LVU47
+ 188 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 189              	.LCFI4:
+ 190              		.cfi_def_cfa_offset 24
+ 191              		.cfi_offset 3, -24
+ 192              		.cfi_offset 4, -20
+ 193              		.cfi_offset 5, -16
+ 194              		.cfi_offset 6, -12
+ 195              		.cfi_offset 7, -8
+ 196              		.cfi_offset 14, -4
+ 197 0002 0D46     		mov	r5, r1
+ 198 0004 1746     		mov	r7, r2
+ 199 0006 1E46     		mov	r6, r3
+  36:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, len);
+ 200              		.loc 1 36 5 is_stmt 1 view .LVU48
+  36:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, len);
+ 201              		.loc 1 36 45 is_stmt 0 view .LVU49
+ 202 0008 01F00F04 		and	r4, r1, #15
+  36:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, len);
+ 203              		.loc 1 36 13 view .LVU50
+ 204 000c C4F11004 		rsb	r4, r4, #16
+ 205 0010 E4B2     		uxtb	r4, r4
+ 206              	.LVL7:
+  37:../../Secure/Core/Src/secboot_aes.c ****     
+ 207              		.loc 1 37 5 is_stmt 1 view .LVU51
+ 208 0012 0A46     		mov	r2, r1
+ 209              	.LVL8:
+  37:../../Secure/Core/Src/secboot_aes.c ****     
+ 210              		.loc 1 37 5 is_stmt 0 view .LVU52
+ 211 0014 0146     		mov	r1, r0
+ 212              	.LVL9:
+  37:../../Secure/Core/Src/secboot_aes.c ****     
+ 213              		.loc 1 37 5 view .LVU53
+ 214 0016 3846     		mov	r0, r7
+ 215              	.LVL10:
+  37:../../Secure/Core/Src/secboot_aes.c ****     
+ 216              		.loc 1 37 5 view .LVU54
+ 217 0018 FFF7FEFF 		bl	memcpy
+ 218              	.LVL11:
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ 219              		.loc 1 39 5 is_stmt 1 view .LVU55
+ 220              	.LBB6:
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ 221              		.loc 1 39 10 view .LVU56
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ 222              		.loc 1 39 18 is_stmt 0 view .LVU57
+ 223 001c 4FF0000C 		mov	ip, #0
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ARM GAS  /tmp/ccy7zkyo.s 			page 7
+
+
+ 224              		.loc 1 39 5 view .LVU58
+ 225 0020 06E0     		b	.L16
+ 226              	.LVL12:
+ 227              	.L17:
+  40:../../Secure/Core/Src/secboot_aes.c ****     }
+ 228              		.loc 1 40 9 is_stmt 1 discriminator 3 view .LVU59
+  40:../../Secure/Core/Src/secboot_aes.c ****     }
+ 229              		.loc 1 40 20 is_stmt 0 discriminator 3 view .LVU60
+ 230 0022 0CEB0503 		add	r3, ip, r5
+  40:../../Secure/Core/Src/secboot_aes.c ****     }
+ 231              		.loc 1 40 25 discriminator 3 view .LVU61
+ 232 0026 FC54     		strb	r4, [r7, r3]
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ 233              		.loc 1 39 39 is_stmt 1 discriminator 3 view .LVU62
+ 234 0028 0CF1010C 		add	ip, ip, #1
+ 235              	.LVL13:
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ 236              		.loc 1 39 39 is_stmt 0 discriminator 3 view .LVU63
+ 237 002c 5FFA8CFC 		uxtb	ip, ip
+ 238              	.LVL14:
+ 239              	.L16:
+  39:../../Secure/Core/Src/secboot_aes.c ****         output[len + i] = pad_len;
+ 240              		.loc 1 39 27 is_stmt 1 discriminator 1 view .LVU64
+ 241 0030 A445     		cmp	ip, r4
+ 242 0032 F6D3     		bcc	.L17
+ 243              	.LBE6:
+  43:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_PAD_OK;
+ 244              		.loc 1 43 5 view .LVU65
+  43:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_PAD_OK;
+ 245              		.loc 1 43 20 is_stmt 0 view .LVU66
+ 246 0034 2C44     		add	r4, r4, r5
+ 247              	.LVL15:
+  43:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_PAD_OK;
+ 248              		.loc 1 43 14 view .LVU67
+ 249 0036 3460     		str	r4, [r6]
+  44:../../Secure/Core/Src/secboot_aes.c **** }
+ 250              		.loc 1 44 5 is_stmt 1 view .LVU68
+  45:../../Secure/Core/Src/secboot_aes.c **** 
+ 251              		.loc 1 45 1 is_stmt 0 view .LVU69
+ 252 0038 0020     		movs	r0, #0
+ 253 003a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+  45:../../Secure/Core/Src/secboot_aes.c **** 
+ 254              		.loc 1 45 1 view .LVU70
+ 255              		.cfi_endproc
+ 256              	.LFE205:
+ 258              		.section	.text.PKCS7_Unpad,"ax",%progbits
+ 259              		.align	1
+ 260              		.syntax unified
+ 261              		.thumb
+ 262              		.thumb_func
+ 264              	PKCS7_Unpad:
+ 265              	.LVL16:
+ 266              	.LFB206:
+  56:../../Secure/Core/Src/secboot_aes.c ****     if (!input || !output || !output_len) return PKCS7_UNPAD_NOK;
+ 267              		.loc 1 56 104 is_stmt 1 view -0
+ 268              		.cfi_startproc
+ 269              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /tmp/ccy7zkyo.s 			page 8
+
+
+ 270              		@ frame_needed = 0, uses_anonymous_args = 0
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 271              		.loc 1 57 5 view .LVU72
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 272              		.loc 1 57 8 is_stmt 0 view .LVU73
+ 273 0000 30B3     		cbz	r0, .L23
+  56:../../Secure/Core/Src/secboot_aes.c ****     if (!input || !output || !output_len) return PKCS7_UNPAD_NOK;
+ 274              		.loc 1 56 104 discriminator 2 view .LVU74
+ 275 0002 70B5     		push	{r4, r5, r6, lr}
+ 276              	.LCFI5:
+ 277              		.cfi_def_cfa_offset 16
+ 278              		.cfi_offset 4, -16
+ 279              		.cfi_offset 5, -12
+ 280              		.cfi_offset 6, -8
+ 281              		.cfi_offset 14, -4
+ 282 0004 1646     		mov	r6, r2
+ 283 0006 0546     		mov	r5, r0
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 284              		.loc 1 57 16 discriminator 2 view .LVU75
+ 285 0008 22B3     		cbz	r2, .L24
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 286              		.loc 1 57 27 discriminator 4 view .LVU76
+ 287 000a 2BB3     		cbz	r3, .L25
+  58:../../Secure/Core/Src/secboot_aes.c **** 
+ 288              		.loc 1 58 5 is_stmt 1 view .LVU77
+  58:../../Secure/Core/Src/secboot_aes.c **** 
+ 289              		.loc 1 58 8 is_stmt 0 view .LVU78
+ 290 000c 31B3     		cbz	r1, .L26
+  58:../../Secure/Core/Src/secboot_aes.c **** 
+ 291              		.loc 1 58 24 discriminator 2 view .LVU79
+ 292 000e 11F00F0C 		ands	ip, r1, #15
+ 293 0012 25D1     		bne	.L27
+  60:../../Secure/Core/Src/secboot_aes.c ****     if (pad == 0 || pad > AES_BLOCK_SIZE || pad > input_len) return PKCS7_UNPAD_NOK;
+ 294              		.loc 1 60 5 is_stmt 1 view .LVU80
+  60:../../Secure/Core/Src/secboot_aes.c ****     if (pad == 0 || pad > AES_BLOCK_SIZE || pad > input_len) return PKCS7_UNPAD_NOK;
+ 295              		.loc 1 60 24 is_stmt 0 view .LVU81
+ 296 0014 4A1E     		subs	r2, r1, #1
+ 297              	.LVL17:
+  60:../../Secure/Core/Src/secboot_aes.c ****     if (pad == 0 || pad > AES_BLOCK_SIZE || pad > input_len) return PKCS7_UNPAD_NOK;
+ 298              		.loc 1 60 13 view .LVU82
+ 299 0016 10F802E0 		ldrb	lr, [r0, r2]	@ zero_extendqisi2
+ 300              	.LVL18:
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 301              		.loc 1 61 5 is_stmt 1 view .LVU83
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 302              		.loc 1 61 18 is_stmt 0 view .LVU84
+ 303 001a 0EF1FF32 		add	r2, lr, #-1
+ 304 001e D2B2     		uxtb	r2, r2
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 305              		.loc 1 61 8 view .LVU85
+ 306 0020 0F2A     		cmp	r2, #15
+ 307 0022 1FD8     		bhi	.L28
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 308              		.loc 1 61 42 discriminator 2 view .LVU86
+ 309 0024 8E45     		cmp	lr, r1
+ 310 0026 1FD8     		bhi	.L35
+ 311              	.L21:
+ARM GAS  /tmp/ccy7zkyo.s 			page 9
+
+
+ 312              	.LVL19:
+ 313              	.LBB7:
+  64:../../Secure/Core/Src/secboot_aes.c ****         if (input[input_len - 1 - i] != pad) return PKCS7_UNPAD_NOK;
+ 314              		.loc 1 64 26 is_stmt 1 discriminator 1 view .LVU87
+ 315 0028 E645     		cmp	lr, ip
+ 316 002a 08D9     		bls	.L36
+  65:../../Secure/Core/Src/secboot_aes.c ****     }
+ 317              		.loc 1 65 9 view .LVU88
+  65:../../Secure/Core/Src/secboot_aes.c ****     }
+ 318              		.loc 1 65 33 is_stmt 0 view .LVU89
+ 319 002c A1EB0C04 		sub	r4, r1, ip
+ 320 0030 013C     		subs	r4, r4, #1
+  65:../../Secure/Core/Src/secboot_aes.c ****     }
+ 321              		.loc 1 65 18 view .LVU90
+ 322 0032 2A5D     		ldrb	r2, [r5, r4]	@ zero_extendqisi2
+  65:../../Secure/Core/Src/secboot_aes.c ****     }
+ 323              		.loc 1 65 12 view .LVU91
+ 324 0034 7245     		cmp	r2, lr
+ 325 0036 19D1     		bne	.L30
+  64:../../Secure/Core/Src/secboot_aes.c ****         if (input[input_len - 1 - i] != pad) return PKCS7_UNPAD_NOK;
+ 326              		.loc 1 64 34 is_stmt 1 discriminator 2 view .LVU92
+ 327 0038 0CF1010C 		add	ip, ip, #1
+ 328              	.LVL20:
+  64:../../Secure/Core/Src/secboot_aes.c ****         if (input[input_len - 1 - i] != pad) return PKCS7_UNPAD_NOK;
+ 329              		.loc 1 64 34 is_stmt 0 discriminator 2 view .LVU93
+ 330 003c F4E7     		b	.L21
+ 331              	.L36:
+  64:../../Secure/Core/Src/secboot_aes.c ****         if (input[input_len - 1 - i] != pad) return PKCS7_UNPAD_NOK;
+ 332              		.loc 1 64 34 discriminator 2 view .LVU94
+ 333              	.LBE7:
+  68:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, *output_len);
+ 334              		.loc 1 68 5 is_stmt 1 view .LVU95
+  68:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, *output_len);
+ 335              		.loc 1 68 29 is_stmt 0 view .LVU96
+ 336 003e A1EB0E02 		sub	r2, r1, lr
+  68:../../Secure/Core/Src/secboot_aes.c ****     memcpy(output, input, *output_len);
+ 337              		.loc 1 68 17 view .LVU97
+ 338 0042 1A60     		str	r2, [r3]
+  69:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_UNPAD_OK;
+ 339              		.loc 1 69 5 is_stmt 1 view .LVU98
+ 340 0044 2946     		mov	r1, r5
+ 341              	.LVL21:
+  69:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_UNPAD_OK;
+ 342              		.loc 1 69 5 is_stmt 0 view .LVU99
+ 343 0046 3046     		mov	r0, r6
+ 344              	.LVL22:
+  69:../../Secure/Core/Src/secboot_aes.c ****     return PKCS7_UNPAD_OK;
+ 345              		.loc 1 69 5 view .LVU100
+ 346 0048 FFF7FEFF 		bl	memcpy
+ 347              	.LVL23:
+  70:../../Secure/Core/Src/secboot_aes.c **** }
+ 348              		.loc 1 70 5 is_stmt 1 view .LVU101
+  70:../../Secure/Core/Src/secboot_aes.c **** }
+ 349              		.loc 1 70 12 is_stmt 0 view .LVU102
+ 350 004c 0220     		movs	r0, #2
+ 351 004e 06E0     		b	.L20
+ 352              	.LVL24:
+ARM GAS  /tmp/ccy7zkyo.s 			page 10
+
+
+ 353              	.L23:
+ 354              	.LCFI6:
+ 355              		.cfi_def_cfa_offset 0
+ 356              		.cfi_restore 4
+ 357              		.cfi_restore 5
+ 358              		.cfi_restore 6
+ 359              		.cfi_restore 14
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 360              		.loc 1 57 50 view .LVU103
+ 361 0050 0320     		movs	r0, #3
+ 362              	.LVL25:
+  71:../../Secure/Core/Src/secboot_aes.c **** 
+ 363              		.loc 1 71 1 view .LVU104
+ 364 0052 7047     		bx	lr
+ 365              	.LVL26:
+ 366              	.L24:
+ 367              	.LCFI7:
+ 368              		.cfi_def_cfa_offset 16
+ 369              		.cfi_offset 4, -16
+ 370              		.cfi_offset 5, -12
+ 371              		.cfi_offset 6, -8
+ 372              		.cfi_offset 14, -4
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 373              		.loc 1 57 50 view .LVU105
+ 374 0054 0320     		movs	r0, #3
+ 375              	.LVL27:
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 376              		.loc 1 57 50 view .LVU106
+ 377 0056 02E0     		b	.L20
+ 378              	.LVL28:
+ 379              	.L25:
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 380              		.loc 1 57 50 view .LVU107
+ 381 0058 0320     		movs	r0, #3
+ 382              	.LVL29:
+  57:../../Secure/Core/Src/secboot_aes.c ****     if (input_len == 0 || input_len % AES_BLOCK_SIZE != 0) return PKCS7_UNPAD_NOK;
+ 383              		.loc 1 57 50 view .LVU108
+ 384 005a 00E0     		b	.L20
+ 385              	.LVL30:
+ 386              	.L26:
+  58:../../Secure/Core/Src/secboot_aes.c **** 
+ 387              		.loc 1 58 67 view .LVU109
+ 388 005c 0320     		movs	r0, #3
+ 389              	.LVL31:
+ 390              	.L20:
+  71:../../Secure/Core/Src/secboot_aes.c **** 
+ 391              		.loc 1 71 1 view .LVU110
+ 392 005e 70BD     		pop	{r4, r5, r6, pc}
+ 393              	.LVL32:
+ 394              	.L27:
+  58:../../Secure/Core/Src/secboot_aes.c **** 
+ 395              		.loc 1 58 67 view .LVU111
+ 396 0060 0320     		movs	r0, #3
+ 397              	.LVL33:
+  58:../../Secure/Core/Src/secboot_aes.c **** 
+ 398              		.loc 1 58 67 view .LVU112
+ 399 0062 FCE7     		b	.L20
+ARM GAS  /tmp/ccy7zkyo.s 			page 11
+
+
+ 400              	.LVL34:
+ 401              	.L28:
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 402              		.loc 1 61 69 view .LVU113
+ 403 0064 0320     		movs	r0, #3
+ 404              	.LVL35:
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 405              		.loc 1 61 69 view .LVU114
+ 406 0066 FAE7     		b	.L20
+ 407              	.LVL36:
+ 408              	.L35:
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 409              		.loc 1 61 69 view .LVU115
+ 410 0068 0320     		movs	r0, #3
+ 411              	.LVL37:
+  61:../../Secure/Core/Src/secboot_aes.c **** 
+ 412              		.loc 1 61 69 view .LVU116
+ 413 006a F8E7     		b	.L20
+ 414              	.LVL38:
+ 415              	.L30:
+ 416              	.LBB8:
+  65:../../Secure/Core/Src/secboot_aes.c ****     }
+ 417              		.loc 1 65 53 view .LVU117
+ 418 006c 0320     		movs	r0, #3
+ 419              	.LVL39:
+  65:../../Secure/Core/Src/secboot_aes.c ****     }
+ 420              		.loc 1 65 53 view .LVU118
+ 421 006e F6E7     		b	.L20
+ 422              	.LBE8:
+ 423              		.cfi_endproc
+ 424              	.LFE206:
+ 426              		.section	.text.SECBOOT_AES_Init,"ax",%progbits
+ 427              		.align	1
+ 428              		.global	SECBOOT_AES_Init
+ 429              		.syntax unified
+ 430              		.thumb
+ 431              		.thumb_func
+ 433              	SECBOOT_AES_Init:
+ 434              	.LVL40:
+ 435              	.LFB209:
+ 102:../../Secure/Core/Src/secboot_aes.c **** 
+ 103:../../Secure/Core/Src/secboot_aes.c **** SECBOOT_AES_StatusTypeDef SECBOOT_AES_Init(SECBOOT_AES_Context *ctx, uint32_t *key, uint32_t *iv) {
+ 436              		.loc 1 103 99 is_stmt 1 view -0
+ 437              		.cfi_startproc
+ 438              		@ args = 0, pretend = 0, frame = 0
+ 439              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104:../../Secure/Core/Src/secboot_aes.c ****     if (!ctx || !key || !iv) return SECBOOT_AES_INVALID_PARAM;
+ 440              		.loc 1 104 5 view .LVU120
+ 441              		.loc 1 104 8 is_stmt 0 view .LVU121
+ 442 0000 90B3     		cbz	r0, .L39
+ 103:../../Secure/Core/Src/secboot_aes.c ****     if (!ctx || !key || !iv) return SECBOOT_AES_INVALID_PARAM;
+ 443              		.loc 1 103 99 discriminator 2 view .LVU122
+ 444 0002 38B5     		push	{r3, r4, r5, lr}
+ 445              	.LCFI8:
+ 446              		.cfi_def_cfa_offset 16
+ 447              		.cfi_offset 3, -16
+ 448              		.cfi_offset 4, -12
+ARM GAS  /tmp/ccy7zkyo.s 			page 12
+
+
+ 449              		.cfi_offset 5, -8
+ 450              		.cfi_offset 14, -4
+ 451 0004 0346     		mov	r3, r0
+ 452              		.loc 1 104 14 discriminator 2 view .LVU123
+ 453 0006 89B3     		cbz	r1, .L40
+ 454              		.loc 1 104 22 discriminator 4 view .LVU124
+ 455 0008 92B3     		cbz	r2, .L41
+ 105:../../Secure/Core/Src/secboot_aes.c **** 
+ 106:../../Secure/Core/Src/secboot_aes.c ****     memcpy(ctx->iv, iv, IV_WORD_SIZE * sizeof(uint32_t));
+ 456              		.loc 1 106 5 is_stmt 1 view .LVU125
+ 457              		.loc 1 106 15 is_stmt 0 view .LVU126
+ 458 000a 00F58E70 		add	r0, r0, #284
+ 459              	.LVL41:
+ 460              		.loc 1 106 5 view .LVU127
+ 461 000e D2F800C0 		ldr	ip, [r2]	@ unaligned
+ 462 0012 5568     		ldr	r5, [r2, #4]	@ unaligned
+ 463 0014 9468     		ldr	r4, [r2, #8]	@ unaligned
+ 464 0016 D268     		ldr	r2, [r2, #12]	@ unaligned
+ 465              	.LVL42:
+ 466              		.loc 1 106 5 view .LVU128
+ 467 0018 C3F81CC1 		str	ip, [r3, #284]	@ unaligned
+ 468 001c C3F82051 		str	r5, [r3, #288]	@ unaligned
+ 469 0020 C3F82441 		str	r4, [r3, #292]	@ unaligned
+ 470 0024 C3F82821 		str	r2, [r3, #296]	@ unaligned
+ 107:../../Secure/Core/Src/secboot_aes.c ****     memcpy(ctx->key, key, KEY_WORD_SIZE * sizeof(uint32_t));
+ 471              		.loc 1 107 5 is_stmt 1 view .LVU129
+ 472              		.loc 1 107 15 is_stmt 0 view .LVU130
+ 473 0028 03F58674 		add	r4, r3, #268
+ 474              		.loc 1 107 5 view .LVU131
+ 475 002c 0D68     		ldr	r5, [r1]	@ unaligned
+ 476 002e D1F804E0 		ldr	lr, [r1, #4]	@ unaligned
+ 477 0032 D1F808C0 		ldr	ip, [r1, #8]	@ unaligned
+ 478 0036 CA68     		ldr	r2, [r1, #12]	@ unaligned
+ 479 0038 C3F80C51 		str	r5, [r3, #268]	@ unaligned
+ 480 003c C3F810E1 		str	lr, [r3, #272]	@ unaligned
+ 481 0040 C3F814C1 		str	ip, [r3, #276]	@ unaligned
+ 482 0044 C3F81821 		str	r2, [r3, #280]	@ unaligned
+ 108:../../Secure/Core/Src/secboot_aes.c **** 
+ 109:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Instance = AES;
+ 483              		.loc 1 109 5 is_stmt 1 view .LVU132
+ 484              		.loc 1 109 25 is_stmt 0 view .LVU133
+ 485 0048 0B4A     		ldr	r2, .L48
+ 486 004a 1A60     		str	r2, [r3]
+ 110:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.DataType = CRYP_DATATYPE_32B;
+ 487              		.loc 1 110 5 is_stmt 1 view .LVU134
+ 488              		.loc 1 110 30 is_stmt 0 view .LVU135
+ 489 004c 0022     		movs	r2, #0
+ 490 004e 5A60     		str	r2, [r3, #4]
+ 111:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.KeySize = CRYP_KEYSIZE_128B;
+ 491              		.loc 1 111 5 is_stmt 1 view .LVU136
+ 492              		.loc 1 111 29 is_stmt 0 view .LVU137
+ 493 0050 9A60     		str	r2, [r3, #8]
+ 112:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.pKey = (uint32_t *)ctx->key;
+ 494              		.loc 1 112 5 is_stmt 1 view .LVU138
+ 495              		.loc 1 112 26 is_stmt 0 view .LVU139
+ 496 0052 DC60     		str	r4, [r3, #12]
+ 113:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.pInitVect = (uint32_t *)ctx->iv;
+ARM GAS  /tmp/ccy7zkyo.s 			page 13
+
+
+ 497              		.loc 1 113 5 is_stmt 1 view .LVU140
+ 498              		.loc 1 113 31 is_stmt 0 view .LVU141
+ 499 0054 1861     		str	r0, [r3, #16]
+ 114:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.Algorithm = CRYP_AES_CBC;
+ 500              		.loc 1 114 5 is_stmt 1 view .LVU142
+ 501              		.loc 1 114 31 is_stmt 0 view .LVU143
+ 502 0056 2021     		movs	r1, #32
+ 503              	.LVL43:
+ 504              		.loc 1 114 31 view .LVU144
+ 505 0058 5961     		str	r1, [r3, #20]
+ 115:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.DataWidthUnit = CRYP_DATAWIDTHUNIT_WORD;
+ 506              		.loc 1 115 5 is_stmt 1 view .LVU145
+ 507              		.loc 1 115 35 is_stmt 0 view .LVU146
+ 508 005a 5A62     		str	r2, [r3, #36]
+ 116:../../Secure/Core/Src/secboot_aes.c ****     ctx->hcryp.Init.KeyIVConfigSkip = CRYP_KEYIVCONFIG_ALWAYS;
+ 509              		.loc 1 116 5 is_stmt 1 view .LVU147
+ 510              		.loc 1 116 37 is_stmt 0 view .LVU148
+ 511 005c DA62     		str	r2, [r3, #44]
+ 117:../../Secure/Core/Src/secboot_aes.c **** 
+ 118:../../Secure/Core/Src/secboot_aes.c ****     if (HAL_CRYP_Init(&ctx->hcryp) != HAL_OK) {
+ 512              		.loc 1 118 5 is_stmt 1 view .LVU149
+ 513              		.loc 1 118 9 is_stmt 0 view .LVU150
+ 514 005e 1846     		mov	r0, r3
+ 515 0060 FFF7FEFF 		bl	HAL_CRYP_Init
+ 516              	.LVL44:
+ 517              		.loc 1 118 8 view .LVU151
+ 518 0064 30B9     		cbnz	r0, .L47
+ 519              	.LVL45:
+ 520              	.L38:
+ 119:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_ERROR;
+ 120:../../Secure/Core/Src/secboot_aes.c ****     }    
+ 121:../../Secure/Core/Src/secboot_aes.c **** 
+ 122:../../Secure/Core/Src/secboot_aes.c ****     return SECBOOT_AES_OK;
+ 123:../../Secure/Core/Src/secboot_aes.c **** }
+ 521              		.loc 1 123 1 view .LVU152
+ 522 0066 38BD     		pop	{r3, r4, r5, pc}
+ 523              	.LVL46:
+ 524              	.L39:
+ 525              	.LCFI9:
+ 526              		.cfi_def_cfa_offset 0
+ 527              		.cfi_restore 3
+ 528              		.cfi_restore 4
+ 529              		.cfi_restore 5
+ 530              		.cfi_restore 14
+ 104:../../Secure/Core/Src/secboot_aes.c **** 
+ 531              		.loc 1 104 37 view .LVU153
+ 532 0068 0220     		movs	r0, #2
+ 533              	.LVL47:
+ 534              		.loc 1 123 1 view .LVU154
+ 535 006a 7047     		bx	lr
+ 536              	.LVL48:
+ 537              	.L40:
+ 538              	.LCFI10:
+ 539              		.cfi_def_cfa_offset 16
+ 540              		.cfi_offset 3, -16
+ 541              		.cfi_offset 4, -12
+ 542              		.cfi_offset 5, -8
+ARM GAS  /tmp/ccy7zkyo.s 			page 14
+
+
+ 543              		.cfi_offset 14, -4
+ 104:../../Secure/Core/Src/secboot_aes.c **** 
+ 544              		.loc 1 104 37 view .LVU155
+ 545 006c 0220     		movs	r0, #2
+ 546              	.LVL49:
+ 104:../../Secure/Core/Src/secboot_aes.c **** 
+ 547              		.loc 1 104 37 view .LVU156
+ 548 006e FAE7     		b	.L38
+ 549              	.LVL50:
+ 550              	.L41:
+ 104:../../Secure/Core/Src/secboot_aes.c **** 
+ 551              		.loc 1 104 37 view .LVU157
+ 552 0070 0220     		movs	r0, #2
+ 553              	.LVL51:
+ 104:../../Secure/Core/Src/secboot_aes.c **** 
+ 554              		.loc 1 104 37 view .LVU158
+ 555 0072 F8E7     		b	.L38
+ 556              	.LVL52:
+ 557              	.L47:
+ 119:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_ERROR;
+ 558              		.loc 1 119 16 view .LVU159
+ 559 0074 0120     		movs	r0, #1
+ 560 0076 F6E7     		b	.L38
+ 561              	.L49:
+ 562              		.align	2
+ 563              	.L48:
+ 564 0078 00000C52 		.word	1376518144
+ 565              		.cfi_endproc
+ 566              	.LFE209:
+ 568              		.section	.text.SECBOOT_AES_DeInit,"ax",%progbits
+ 569              		.align	1
+ 570              		.global	SECBOOT_AES_DeInit
+ 571              		.syntax unified
+ 572              		.thumb
+ 573              		.thumb_func
+ 575              	SECBOOT_AES_DeInit:
+ 576              	.LVL53:
+ 577              	.LFB210:
+ 124:../../Secure/Core/Src/secboot_aes.c **** 
+ 125:../../Secure/Core/Src/secboot_aes.c **** /**
+ 126:../../Secure/Core/Src/secboot_aes.c ****   * @brief  Deinitialize the AES cryptographic context
+ 127:../../Secure/Core/Src/secboot_aes.c ****   * @note   This function:
+ 128:../../Secure/Core/Src/secboot_aes.c ****   *         - Safely deinitializes the AES hardware peripheral
+ 129:../../Secure/Core/Src/secboot_aes.c ****   *         - Clears sensitive data from memory
+ 130:../../Secure/Core/Src/secboot_aes.c ****   *         - Locks the cryptographic module
+ 131:../../Secure/Core/Src/secboot_aes.c ****   *         - Should be called after all crypto operations are complete
+ 132:../../Secure/Core/Src/secboot_aes.c ****   * @param  ctx Pointer to the AES context structure
+ 133:../../Secure/Core/Src/secboot_aes.c ****   * @retval SECBOOT_AES_StatusTypeDef Deinitialization status
+ 134:../../Secure/Core/Src/secboot_aes.c ****   */
+ 135:../../Secure/Core/Src/secboot_aes.c **** SECBOOT_AES_StatusTypeDef SECBOOT_AES_DeInit(SECBOOT_AES_Context *ctx)
+ 136:../../Secure/Core/Src/secboot_aes.c **** {
+ 578              		.loc 1 136 1 is_stmt 1 view -0
+ 579              		.cfi_startproc
+ 580              		@ args = 0, pretend = 0, frame = 0
+ 581              		@ frame_needed = 0, uses_anonymous_args = 0
+ 582              		.loc 1 136 1 is_stmt 0 view .LVU161
+ 583 0000 38B5     		push	{r3, r4, r5, lr}
+ARM GAS  /tmp/ccy7zkyo.s 			page 15
+
+
+ 584              	.LCFI11:
+ 585              		.cfi_def_cfa_offset 16
+ 586              		.cfi_offset 3, -16
+ 587              		.cfi_offset 4, -12
+ 588              		.cfi_offset 5, -8
+ 589              		.cfi_offset 14, -4
+ 137:../../Secure/Core/Src/secboot_aes.c ****     /* 1. Parameter Validation */
+ 138:../../Secure/Core/Src/secboot_aes.c ****     if (!ctx) {
+ 590              		.loc 1 138 5 is_stmt 1 view .LVU162
+ 591              		.loc 1 138 8 is_stmt 0 view .LVU163
+ 592 0002 00B3     		cbz	r0, .L56
+ 593 0004 0446     		mov	r4, r0
+ 139:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_INVALID_PARAM;
+ 140:../../Secure/Core/Src/secboot_aes.c ****     }
+ 141:../../Secure/Core/Src/secboot_aes.c **** 
+ 142:../../Secure/Core/Src/secboot_aes.c ****     /* 2. Hardware Deinitialization */
+ 143:../../Secure/Core/Src/secboot_aes.c ****     if (HAL_CRYP_DeInit(&ctx->hcryp) != HAL_OK) {
+ 594              		.loc 1 143 5 is_stmt 1 view .LVU164
+ 595              		.loc 1 143 9 is_stmt 0 view .LVU165
+ 596 0006 FFF7FEFF 		bl	HAL_CRYP_DeInit
+ 597              	.LVL54:
+ 598              		.loc 1 143 8 view .LVU166
+ 599 000a 0546     		mov	r5, r0
+ 600 000c E8B9     		cbnz	r0, .L57
+ 144:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_ERROR;
+ 145:../../Secure/Core/Src/secboot_aes.c ****     }
+ 146:../../Secure/Core/Src/secboot_aes.c **** 
+ 147:../../Secure/Core/Src/secboot_aes.c ****     /* 3. Secure Data Cleansing */
+ 148:../../Secure/Core/Src/secboot_aes.c ****     volatile uint32_t *pKey = (volatile uint32_t *)ctx->key;
+ 601              		.loc 1 148 5 is_stmt 1 view .LVU167
+ 602              		.loc 1 148 24 is_stmt 0 view .LVU168
+ 603 000e 04F58670 		add	r0, r4, #268
+ 604              	.LVL55:
+ 149:../../Secure/Core/Src/secboot_aes.c ****     volatile uint32_t *pIV = (volatile uint32_t *)ctx->iv;
+ 605              		.loc 1 149 5 is_stmt 1 view .LVU169
+ 606              		.loc 1 149 24 is_stmt 0 view .LVU170
+ 607 0012 04F58E71 		add	r1, r4, #284
+ 608              	.LVL56:
+ 150:../../Secure/Core/Src/secboot_aes.c ****     
+ 151:../../Secure/Core/Src/secboot_aes.c ****     for (int i = 0; i < KEY_WORD_SIZE; i++) {
+ 609              		.loc 1 151 5 is_stmt 1 view .LVU171
+ 610              	.LBB9:
+ 611              		.loc 1 151 10 view .LVU172
+ 612              		.loc 1 151 14 is_stmt 0 view .LVU173
+ 613 0016 0023     		movs	r3, #0
+ 614              		.loc 1 151 5 view .LVU174
+ 615 0018 03E0     		b	.L52
+ 616              	.LVL57:
+ 617              	.L53:
+ 152:../../Secure/Core/Src/secboot_aes.c ****         pKey[i] = 0x00000000;
+ 618              		.loc 1 152 9 is_stmt 1 discriminator 3 view .LVU175
+ 619              		.loc 1 152 17 is_stmt 0 discriminator 3 view .LVU176
+ 620 001a 0022     		movs	r2, #0
+ 621 001c 40F82320 		str	r2, [r0, r3, lsl #2]
+ 151:../../Secure/Core/Src/secboot_aes.c ****         pKey[i] = 0x00000000;
+ 622              		.loc 1 151 41 is_stmt 1 discriminator 3 view .LVU177
+ 623 0020 0133     		adds	r3, r3, #1
+ARM GAS  /tmp/ccy7zkyo.s 			page 16
+
+
+ 624              	.LVL58:
+ 625              	.L52:
+ 151:../../Secure/Core/Src/secboot_aes.c ****         pKey[i] = 0x00000000;
+ 626              		.loc 1 151 23 discriminator 1 view .LVU178
+ 627 0022 032B     		cmp	r3, #3
+ 628 0024 F9DD     		ble	.L53
+ 629              	.LBE9:
+ 630              	.LBB10:
+ 153:../../Secure/Core/Src/secboot_aes.c ****     }
+ 154:../../Secure/Core/Src/secboot_aes.c ****     
+ 155:../../Secure/Core/Src/secboot_aes.c ****     for (int i = 0; i < IV_WORD_SIZE; i++) {
+ 631              		.loc 1 155 14 is_stmt 0 view .LVU179
+ 632 0026 0023     		movs	r3, #0
+ 633              	.LVL59:
+ 634              		.loc 1 155 14 view .LVU180
+ 635 0028 03E0     		b	.L54
+ 636              	.LVL60:
+ 637              	.L55:
+ 156:../../Secure/Core/Src/secboot_aes.c ****         pIV[i] = 0x00000000;
+ 638              		.loc 1 156 9 is_stmt 1 discriminator 3 view .LVU181
+ 639              		.loc 1 156 16 is_stmt 0 discriminator 3 view .LVU182
+ 640 002a 0022     		movs	r2, #0
+ 641 002c 41F82320 		str	r2, [r1, r3, lsl #2]
+ 155:../../Secure/Core/Src/secboot_aes.c ****         pIV[i] = 0x00000000;
+ 642              		.loc 1 155 40 is_stmt 1 discriminator 3 view .LVU183
+ 643 0030 0133     		adds	r3, r3, #1
+ 644              	.LVL61:
+ 645              	.L54:
+ 155:../../Secure/Core/Src/secboot_aes.c ****         pIV[i] = 0x00000000;
+ 646              		.loc 1 155 23 discriminator 1 view .LVU184
+ 647 0032 032B     		cmp	r3, #3
+ 648 0034 F9DD     		ble	.L55
+ 649              	.LBE10:
+ 157:../../Secure/Core/Src/secboot_aes.c ****     }
+ 158:../../Secure/Core/Src/secboot_aes.c **** 
+ 159:../../Secure/Core/Src/secboot_aes.c ****     /* 5. Context Structure Sanitization */
+ 160:../../Secure/Core/Src/secboot_aes.c ****     memset(ctx, 0, sizeof(SECBOOT_AES_Context));
+ 650              		.loc 1 160 5 view .LVU185
+ 651 0036 4FF49672 		mov	r2, #300
+ 652 003a 0021     		movs	r1, #0
+ 653              	.LVL62:
+ 654              		.loc 1 160 5 is_stmt 0 view .LVU186
+ 655 003c 2046     		mov	r0, r4
+ 656              	.LVL63:
+ 657              		.loc 1 160 5 view .LVU187
+ 658 003e FFF7FEFF 		bl	memset
+ 659              	.LVL64:
+ 161:../../Secure/Core/Src/secboot_aes.c **** 
+ 162:../../Secure/Core/Src/secboot_aes.c ****     return SECBOOT_AES_OK;
+ 660              		.loc 1 162 5 is_stmt 1 view .LVU188
+ 661              	.L51:
+ 163:../../Secure/Core/Src/secboot_aes.c **** }
+ 662              		.loc 1 163 1 is_stmt 0 view .LVU189
+ 663 0042 2846     		mov	r0, r5
+ 664 0044 38BD     		pop	{r3, r4, r5, pc}
+ 665              	.LVL65:
+ 666              	.L56:
+ARM GAS  /tmp/ccy7zkyo.s 			page 17
+
+
+ 139:../../Secure/Core/Src/secboot_aes.c ****     }
+ 667              		.loc 1 139 16 view .LVU190
+ 668 0046 0225     		movs	r5, #2
+ 669 0048 FBE7     		b	.L51
+ 670              	.LVL66:
+ 671              	.L57:
+ 144:../../Secure/Core/Src/secboot_aes.c ****     }
+ 672              		.loc 1 144 16 view .LVU191
+ 673 004a 0125     		movs	r5, #1
+ 674 004c F9E7     		b	.L51
+ 675              		.cfi_endproc
+ 676              	.LFE210:
+ 678              		.section	.text.SECBOOT_AES_Encrypt,"ax",%progbits
+ 679              		.align	1
+ 680              		.global	SECBOOT_AES_Encrypt
+ 681              		.syntax unified
+ 682              		.thumb
+ 683              		.thumb_func
+ 685              	SECBOOT_AES_Encrypt:
+ 686              	.LVL67:
+ 687              	.LFB211:
+ 164:../../Secure/Core/Src/secboot_aes.c **** 
+ 165:../../Secure/Core/Src/secboot_aes.c **** 
+ 166:../../Secure/Core/Src/secboot_aes.c **** SECBOOT_AES_StatusTypeDef SECBOOT_AES_Encrypt(
+ 167:../../Secure/Core/Src/secboot_aes.c ****     SECBOOT_AES_Context *ctx,
+ 168:../../Secure/Core/Src/secboot_aes.c ****     uint8_t *plaintext,
+ 169:../../Secure/Core/Src/secboot_aes.c ****     size_t plaintext_len,
+ 170:../../Secure/Core/Src/secboot_aes.c ****     uint32_t *ciphertext,
+ 171:../../Secure/Core/Src/secboot_aes.c ****     size_t *ciphertext_len
+ 172:../../Secure/Core/Src/secboot_aes.c **** ) {
+ 688              		.loc 1 172 3 is_stmt 1 view -0
+ 689              		.cfi_startproc
+ 690              		@ args = 4, pretend = 0, frame = 8
+ 691              		@ frame_needed = 1, uses_anonymous_args = 0
+ 692              		.loc 1 172 3 is_stmt 0 view .LVU193
+ 693 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 694              	.LCFI12:
+ 695              		.cfi_def_cfa_offset 36
+ 696              		.cfi_offset 4, -36
+ 697              		.cfi_offset 5, -32
+ 698              		.cfi_offset 6, -28
+ 699              		.cfi_offset 7, -24
+ 700              		.cfi_offset 8, -20
+ 701              		.cfi_offset 9, -16
+ 702              		.cfi_offset 10, -12
+ 703              		.cfi_offset 11, -8
+ 704              		.cfi_offset 14, -4
+ 705 0004 85B0     		sub	sp, sp, #20
+ 706              	.LCFI13:
+ 707              		.cfi_def_cfa_offset 56
+ 708 0006 02AF     		add	r7, sp, #8
+ 709              	.LCFI14:
+ 710              		.cfi_def_cfa 7, 48
+ 173:../../Secure/Core/Src/secboot_aes.c ****     if (!ctx || !plaintext || !ciphertext || !ciphertext_len) {
+ 711              		.loc 1 173 5 is_stmt 1 view .LVU194
+ 712              		.loc 1 173 8 is_stmt 0 view .LVU195
+ 713 0008 0028     		cmp	r0, #0
+ARM GAS  /tmp/ccy7zkyo.s 			page 18
+
+
+ 714 000a 42D0     		beq	.L61
+ 715 000c 0C46     		mov	r4, r1
+ 716 000e 1146     		mov	r1, r2
+ 717              	.LVL68:
+ 718              		.loc 1 173 8 view .LVU196
+ 719 0010 1D46     		mov	r5, r3
+ 720 0012 0646     		mov	r6, r0
+ 721              		.loc 1 173 14 discriminator 1 view .LVU197
+ 722 0014 002C     		cmp	r4, #0
+ 723 0016 3ED0     		beq	.L62
+ 724              		.loc 1 173 28 discriminator 2 view .LVU198
+ 725 0018 002B     		cmp	r3, #0
+ 726 001a 3ED0     		beq	.L63
+ 727              		.loc 1 173 43 discriminator 3 view .LVU199
+ 728 001c 3B6B     		ldr	r3, [r7, #48]
+ 729              	.LVL69:
+ 730              		.loc 1 173 43 discriminator 3 view .LVU200
+ 731 001e 002B     		cmp	r3, #0
+ 732 0020 3DD0     		beq	.L64
+ 174:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_INVALID_PARAM;
+ 175:../../Secure/Core/Src/secboot_aes.c ****     }
+ 176:../../Secure/Core/Src/secboot_aes.c **** 
+ 177:../../Secure/Core/Src/secboot_aes.c ****     size_t padding_size_bytes = plaintext_len + AES_BLOCK_SIZE - (plaintext_len % AES_BLOCK_SIZE);
+ 733              		.loc 1 177 5 is_stmt 1 view .LVU201
+ 734              		.loc 1 177 64 is_stmt 0 view .LVU202
+ 735 0022 22F00F03 		bic	r3, r2, #15
+ 736              	.LVL70:
+ 178:../../Secure/Core/Src/secboot_aes.c ****     size_t padding_size_words = padding_size_bytes / 4;
+ 737              		.loc 1 178 5 is_stmt 1 view .LVU203
+ 179:../../Secure/Core/Src/secboot_aes.c ****     uint8_t padded_bytes_input[padding_size_bytes];
+ 738              		.loc 1 179 5 view .LVU204
+ 739              		.loc 1 179 13 is_stmt 0 view .LVU205
+ 740 0026 03F11002 		add	r2, r3, #16
+ 741              	.LVL71:
+ 742              		.loc 1 179 13 view .LVU206
+ 743 002a ADEB020D 		sub	sp, sp, r2
+ 744 002e 0DF10808 		add	r8, sp, #8
+ 745              	.LVL72:
+ 180:../../Secure/Core/Src/secboot_aes.c ****     uint32_t padded_words_input[padding_size_words];
+ 746              		.loc 1 180 5 is_stmt 1 view .LVU207
+ 747              		.loc 1 180 14 is_stmt 0 view .LVU208
+ 748 0032 ADEB020D 		sub	sp, sp, r2
+ 749 0036 0DF10809 		add	r9, sp, #8
+ 750              	.LVL73:
+ 181:../../Secure/Core/Src/secboot_aes.c ****     uint32_t cipher_output[padding_size_words];
+ 751              		.loc 1 181 5 is_stmt 1 view .LVU209
+ 752              		.loc 1 181 14 is_stmt 0 view .LVU210
+ 753 003a ADEB020D 		sub	sp, sp, r2
+ 754 003e 0DF1080A 		add	r10, sp, #8
+ 755              	.LVL74:
+ 182:../../Secure/Core/Src/secboot_aes.c **** 
+ 183:../../Secure/Core/Src/secboot_aes.c ****     size_t padded_bytes_len = 0;
+ 756              		.loc 1 183 5 is_stmt 1 view .LVU211
+ 757              		.loc 1 183 12 is_stmt 0 view .LVU212
+ 758 0042 0023     		movs	r3, #0
+ 759              	.LVL75:
+ 760              		.loc 1 183 12 view .LVU213
+ARM GAS  /tmp/ccy7zkyo.s 			page 19
+
+
+ 761 0044 7B60     		str	r3, [r7, #4]
+ 184:../../Secure/Core/Src/secboot_aes.c ****     size_t padded_words_len = 0;
+ 762              		.loc 1 184 5 is_stmt 1 view .LVU214
+ 763              	.LVL76:
+ 185:../../Secure/Core/Src/secboot_aes.c ****     
+ 186:../../Secure/Core/Src/secboot_aes.c ****     if (PKCS7_Pad(plaintext, plaintext_len, padded_bytes_input, &padded_bytes_len) != PKCS7_PAD_OK)
+ 764              		.loc 1 186 5 view .LVU215
+ 765              		.loc 1 186 9 is_stmt 0 view .LVU216
+ 766 0046 3B1D     		adds	r3, r7, #4
+ 767 0048 4246     		mov	r2, r8
+ 768              	.LVL77:
+ 769              		.loc 1 186 9 view .LVU217
+ 770 004a 2046     		mov	r0, r4
+ 771              	.LVL78:
+ 772              		.loc 1 186 9 view .LVU218
+ 773 004c FFF7FEFF 		bl	PKCS7_Pad
+ 774              	.LVL79:
+ 775              		.loc 1 186 8 view .LVU219
+ 776 0050 38BB     		cbnz	r0, .L65
+ 187:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_PADDING_ERROR;
+ 188:../../Secure/Core/Src/secboot_aes.c ****     }
+ 189:../../Secure/Core/Src/secboot_aes.c **** 
+ 190:../../Secure/Core/Src/secboot_aes.c ****     padded_words_len = padded_bytes_len / 4;
+ 777              		.loc 1 190 5 is_stmt 1 view .LVU220
+ 778              		.loc 1 190 41 is_stmt 0 view .LVU221
+ 779 0052 7C68     		ldr	r4, [r7, #4]
+ 780              	.LVL80:
+ 781              		.loc 1 190 22 view .LVU222
+ 782 0054 4FEA940B 		lsr	fp, r4, #2
+ 783              	.LVL81:
+ 191:../../Secure/Core/Src/secboot_aes.c ****     bytes_to_uint32_be(padded_bytes_input, padded_bytes_len, padded_words_input);
+ 784              		.loc 1 191 5 is_stmt 1 view .LVU223
+ 785 0058 4A46     		mov	r2, r9
+ 786 005a 2146     		mov	r1, r4
+ 787 005c 4046     		mov	r0, r8
+ 788 005e FFF7FEFF 		bl	bytes_to_uint32_be
+ 789              	.LVL82:
+ 192:../../Secure/Core/Src/secboot_aes.c **** 
+ 193:../../Secure/Core/Src/secboot_aes.c ****     if (HAL_CRYP_Encrypt(&ctx->hcryp, padded_words_input, (uint16_t)padded_words_len, 
+ 790              		.loc 1 193 5 view .LVU224
+ 791              		.loc 1 193 9 is_stmt 0 view .LVU225
+ 792 0062 4FF0FF33 		mov	r3, #-1
+ 793 0066 0093     		str	r3, [sp]
+ 794 0068 5346     		mov	r3, r10
+ 795 006a 1FFA8BF2 		uxth	r2, fp
+ 796 006e 4946     		mov	r1, r9
+ 797 0070 3046     		mov	r0, r6
+ 798 0072 FFF7FEFF 		bl	HAL_CRYP_Encrypt
+ 799              	.LVL83:
+ 800              		.loc 1 193 8 view .LVU226
+ 801 0076 0646     		mov	r6, r0
+ 802              	.LVL84:
+ 803              		.loc 1 193 8 view .LVU227
+ 804 0078 08B1     		cbz	r0, .L68
+ 194:../../Secure/Core/Src/secboot_aes.c ****                          cipher_output, HAL_MAX_DELAY) != HAL_OK) {
+ 195:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_ERROR;
+ 805              		.loc 1 195 16 view .LVU228
+ARM GAS  /tmp/ccy7zkyo.s 			page 20
+
+
+ 806 007a 0126     		movs	r6, #1
+ 807 007c 12E0     		b	.L60
+ 808              	.L68:
+ 196:../../Secure/Core/Src/secboot_aes.c ****     }
+ 197:../../Secure/Core/Src/secboot_aes.c **** 
+ 198:../../Secure/Core/Src/secboot_aes.c ****     memcpy(ciphertext, cipher_output, padded_words_len * sizeof(uint32_t));
+ 809              		.loc 1 198 5 is_stmt 1 view .LVU229
+ 810 007e 24F00302 		bic	r2, r4, #3
+ 811 0082 5146     		mov	r1, r10
+ 812 0084 2846     		mov	r0, r5
+ 813 0086 FFF7FEFF 		bl	memcpy
+ 814              	.LVL85:
+ 199:../../Secure/Core/Src/secboot_aes.c ****     *ciphertext_len = padded_words_len;
+ 815              		.loc 1 199 5 view .LVU230
+ 816              		.loc 1 199 21 is_stmt 0 view .LVU231
+ 817 008a 3B6B     		ldr	r3, [r7, #48]
+ 818 008c C3F800B0 		str	fp, [r3]
+ 200:../../Secure/Core/Src/secboot_aes.c ****     return SECBOOT_AES_OK;
+ 819              		.loc 1 200 5 is_stmt 1 view .LVU232
+ 820              		.loc 1 200 12 is_stmt 0 view .LVU233
+ 821 0090 08E0     		b	.L60
+ 822              	.LVL86:
+ 823              	.L61:
+ 174:../../Secure/Core/Src/secboot_aes.c ****     }
+ 824              		.loc 1 174 16 view .LVU234
+ 825 0092 0226     		movs	r6, #2
+ 826 0094 06E0     		b	.L60
+ 827              	.LVL87:
+ 828              	.L62:
+ 174:../../Secure/Core/Src/secboot_aes.c ****     }
+ 829              		.loc 1 174 16 view .LVU235
+ 830 0096 0226     		movs	r6, #2
+ 831 0098 04E0     		b	.L60
+ 832              	.L63:
+ 174:../../Secure/Core/Src/secboot_aes.c ****     }
+ 833              		.loc 1 174 16 view .LVU236
+ 834 009a 0226     		movs	r6, #2
+ 835 009c 02E0     		b	.L60
+ 836              	.LVL88:
+ 837              	.L64:
+ 174:../../Secure/Core/Src/secboot_aes.c ****     }
+ 838              		.loc 1 174 16 view .LVU237
+ 839 009e 0226     		movs	r6, #2
+ 840 00a0 00E0     		b	.L60
+ 841              	.LVL89:
+ 842              	.L65:
+ 187:../../Secure/Core/Src/secboot_aes.c ****     }
+ 843              		.loc 1 187 16 view .LVU238
+ 844 00a2 0326     		movs	r6, #3
+ 845              	.LVL90:
+ 846              	.L60:
+ 201:../../Secure/Core/Src/secboot_aes.c **** }
+ 847              		.loc 1 201 1 view .LVU239
+ 848 00a4 3046     		mov	r0, r6
+ 849 00a6 0C37     		adds	r7, r7, #12
+ 850              	.LCFI15:
+ 851              		.cfi_def_cfa_offset 36
+ARM GAS  /tmp/ccy7zkyo.s 			page 21
+
+
+ 852 00a8 BD46     		mov	sp, r7
+ 853              	.LCFI16:
+ 854              		.cfi_def_cfa_register 13
+ 855              		@ sp needed
+ 856 00aa BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 857              		.cfi_endproc
+ 858              	.LFE211:
+ 860              		.section	.text.SECBOOT_AES_Decrypt,"ax",%progbits
+ 861              		.align	1
+ 862              		.global	SECBOOT_AES_Decrypt
+ 863              		.syntax unified
+ 864              		.thumb
+ 865              		.thumb_func
+ 867              	SECBOOT_AES_Decrypt:
+ 868              	.LVL91:
+ 869              	.LFB212:
+ 202:../../Secure/Core/Src/secboot_aes.c **** 
+ 203:../../Secure/Core/Src/secboot_aes.c **** SECBOOT_AES_StatusTypeDef SECBOOT_AES_Decrypt(
+ 204:../../Secure/Core/Src/secboot_aes.c ****     SECBOOT_AES_Context *ctx,
+ 205:../../Secure/Core/Src/secboot_aes.c ****     uint32_t *ciphertext,
+ 206:../../Secure/Core/Src/secboot_aes.c ****     size_t ciphertext_len,
+ 207:../../Secure/Core/Src/secboot_aes.c ****     uint8_t *plaintext,
+ 208:../../Secure/Core/Src/secboot_aes.c ****     size_t *plaintext_len
+ 209:../../Secure/Core/Src/secboot_aes.c **** ) {
+ 870              		.loc 1 209 3 is_stmt 1 view -0
+ 871              		.cfi_startproc
+ 872              		@ args = 4, pretend = 0, frame = 8
+ 873              		@ frame_needed = 1, uses_anonymous_args = 0
+ 874              		.loc 1 209 3 is_stmt 0 view .LVU241
+ 875 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 876              	.LCFI17:
+ 877              		.cfi_def_cfa_offset 36
+ 878              		.cfi_offset 4, -36
+ 879              		.cfi_offset 5, -32
+ 880              		.cfi_offset 6, -28
+ 881              		.cfi_offset 7, -24
+ 882              		.cfi_offset 8, -20
+ 883              		.cfi_offset 9, -16
+ 884              		.cfi_offset 10, -12
+ 885              		.cfi_offset 11, -8
+ 886              		.cfi_offset 14, -4
+ 887 0004 85B0     		sub	sp, sp, #20
+ 888              	.LCFI18:
+ 889              		.cfi_def_cfa_offset 56
+ 890 0006 02AF     		add	r7, sp, #8
+ 891              	.LCFI19:
+ 892              		.cfi_def_cfa 7, 48
+ 893 0008 1446     		mov	r4, r2
+ 894 000a 1E46     		mov	r6, r3
+ 210:../../Secure/Core/Src/secboot_aes.c ****     size_t plaintextPadded_words_len = ciphertext_len;
+ 895              		.loc 1 210 5 is_stmt 1 view .LVU242
+ 896              	.LVL92:
+ 211:../../Secure/Core/Src/secboot_aes.c ****     size_t plaintextPadded_bytes_len = ciphertext_len * 4;
+ 897              		.loc 1 211 5 view .LVU243
+ 898              		.loc 1 211 12 is_stmt 0 view .LVU244
+ 899 000c 4FEA8208 		lsl	r8, r2, #2
+ 900              	.LVL93:
+ARM GAS  /tmp/ccy7zkyo.s 			page 22
+
+
+ 212:../../Secure/Core/Src/secboot_aes.c ****     uint32_t plaintextPadded_words[plaintextPadded_words_len];
+ 901              		.loc 1 212 5 is_stmt 1 view .LVU245
+ 902              		.loc 1 212 14 is_stmt 0 view .LVU246
+ 903 0010 08F1070C 		add	ip, r8, #7
+ 904 0014 2CF0070C 		bic	ip, ip, #7
+ 905 0018 ADEB0C0D 		sub	sp, sp, ip
+ 906 001c 0DF10809 		add	r9, sp, #8
+ 907              	.LVL94:
+ 213:../../Secure/Core/Src/secboot_aes.c ****     uint8_t plaintextPadded_bytes[plaintextPadded_bytes_len];
+ 908              		.loc 1 213 5 is_stmt 1 view .LVU247
+ 909              		.loc 1 213 13 is_stmt 0 view .LVU248
+ 910 0020 ADEB0C0D 		sub	sp, sp, ip
+ 911 0024 0DF1080A 		add	r10, sp, #8
+ 912              	.LVL95:
+ 214:../../Secure/Core/Src/secboot_aes.c ****     uint8_t plaintextUnpadded_bytes[plaintextPadded_bytes_len];
+ 913              		.loc 1 214 5 is_stmt 1 view .LVU249
+ 914              		.loc 1 214 13 is_stmt 0 view .LVU250
+ 915 0028 ADEB0C0D 		sub	sp, sp, ip
+ 916 002c 6D46     		mov	r5, sp
+ 917              	.LVL96:
+ 215:../../Secure/Core/Src/secboot_aes.c ****     size_t plaintextUnpadded_bytes_len = 0;
+ 918              		.loc 1 215 5 is_stmt 1 view .LVU251
+ 919              		.loc 1 215 12 is_stmt 0 view .LVU252
+ 920 002e 0023     		movs	r3, #0
+ 921              	.LVL97:
+ 922              		.loc 1 215 12 view .LVU253
+ 923 0030 7B60     		str	r3, [r7, #4]
+ 216:../../Secure/Core/Src/secboot_aes.c **** 
+ 217:../../Secure/Core/Src/secboot_aes.c ****     if (HAL_CRYP_Decrypt(&ctx->hcryp, ciphertext, ciphertext_len,
+ 924              		.loc 1 217 5 is_stmt 1 view .LVU254
+ 925              		.loc 1 217 9 is_stmt 0 view .LVU255
+ 926 0032 4FF0FF33 		mov	r3, #-1
+ 927 0036 45F8083B 		str	r3, [r5], #8
+ 928              	.LVL98:
+ 929              		.loc 1 217 9 view .LVU256
+ 930 003a 4B46     		mov	r3, r9
+ 931 003c 92B2     		uxth	r2, r2
+ 932              	.LVL99:
+ 933              		.loc 1 217 9 view .LVU257
+ 934 003e FFF7FEFF 		bl	HAL_CRYP_Decrypt
+ 935              	.LVL100:
+ 936              		.loc 1 217 8 view .LVU258
+ 937 0042 30B1     		cbz	r0, .L74
+ 218:../../Secure/Core/Src/secboot_aes.c ****                          plaintextPadded_words, HAL_MAX_DELAY) != HAL_OK) {
+ 219:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_ERROR;
+ 938              		.loc 1 219 16 view .LVU259
+ 939 0044 4FF0010B 		mov	fp, #1
+ 940              	.L70:
+ 220:../../Secure/Core/Src/secboot_aes.c ****     }
+ 221:../../Secure/Core/Src/secboot_aes.c **** 
+ 222:../../Secure/Core/Src/secboot_aes.c ****     uint32_to_bytes_be(plaintextPadded_words, plaintextPadded_words_len, plaintextPadded_bytes);
+ 223:../../Secure/Core/Src/secboot_aes.c **** 
+ 224:../../Secure/Core/Src/secboot_aes.c ****     if (PKCS7_Unpad(plaintextPadded_bytes, plaintextPadded_bytes_len,
+ 225:../../Secure/Core/Src/secboot_aes.c ****                     plaintextUnpadded_bytes, &plaintextUnpadded_bytes_len) != PKCS7_UNPAD_OK) {
+ 226:../../Secure/Core/Src/secboot_aes.c ****         return SECBOOT_AES_PADDING_ERROR;
+ 227:../../Secure/Core/Src/secboot_aes.c ****     }
+ 228:../../Secure/Core/Src/secboot_aes.c **** 
+ARM GAS  /tmp/ccy7zkyo.s 			page 23
+
+
+ 229:../../Secure/Core/Src/secboot_aes.c ****     memcpy(plaintext, plaintextUnpadded_bytes, plaintextUnpadded_bytes_len);
+ 230:../../Secure/Core/Src/secboot_aes.c ****     *plaintext_len = plaintextUnpadded_bytes_len;
+ 231:../../Secure/Core/Src/secboot_aes.c ****     return SECBOOT_AES_OK;
+ 232:../../Secure/Core/Src/secboot_aes.c **** }
+ 941              		.loc 1 232 1 view .LVU260
+ 942 0048 5846     		mov	r0, fp
+ 943 004a 0C37     		adds	r7, r7, #12
+ 944              	.LCFI20:
+ 945              		.cfi_remember_state
+ 946              		.cfi_def_cfa_offset 36
+ 947 004c BD46     		mov	sp, r7
+ 948              	.LCFI21:
+ 949              		.cfi_def_cfa_register 13
+ 950              		@ sp needed
+ 951 004e BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 952              	.LVL101:
+ 953              	.L74:
+ 954              	.LCFI22:
+ 955              		.cfi_restore_state
+ 956              		.loc 1 232 1 view .LVU261
+ 957 0052 8346     		mov	fp, r0
+ 222:../../Secure/Core/Src/secboot_aes.c **** 
+ 958              		.loc 1 222 5 is_stmt 1 view .LVU262
+ 959 0054 5246     		mov	r2, r10
+ 960 0056 2146     		mov	r1, r4
+ 961 0058 4846     		mov	r0, r9
+ 962 005a FFF7FEFF 		bl	uint32_to_bytes_be
+ 963              	.LVL102:
+ 224:../../Secure/Core/Src/secboot_aes.c ****                     plaintextUnpadded_bytes, &plaintextUnpadded_bytes_len) != PKCS7_UNPAD_OK) {
+ 964              		.loc 1 224 5 view .LVU263
+ 224:../../Secure/Core/Src/secboot_aes.c ****                     plaintextUnpadded_bytes, &plaintextUnpadded_bytes_len) != PKCS7_UNPAD_OK) {
+ 965              		.loc 1 224 9 is_stmt 0 view .LVU264
+ 966 005e 3B1D     		adds	r3, r7, #4
+ 967 0060 2A46     		mov	r2, r5
+ 968 0062 4146     		mov	r1, r8
+ 969 0064 5046     		mov	r0, r10
+ 970 0066 FFF7FEFF 		bl	PKCS7_Unpad
+ 971              	.LVL103:
+ 224:../../Secure/Core/Src/secboot_aes.c ****                     plaintextUnpadded_bytes, &plaintextUnpadded_bytes_len) != PKCS7_UNPAD_OK) {
+ 972              		.loc 1 224 8 view .LVU265
+ 973 006a 0228     		cmp	r0, #2
+ 974 006c 02D0     		beq	.L75
+ 226:../../Secure/Core/Src/secboot_aes.c ****     }
+ 975              		.loc 1 226 16 view .LVU266
+ 976 006e 4FF0030B 		mov	fp, #3
+ 977 0072 E9E7     		b	.L70
+ 978              	.L75:
+ 229:../../Secure/Core/Src/secboot_aes.c ****     *plaintext_len = plaintextUnpadded_bytes_len;
+ 979              		.loc 1 229 5 is_stmt 1 view .LVU267
+ 980 0074 7A68     		ldr	r2, [r7, #4]
+ 981 0076 2946     		mov	r1, r5
+ 982 0078 3046     		mov	r0, r6
+ 983 007a FFF7FEFF 		bl	memcpy
+ 984              	.LVL104:
+ 230:../../Secure/Core/Src/secboot_aes.c ****     return SECBOOT_AES_OK;
+ 985              		.loc 1 230 5 view .LVU268
+ 230:../../Secure/Core/Src/secboot_aes.c ****     return SECBOOT_AES_OK;
+ARM GAS  /tmp/ccy7zkyo.s 			page 24
+
+
+ 986              		.loc 1 230 20 is_stmt 0 view .LVU269
+ 987 007e 7A68     		ldr	r2, [r7, #4]
+ 988 0080 3B6B     		ldr	r3, [r7, #48]
+ 989 0082 1A60     		str	r2, [r3]
+ 231:../../Secure/Core/Src/secboot_aes.c **** }
+ 990              		.loc 1 231 5 is_stmt 1 view .LVU270
+ 231:../../Secure/Core/Src/secboot_aes.c **** }
+ 991              		.loc 1 231 12 is_stmt 0 view .LVU271
+ 992 0084 E0E7     		b	.L70
+ 993              		.cfi_endproc
+ 994              	.LFE212:
+ 996              		.text
+ 997              	.Letext0:
+ 998              		.file 2 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stddef.h"
+ 999              		.file 3 "/usr/lib/gcc/arm-none-eabi/12.2.1/include/stdint.h"
+ 1000              		.file 4 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l562xx.h"
+ 1001              		.file 5 "../../Drivers/CMSIS/Device/ST/STM32L5xx/Include/stm32l5xx.h"
+ 1002              		.file 6 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_def.h"
+ 1003              		.file 7 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_dma.h"
+ 1004              		.file 8 "../../Drivers/STM32L5xx_HAL_Driver/Inc/stm32l5xx_hal_cryp.h"
+ 1005              		.file 9 "../../Secure/Core/Inc/secboot_aes.h"
+ 1006              		.file 10 "/usr/include/newlib/string.h"
+ 1007              		.file 11 "<built-in>"
+ARM GAS  /tmp/ccy7zkyo.s 			page 25
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 secboot_aes.c
+     /tmp/ccy7zkyo.s:22     .text.bytes_to_uint32_be:00000000 $t
+     /tmp/ccy7zkyo.s:27     .text.bytes_to_uint32_be:00000000 bytes_to_uint32_be
+     /tmp/ccy7zkyo.s:92     .text.uint32_to_bytes_be:00000000 $t
+     /tmp/ccy7zkyo.s:97     .text.uint32_to_bytes_be:00000000 uint32_to_bytes_be
+     /tmp/ccy7zkyo.s:175    .text.PKCS7_Pad:00000000 $t
+     /tmp/ccy7zkyo.s:180    .text.PKCS7_Pad:00000000 PKCS7_Pad
+     /tmp/ccy7zkyo.s:259    .text.PKCS7_Unpad:00000000 $t
+     /tmp/ccy7zkyo.s:264    .text.PKCS7_Unpad:00000000 PKCS7_Unpad
+     /tmp/ccy7zkyo.s:427    .text.SECBOOT_AES_Init:00000000 $t
+     /tmp/ccy7zkyo.s:433    .text.SECBOOT_AES_Init:00000000 SECBOOT_AES_Init
+     /tmp/ccy7zkyo.s:564    .text.SECBOOT_AES_Init:00000078 $d
+     /tmp/ccy7zkyo.s:569    .text.SECBOOT_AES_DeInit:00000000 $t
+     /tmp/ccy7zkyo.s:575    .text.SECBOOT_AES_DeInit:00000000 SECBOOT_AES_DeInit
+     /tmp/ccy7zkyo.s:679    .text.SECBOOT_AES_Encrypt:00000000 $t
+     /tmp/ccy7zkyo.s:685    .text.SECBOOT_AES_Encrypt:00000000 SECBOOT_AES_Encrypt
+     /tmp/ccy7zkyo.s:861    .text.SECBOOT_AES_Decrypt:00000000 $t
+     /tmp/ccy7zkyo.s:867    .text.SECBOOT_AES_Decrypt:00000000 SECBOOT_AES_Decrypt
+
+UNDEFINED SYMBOLS
+memcpy
+HAL_CRYP_Init
+HAL_CRYP_DeInit
+memset
+HAL_CRYP_Encrypt
+HAL_CRYP_Decrypt
